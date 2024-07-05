@@ -1,0 +1,45 @@
+@BASE_URL=http://localhost:3000
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Mywicm9sZSI6IlN0YWZmIiwiaWF0IjoxNjk5NDAxNzIyLCJleHAiOjE2OTk0MDUzMjJ9.9E4gXFoCQ6nvxG8LSgF2u-xh2hOS6rMmpyQL77o5Oig
+
+###
+
+POST {{BASE_URL}}/apis/blabla/add-user HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "username": "test3",
+  "email": "test3@mail.com",
+  "password": "12345",
+  "phoneNumber": "1234",
+  "address": "Dunia"
+}
+
+###
+
+POST {{BASE_URL}}/apis/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "Dane35@hotmail.com",
+  "password": "123456"
+}
+
+###
+
+GET {{BASE_URL}}/apis/blog HTTP/1.1
+Authorization: Bearer {{TOKEN}}
+
+###
+
+GET {{BASE_URL}}/apis/blog/10 HTTP/1.1
+Authorization: Bearer {{TOKEN}}
+
+###
+
+POST {{BASE_URL}}/apis/blog HTTP/1.1
+Content-Type: application/json
+
+{
+  
+}
