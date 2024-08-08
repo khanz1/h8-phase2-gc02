@@ -1,16 +1,12 @@
 import prisma from "@/dbs/prisma";
-import { errorCreator } from "@/utils/error-creator";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
-  try {
-    const query = await prisma.movie_Genre.findMany();
+export const GET = withErrorHandler(async () => {
+  const query = await prisma.movie_Genre.findMany();
 
-    return NextResponse.json({
-      statusCode: 200,
-      data: query,
-    });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  return NextResponse.json({
+    statusCode: 200,
+    data: query,
+  });
+});

@@ -1,4 +1,3 @@
-import { CustomResponse } from "@/defs/custom-response";
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -112,7 +111,7 @@ export const errorCreator = (
     }
   }
 
-  return NextResponse.json<CustomResponse<never>>(
+  return NextResponse.json(
     {
       statusCode,
       error: errorMessage,
