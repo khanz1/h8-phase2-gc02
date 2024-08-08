@@ -1,5 +1,4 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { UserModel } from "@/defs/zod";
 import { compareHashWithText } from "@/utils/bcrypt";
 import { parsingData } from "@/utils/data-parser";
@@ -36,7 +35,7 @@ export const POST = async (req: NextRequest) => {
 
     const token = await signPayload(payload);
 
-    return NextResponse.json<CustomResponse<{ access_token: string }>>(
+    return NextResponse.json(
       {
         statusCode: 200,
         message: "Login success",

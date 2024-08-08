@@ -1,5 +1,5 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse, GlobalPubParams } from "@/defs/custom-response";
+import { GlobalPubParams } from "@/defs/custom-response";
 import { errorCreator } from "@/utils/error-creator";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,7 +28,7 @@ export const GET = async (
       throw new Error("ARTICLE_NOT_FOUND");
     }
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       data: query,
     });

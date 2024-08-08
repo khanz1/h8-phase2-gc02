@@ -1,7 +1,7 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { createParsedSearchParamsAndOptionQuery } from "@/utils/data-parser";
 import { errorCreator } from "@/utils/error-creator";
+import { getPaginatedResponse } from "@/utils/paginated-response";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -16,23 +16,9 @@ export const GET = async (req: NextRequest) => {
       }),
     ]);
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: {
-        query: [...query],
-        pagination: {
-          currentPage: parsedSearchParams.data.page
-            ? parseInt(parsedSearchParams.data.page.toString() || "1")
-            : 1,
-          totalPage: Math.ceil(
-            rows /
-              (parsedSearchParams.data.limit
-                ? parseInt(parsedSearchParams.data.limit.toString() || "10")
-                : 10),
-          ),
-          totalRows: rows,
-        },
-      },
+      data: getPaginatedResponse(query, parsedSearchParams, rows),
     });
   } catch (err) {
     return errorCreator(err);

@@ -46,18 +46,40 @@ export const PatchBodyFormData = z.object({
 export const PublicGlobalSearchParams = z.object({
   q: z.string().nullable().optional(),
   i: z.string().nullable().optional(),
-  sort: z.enum(["ASC", "DESC", "asc", "desc"]).nullable().optional(),
+  // Sorting order, case-insensitive, defaults to 'ASC'
+  sort: z
+    .enum(["ASC", "DESC", "asc", "desc"])
+    .nullable()
+    .optional()
+    .transform((data) => data?.toLowerCase() || "asc"),
   page: z
     .string()
-    .refine((data) => parseInt(data) > 0, "page must be greater than 0.")
     .nullable()
-    .optional(),
+    .optional()
+    .refine(
+      (data) => {
+        const parsed = parseInt(data || "1", 10);
+        return !isNaN(parsed) && parsed > 0;
+      },
+      {
+        message: "Page must be a number greater than 0.",
+        path: ["page"],
+      },
+    )
+    .transform((data) => parseInt(data || "1", 10)),
   limit: z
     .string()
-    .refine(
-      (data) => parseInt(data) >= 4 && parseInt(data) <= 12,
-      "limit must be between 4 to 12",
-    )
     .nullable()
-    .optional(),
+    .optional()
+    .refine(
+      (data) => {
+        const parsed = parseInt(data || "10", 10);
+        return !isNaN(parsed) && parsed >= 4 && parsed <= 12;
+      },
+      {
+        message: "Limit must be a number between 4 and 12.",
+        path: ["limit"],
+      },
+    )
+    .transform((data) => parseInt(data || "10", 10)),
 });

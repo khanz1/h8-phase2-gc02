@@ -1,5 +1,4 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { UserModel } from "@/defs/zod";
 import { parsingData } from "@/utils/data-parser";
 import { errorCreator } from "@/utils/error-creator";
@@ -20,7 +19,7 @@ export const POST = async (req: NextRequest) => {
       data: parsedData.data,
     });
 
-    return NextResponse.json<CustomResponse<{ id: number; email: string }>>(
+    return NextResponse.json(
       {
         statusCode: 201,
         message: "User created successfully",

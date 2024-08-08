@@ -20,7 +20,7 @@ export const parsingData = async (req: NextRequest) => {
   return data;
 };
 
-export const validatePublicGlobalSearchParams = (req: NextRequest) => {
+export const validatePublicSearchParams = (req: NextRequest) => {
   // { q, i, sort, page, limit }
   const { searchParams } = new URL(req.nextUrl);
 
@@ -45,51 +45,37 @@ export const createParsedSearchParamsAndOptionQuery = (
   sortingColumn: string,
   secondEntityName: string,
 ) => {
-  let options: OptionsQuery<{}> = {};
+  const searchParams = validatePublicSearchParams(req);
 
-  const parsedSearchParams = validatePublicGlobalSearchParams(req);
+  const options: OptionsQuery = {
+    where: {},
+    skip: (searchParams.data.page - 1) * searchParams.data.limit,
+    take: searchParams.data.limit,
+    orderBy: {
+      [sortingColumn]: searchParams.data.sort,
+    },
+    include: {
+      [secondEntityName]: true,
+    },
+  };
 
-  if (parsedSearchParams.data.q) {
+  if (searchParams.data.q) {
     options.where = {
       [searchColumn]: {
-        contains: `%${parsedSearchParams.data.q}%`,
+        contains: `%${searchParams.data.q}%`,
         mode: "insensitive",
       },
     };
   }
 
-  if (parsedSearchParams.data.i) {
+  if (searchParams.data.i) {
     options.where = {
       ...options.where,
       [secondEntityName]: {
-        name: parsedSearchParams.data.i,
+        name: searchParams.data.i,
       },
     };
   }
 
-  if (parsedSearchParams.data.sort) {
-    options.orderBy = {
-      [sortingColumn]: parsedSearchParams.data.sort.toLowerCase() || "asc",
-    };
-  }
-
-  if (parsedSearchParams.data.page) {
-    let limit = parsedSearchParams.data.limit
-      ? parseInt(parsedSearchParams.data.limit.toString() || "10")
-      : 10;
-
-    let page = parseInt(parsedSearchParams.data.page.toString() || "1");
-
-    options.skip = (page - 1) * limit;
-  }
-
-  options.include = {
-    [secondEntityName]: true,
-  };
-
-  options.take = parsedSearchParams.data.limit
-    ? parseInt(parsedSearchParams.data.limit.toString() || "10")
-    : 10;
-
-  return { parsedSearchParams, options };
+  return { parsedSearchParams: searchParams, options };
 };
