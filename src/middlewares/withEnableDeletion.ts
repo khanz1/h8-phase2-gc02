@@ -17,9 +17,7 @@ let includePath = [
 const numberToCheck = Number(process.env.PERMISSION_TO_DELETE_SECOND_ENTITY);
 const PERMISSION = isNaN(numberToCheck)
   ? false
-  : numberToCheck > 0
-  ? true
-  : false;
+  : numberToCheck > 0;
 
 export const withEnableDeletion: MiddlewareFactory =
   (next: NextMiddleware) => async (req: NextRequest, _next: NextFetchEvent) => {
