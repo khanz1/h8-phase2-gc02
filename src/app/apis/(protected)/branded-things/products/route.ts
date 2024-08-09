@@ -1,13 +1,11 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { Branded_ProductModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.branded_Product.findMany({
+  const products = await prisma.branded_Product.findMany({
     include: {
       User: {
         select: prismaExclude("User", ["password"]),
@@ -15,40 +13,29 @@ export const GET = withErrorHandler(async () => {
     },
   });
 
-  return NextResponse.json<CustomResponse<unknown>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: products,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler(async (req) => {
+  const user = extractUserFromHeader(req);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+  const requestBody = await getRequestBody(req);
+  requestBody.categoryId = parseInt(requestBody.categoryId);
+  requestBody.authorId = user.id;
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
+  const data = await Branded_ProductModel.parseAsync(requestBody);
 
-  const requestData = await parsingData(req);
-  requestData.categoryId = parseInt(requestData.categoryId);
-  requestData.authorId = parsedHeadersUserData.id;
-
-  const parsedData = Branded_ProductModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.branded_Product.create({
-    data: parsedData.data,
+  const product = await prisma.branded_Product.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<unknown>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: product,
     },
     {
       status: 201,

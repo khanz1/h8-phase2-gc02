@@ -1,33 +1,17 @@
-import prisma from "@/dbs/prisma";
-import { UserJWTPayload } from "@/defs/jwt-payload";
+import { extractUserFromHeader } from "@/utils/data-parser";
+import { ErrorMessage, ForbiddenError } from "@/utils/http-error";
+import { Restaurant_Cuisine } from "@prisma/client";
 import { NextRequest } from "next/server";
 
-export const authorization = async (id: string, req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const guardAdminAndAuthor = async (
+  cuisine: Restaurant_Cuisine,
+  req: NextRequest,
+) => {
+  const user = extractUserFromHeader(req);
 
-  const query = await prisma.restaurant_Cuisine.findFirst({
-    where: {
-      id: parseInt(id),
-    },
-  });
-
-  if (!query) {
-    throw new Error("CUISINE_NOT_FOUND");
+  if (user.role !== "Admin" && user.id !== cuisine.authorId) {
+    throw new ForbiddenError(ErrorMessage.FORBIDDEN);
   }
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
-
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
-
-  if (
-    parsedHeadersUserData.role !== "Admin" &&
-    parsedHeadersUserData.id !== query.authorId
-  ) {
-    throw new Error("FORBIDDEN");
-  }
-
-  return { parsedHeadersUserData };
+  return user;
 };

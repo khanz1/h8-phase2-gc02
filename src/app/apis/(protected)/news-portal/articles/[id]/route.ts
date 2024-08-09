@@ -1,140 +1,113 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { News_ArticleModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
 import imageKit from "@/utils/imagekit";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { News_Article } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { authorization } from "../authorization";
+import { NextResponse } from "next/server";
+import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<News_Article, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.news_Article.findUnique({
+    const article = await prisma.news_Article.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("ARTICLE_NOT_FOUND");
+    if (!article) {
+      throw new NotFoundError(ErrorMessage.ARTICLE_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<News_Article>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: article,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const { parsedHeadersUserData } = await authorization(id, req);
+    const user = await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    requestData.categoryId = parseInt(requestData.categoryId);
-    requestData.authorId = parsedHeadersUserData.id;
+    const requestBody = await getRequestBody(req);
+    requestBody.categoryId = parseInt(requestBody.categoryId);
+    requestBody.authorId = user.id;
 
-    const parsedData = News_ArticleModel.safeParse(requestData);
-
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
+    const data = await News_ArticleModel.parseAsync(requestBody);
 
     await prisma.news_Article.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Article id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
     await prisma.news_Article.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Article id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PATCH = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    const parsedData = PatchBodyFormData.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await PatchBodyFormData.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const base64 = await parsedData.data.file.arrayBuffer();
+    const base64 = await data.file.arrayBuffer();
     const base64String = Buffer.from(base64).toString("base64");
 
     // We will force upload to imagekit here
     const responseImagekit = await imageKit.upload({
       file: base64String,
-      fileName: requestData.file.name,
+      fileName: data.file.name,
       folder: "phase2/challenge/all-in-one",
       tags: ["news-portal"],
     });
 
     await prisma.news_Article.update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Article id: ${id} image updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

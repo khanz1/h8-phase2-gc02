@@ -1,105 +1,87 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Room_TypeModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Room_Type } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Room_Type, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.room_Type.findUnique({
+    const type = await prisma.room_Type.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
+    if (!type) {
+      throw new NotFoundError(ErrorMessage.TYPE_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<Room_Type>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: type,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const requestData = await parsingData(req);
-    const parsedData = Room_TypeModel.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await Room_TypeModel.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const query = await prisma.room_Type.findUnique({
+    const type = await prisma.room_Type.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
+    if (!type) {
+      throw new NotFoundError(ErrorMessage.TYPE_NOT_FOUND);
     }
 
     await prisma.room_Type.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Type id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.room_Type.findUnique({
+    const type = await prisma.room_Type.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
+    if (!type) {
+      throw new NotFoundError(ErrorMessage.TYPE_NOT_FOUND);
     }
 
     await prisma.room_Type.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Type id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

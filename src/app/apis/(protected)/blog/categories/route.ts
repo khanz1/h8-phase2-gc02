@@ -1,45 +1,36 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { Blog_CategoryModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Blog_Category } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = withErrorHandler(async () => {
-  const query = await prisma.blog_Category.findMany();
+export const GET = withErrorHandler<Blog_Category[]>(async () => {
+  const categories = await prisma.blog_Category.findMany();
 
-  return NextResponse.json<CustomResponse<Blog_Category[]>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: categories,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler<Blog_Category>(
+  async (req: NextRequest) => {
+    const requestBody = await getRequestBody(req);
+    const data = await Blog_CategoryModel.parseAsync(requestBody);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+    const category = await prisma.blog_Category.create({
+      data,
+    });
 
-  const requestData = await parsingData(req);
-  const parsedData = Blog_CategoryModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.blog_Category.create({
-    data: parsedData.data,
-  });
-
-  return NextResponse.json<CustomResponse<Blog_Category>>(
-    {
-      statusCode: 201,
-      data: query,
-    },
-    {
-      status: 201,
-    },
-  );
-});
+    return NextResponse.json(
+      {
+        statusCode: 201,
+        data: category,
+      },
+      {
+        status: 201,
+      },
+    );
+  },
+);

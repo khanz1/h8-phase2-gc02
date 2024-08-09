@@ -1,38 +1,36 @@
 import prisma from "@/dbs/prisma";
 import { UserModel } from "@/defs/zod";
 import { compareHashWithText } from "@/utils/bcrypt";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, UnauthorizedError } from "@/utils/http-error";
 import { signPayload } from "@/utils/jwt";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const requestData = await parsingData(req);
-  const parsedData = UserModel.safeParse(requestData);
+  const requestBody = await getRequestBody(req);
+  const data = await UserModel.parseAsync(requestBody);
 
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const foundUser = await prisma.user.findFirst({
+  const user = await prisma.user.findFirst({
     where: {
-      email: parsedData.data.email,
+      email: data.email,
     },
   });
 
-  if (
-    !foundUser ||
-    !compareHashWithText(parsedData.data.password, foundUser.password)
-  ) {
-    throw new Error("INVALID_CREDENTIALS");
+  if (!user) {
+    throw new UnauthorizedError(ErrorMessage.INVALID_LOGIN);
   }
 
-  const payload = {
-    id: foundUser.id,
-    role: foundUser.role,
-  };
+  const isValidPassword = compareHashWithText(data.password, user.password);
 
-  const token = await signPayload(payload);
+  if (!isValidPassword) {
+    throw new UnauthorizedError(ErrorMessage.INVALID_LOGIN);
+  }
+
+  const token = await signPayload({
+    id: user.id,
+    role: user.role,
+  });
 
   return NextResponse.json(
     {

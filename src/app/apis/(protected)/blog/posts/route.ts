@@ -1,13 +1,12 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { Blog_PostModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
+import { Blog_Post } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.blog_Post.findMany({
+  const posts = await prisma.blog_Post.findMany({
     include: {
       User: {
         select: prismaExclude("User", ["password"]),
@@ -15,40 +14,29 @@ export const GET = withErrorHandler(async () => {
     },
   });
 
-  return NextResponse.json<CustomResponse<unknown>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: posts,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler<Blog_Post>(async (req: NextRequest) => {
+  const user = extractUserFromHeader(req);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+  const requestBody = await getRequestBody(req);
+  requestBody.categoryId = parseInt(requestBody.categoryId);
+  requestBody.authorId = user.id;
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
+  const data = await Blog_PostModel.parseAsync(requestBody);
 
-  const requestData = await parsingData(req);
-  requestData.categoryId = parseInt(requestData.categoryId);
-  requestData.authorId = parsedHeadersUserData.id;
-
-  const parsedData = Blog_PostModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.blog_Post.create({
-    data: parsedData.data,
+  const post = await prisma.blog_Post.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<unknown>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: post,
     },
     {
       status: 201,

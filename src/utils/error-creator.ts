@@ -1,3 +1,4 @@
+import { HttpError } from "@/utils/http-error";
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -15,7 +16,7 @@ export const errorCreator = (
   err: unknown,
   code: number = 500,
 ): NextResponse => {
-  console.log(err, "<<< e");
+  console.log(err, "<<< e", err instanceof ZodError);
   let statusCode = code;
   let errorMessage = "Internal Server Error";
 
@@ -41,6 +42,9 @@ export const errorCreator = (
       statusCode = 400;
       errorMessage = `${newError.meta.field_name} - Foreign key invalid`;
     }
+  } else if (err instanceof HttpError) {
+    statusCode = err.statusCode;
+    errorMessage = err.message;
   } else if (err instanceof ZodError) {
     const errPath = err.errors[0].path[0];
     const errMessage = err.errors[0].message;

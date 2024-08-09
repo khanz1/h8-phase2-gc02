@@ -1,105 +1,87 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Branded_CategoryModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Branded_Category } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Branded_Category, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.branded_Category.findUnique({
+    const category = await prisma.branded_Category.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("CATEGORY_NOT_FOUND");
+    if (!category) {
+      throw new NotFoundError(ErrorMessage.CATEGORY_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<Branded_Category>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: category,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const requestData = await parsingData(req);
-    const parsedData = Branded_CategoryModel.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await Branded_CategoryModel.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const query = await prisma.branded_Category.findUnique({
+    const category = await prisma.branded_Category.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("CATEGORY_NOT_FOUND");
+    if (!category) {
+      throw new NotFoundError(ErrorMessage.CATEGORY_NOT_FOUND);
     }
 
     await prisma.branded_Category.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Category id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.branded_Category.findUnique({
+    const category = await prisma.branded_Category.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("CATEGORY_NOT_FOUND");
+    if (!category) {
+      throw new NotFoundError(ErrorMessage.CATEGORY_NOT_FOUND);
     }
 
     await prisma.branded_Category.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Category id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

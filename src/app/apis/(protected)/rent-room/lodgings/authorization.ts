@@ -1,33 +1,24 @@
 import prisma from "@/dbs/prisma";
-import { UserJWTPayload } from "@/defs/jwt-payload";
+import { extractUserFromHeader } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
 import { NextRequest } from "next/server";
 
-export const authorization = async (id: string, req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const guardAdminAndAuthor = async (id: number, req: NextRequest) => {
+  const user = extractUserFromHeader(req);
 
-  const query = await prisma.room_Lodging.findFirst({
+  const lodging = await prisma.room_Lodging.findFirst({
     where: {
-      id: parseInt(id),
+      id,
     },
   });
 
-  if (!query) {
-    throw new Error("LODGING_NOT_FOUND");
+  if (!lodging) {
+    throw new NotFoundError(ErrorMessage.LODGING_NOT_FOUND);
   }
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
-
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
-
-  if (
-    parsedHeadersUserData.role !== "Admin" &&
-    parsedHeadersUserData.id !== query.authorId
-  ) {
+  if (user.role !== "Admin" && user.id !== lodging.authorId) {
     throw new Error("FORBIDDEN");
   }
 
-  return { parsedHeadersUserData };
+  return user;
 };

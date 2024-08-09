@@ -1,23 +1,43 @@
 import { OptionsQuery } from "@/defs/custom-response";
+import { UserJWTPayload } from "@/defs/jwt-payload";
 import { PublicGlobalSearchParams } from "@/defs/zod/x_custom_input";
+import {
+  BadRequestError,
+  ErrorMessage,
+  UnauthorizedError,
+} from "@/utils/http-error";
 import { NextRequest } from "next/server";
 
-export const parsingData = async (req: NextRequest) => {
-  let data;
+export const extractUserFromHeader = (
+  req: NextRequest,
+): Pick<UserJWTPayload, "id" | "role"> => {
+  const headersUserData = req.headers.get("x-custom-data-user");
 
-  if (req.headers.get("content-type") === "application/json") {
-    data = await req.json();
-  } else if (
-    req.headers.get("content-type") === "application/x-www-form-urlencoded" ||
-    req.headers.get("content-type")?.split(";")[0] === "multipart/form-data"
-  ) {
-    data = await req.formData();
-    data = Object.fromEntries(data);
-  } else {
-    throw new Error("INVALID_CONTENT_TYPE");
+  if (!headersUserData) {
+    throw new UnauthorizedError(ErrorMessage.INVALID_TOKEN);
   }
 
-  return data;
+  return JSON.parse(headersUserData);
+};
+
+export const getRequestBody = async (req: NextRequest) => {
+  const contentType = req.headers.get("content-type");
+
+  const isContentTypeJSON = contentType === "application/json";
+  const isContentTypeForm = contentType === "application/x-www-form-urlencoded";
+  const isContentTypeMultipart =
+    contentType?.split(";")[0] === "multipart/form-data";
+
+  if (isContentTypeJSON) {
+    return await req.json();
+  }
+
+  if (isContentTypeForm || isContentTypeMultipart) {
+    const form = await req.formData();
+    return Object.fromEntries(form);
+  }
+
+  throw new BadRequestError(ErrorMessage.INVALID_CONTENT_TYPE);
 };
 
 export const validatePublicSearchParams = (req: NextRequest) => {

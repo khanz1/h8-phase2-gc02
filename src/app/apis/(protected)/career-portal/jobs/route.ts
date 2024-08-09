@@ -1,13 +1,11 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { Career_JobModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.career_Job.findMany({
+  const jobs = await prisma.career_Job.findMany({
     include: {
       User: {
         select: prismaExclude("User", ["password"]),
@@ -15,40 +13,29 @@ export const GET = withErrorHandler(async () => {
     },
   });
 
-  return NextResponse.json<CustomResponse<unknown>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: jobs,
   });
 });
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+  const user = extractUserFromHeader(req);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+  const requestBody = await getRequestBody(req);
+  requestBody.companyId = parseInt(requestBody.companyId);
+  requestBody.authorId = user.id;
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
+  const data = await Career_JobModel.parseAsync(requestBody);
 
-  const requestData = await parsingData(req);
-  requestData.companyId = parseInt(requestData.companyId);
-  requestData.authorId = parsedHeadersUserData.id;
-
-  const parsedData = Career_JobModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.career_Job.create({
-    data: parsedData.data,
+  const job = await prisma.career_Job.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<unknown>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: job,
     },
     {
       status: 201,

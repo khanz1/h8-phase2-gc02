@@ -1,33 +1,28 @@
 import prisma from "@/dbs/prisma";
-import { UserJWTPayload } from "@/defs/jwt-payload";
+import { extractUserFromHeader } from "@/utils/data-parser";
+import {
+  ErrorMessage,
+  ForbiddenError,
+  NotFoundError,
+} from "@/utils/http-error";
 import { NextRequest } from "next/server";
 
-export const authorization = async (id: string, req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const guardAdminAndAuthor = async (id: number, req: NextRequest) => {
+  const user = extractUserFromHeader(req);
 
-  const query = await prisma.news_Article.findFirst({
+  const article = await prisma.news_Article.findFirst({
     where: {
-      id: parseInt(id),
+      id,
     },
   });
 
-  if (!query) {
-    throw new Error("ARTICLE_NOT_FOUND");
+  if (!article) {
+    throw new NotFoundError(ErrorMessage.ARTICLE_NOT_FOUND);
   }
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
+  if (user.role !== "Admin" && user.id !== article.authorId) {
+    throw new ForbiddenError(ErrorMessage.FORBIDDEN);
   }
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
-
-  if (
-    parsedHeadersUserData.role !== "Admin" &&
-    parsedHeadersUserData.id !== query.authorId
-  ) {
-    throw new Error("FORBIDDEN");
-  }
-
-  return { parsedHeadersUserData };
+  return user;
 };

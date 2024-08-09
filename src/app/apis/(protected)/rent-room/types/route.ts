@@ -1,42 +1,31 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { Room_TypeModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Room_Type } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler(async () => {
-  const query = await prisma.room_Type.findMany();
+export const GET = withErrorHandler<Room_Type[]>(async () => {
+  const types = await prisma.room_Type.findMany();
 
-  return NextResponse.json<CustomResponse<Room_Type[]>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: types,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler<Room_Type>(async (req) => {
+  const requestBody = await getRequestBody(req);
+  const data = await Room_TypeModel.parseAsync(requestBody);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
-
-  const requestData = await parsingData(req);
-  const parsedData = Room_TypeModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.room_Type.create({
-    data: parsedData.data,
+  const type = await prisma.room_Type.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<Room_Type>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: type,
     },
     {
       status: 201,

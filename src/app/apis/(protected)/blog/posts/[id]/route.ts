@@ -1,140 +1,104 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Blog_PostModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
-import imageKit from "@/utils/imagekit";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { uploadImage } from "@/utils/upload-image";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Blog_Post } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { authorization } from "../authorization";
+import { NextResponse } from "next/server";
+import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Blog_Post, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.blog_Post.findUnique({
+    const post = await prisma.blog_Post.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("POST_NOT_FOUND");
+    if (!post) {
+      throw new NotFoundError(ErrorMessage.POST_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<Blog_Post>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: post,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const { parsedHeadersUserData } = await authorization(id, req);
+    const user = await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    requestData.categoryId = parseInt(requestData.categoryId);
-    requestData.authorId = parsedHeadersUserData.id;
+    const requestBody = await getRequestBody(req);
+    requestBody.categoryId = parseInt(requestBody.categoryId);
+    requestBody.authorId = user.id;
 
-    const parsedData = Blog_PostModel.safeParse(requestData);
-
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
+    const data = await Blog_PostModel.parseAsync(requestBody);
 
     await prisma.blog_Post.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Post id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
     await prisma.blog_Post.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Post id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PATCH = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    const parsedData = PatchBodyFormData.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await PatchBodyFormData.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const base64 = await parsedData.data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: requestData.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["blog"],
-    });
+    const responseImagekit = await uploadImage(data.file);
 
     await prisma.blog_Post.update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Post id: ${id} image updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

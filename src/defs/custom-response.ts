@@ -5,6 +5,23 @@ export type CustomResponse<T> = {
   data?: T | never;
 };
 
+export type ApiResponse<T = undefined> = {
+  statusCode: number;
+  message?: string;
+  error?: string;
+  data?: T;
+};
+
+export type ProtectedHandlerParams = {
+  params: {
+    id: string;
+  };
+};
+
+export type ResponseMessage = {
+  message: string;
+};
+
 export type GlobalPubParams = {
   id: string;
 };

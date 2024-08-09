@@ -1,13 +1,11 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { Room_LodgingModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.room_Lodging.findMany({
+  const lodgings = await prisma.room_Lodging.findMany({
     include: {
       User: {
         select: prismaExclude("User", ["password"]),
@@ -15,40 +13,28 @@ export const GET = withErrorHandler(async () => {
     },
   });
 
-  return NextResponse.json<CustomResponse<unknown>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: lodgings,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler(async (req) => {
+  const user = extractUserFromHeader(req);
+  const requestBody = await getRequestBody(req);
+  requestBody.typeId = parseInt(requestBody.typeId);
+  requestBody.authorId = user.id;
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+  const data = await Room_LodgingModel.parseAsync(requestBody);
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
-
-  const requestData = await parsingData(req);
-  requestData.typeId = parseInt(requestData.typeId);
-  requestData.authorId = parsedHeadersUserData.id;
-
-  const parsedData = Room_LodgingModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.room_Lodging.create({
-    data: parsedData.data,
+  const lodging = await prisma.room_Lodging.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<unknown>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: lodging,
     },
     {
       status: 201,

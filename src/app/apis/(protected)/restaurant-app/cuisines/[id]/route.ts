@@ -1,140 +1,115 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Restaurant_CuisineModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
 import imageKit from "@/utils/imagekit";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Restaurant_Cuisine } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { authorization } from "../authorization";
+import { NextResponse } from "next/server";
+import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+const findCuisineById = async (id: string) => {
+  const cuisine = await prisma.restaurant_Cuisine.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
 
-    const query = await prisma.restaurant_Cuisine.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("CUISINE_NOT_FOUND");
-    }
-
-    return NextResponse.json<CustomResponse<Restaurant_Cuisine>>({
-      statusCode: 200,
-      data: query,
-    });
-  } catch (err) {
-    return errorCreator(err);
+  if (!cuisine) {
+    throw new NotFoundError(ErrorMessage.CUISINE_NOT_FOUND);
   }
+
+  return cuisine;
 };
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Restaurant_Cuisine, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const cuisine = await findCuisineById(params.id);
 
-    const { parsedHeadersUserData } = await authorization(id, req);
+    return NextResponse.json({
+      statusCode: 200,
+      data: cuisine,
+    });
+  },
+);
 
-    const requestData = await parsingData(req);
-    requestData.categoryId = parseInt(requestData.categoryId);
-    requestData.authorId = parsedHeadersUserData.id;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const cuisine = await findCuisineById(params.id);
+    const user = await guardAdminAndAuthor(cuisine, req);
 
-    const parsedData = Restaurant_CuisineModel.safeParse(requestData);
-
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
+    const requestBody = await getRequestBody(req);
+    const data = await Restaurant_CuisineModel.parseAsync(requestBody);
+    requestBody.categoryId = parseInt(requestBody.categoryId);
+    requestBody.authorId = user.id;
 
     await prisma.restaurant_Cuisine.update({
       where: {
-        id: parseInt(id),
+        id: cuisine.id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Cuisine id: ${id} updated successfully`,
+      message: `Cuisine id: ${cuisine.id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const cuisine = await findCuisineById(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(cuisine, req);
 
     await prisma.restaurant_Cuisine.delete({
       where: {
-        id: parseInt(id),
+        id: cuisine.id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Cuisine id: ${id} deleted successfully`,
+      message: `Cuisine id: ${cuisine.id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PATCH = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const cuisine = await findCuisineById(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(cuisine, req);
 
-    const requestData = await parsingData(req);
-    const parsedData = PatchBodyFormData.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await PatchBodyFormData.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const base64 = await parsedData.data.file.arrayBuffer();
+    const base64 = await data.file.arrayBuffer();
     const base64String = Buffer.from(base64).toString("base64");
 
     // We will force upload to imagekit here
     const responseImagekit = await imageKit.upload({
       file: base64String,
-      fileName: requestData.file.name,
+      fileName: data.file.name,
       folder: "phase2/challenge/all-in-one",
       tags: ["career-portal"],
     });
 
     await prisma.restaurant_Cuisine.update({
       where: {
-        id: parseInt(id),
+        id: cuisine.id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Cuisine id: ${id} image updated successfully`,
+      message: `Cuisine id: ${cuisine.id} image updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

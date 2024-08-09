@@ -1,140 +1,113 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Branded_ProductModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
 import imageKit from "@/utils/imagekit";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Branded_Product } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
-import { authorization } from "../authorization";
+import { NextResponse } from "next/server";
+import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Branded_Product, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.branded_Product.findUnique({
+    const product = await prisma.branded_Product.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("POST_NOT_FOUND");
+    if (!product) {
+      throw new NotFoundError(ErrorMessage.PRODUCT_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<Branded_Product>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: product,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const { parsedHeadersUserData } = await authorization(id, req);
+    const user = await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    requestData.categoryId = parseInt(requestData.categoryId);
-    requestData.authorId = parsedHeadersUserData.id;
+    const requestBody = await getRequestBody(req);
+    requestBody.categoryId = parseInt(requestBody.categoryId);
+    requestBody.authorId = user.id;
 
-    const parsedData = Branded_ProductModel.safeParse(requestData);
-
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
+    const data = await Branded_ProductModel.parseAsync(requestBody);
 
     await prisma.branded_Product.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Product id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
     await prisma.branded_Product.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Product id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PATCH = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    await authorization(id, req);
+    await guardAdminAndAuthor(id, req);
 
-    const requestData = await parsingData(req);
-    const parsedData = PatchBodyFormData.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await PatchBodyFormData.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const base64 = await parsedData.data.file.arrayBuffer();
+    const base64 = await data.file.arrayBuffer();
     const base64String = Buffer.from(base64).toString("base64");
 
     // We will force upload to imagekit here
     const responseImagekit = await imageKit.upload({
       file: base64String,
-      fileName: requestData.file.name,
+      fileName: requestBody.file.name,
       folder: "phase2/challenge/all-in-one",
       tags: ["branded-things"],
     });
 
     await prisma.branded_Product.update({
       where: {
-        id: parseInt(id),
+        id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Product id: ${id} image updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

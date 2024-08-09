@@ -1,105 +1,87 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Movie_GenreModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Movie_Genre } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Movie_Genre, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.movie_Genre.findUnique({
+    const genre = await prisma.movie_Genre.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("MOVIE_NOT_FOUND");
+    if (!genre) {
+      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
     }
 
-    return NextResponse.json<CustomResponse<Movie_Genre>>({
+    return NextResponse.json({
       statusCode: 200,
-      data: query,
+      data: genre,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const id = parseInt(params.id);
 
-    const requestData = await parsingData(req);
-    const parsedData = Movie_GenreModel.safeParse(requestData);
+    const requestBody = await getRequestBody(req);
+    const data = await Movie_GenreModel.parseAsync(requestBody);
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const query = await prisma.movie_Genre.findUnique({
+    const genre = await prisma.movie_Genre.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("GENRE_NOT_FOUND");
+    if (!genre) {
+      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
     }
 
     await prisma.movie_Genre.update({
       where: {
-        id: parseInt(id),
+        id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Genre id: ${id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const id = parseInt(params.id);
 
-    const query = await prisma.movie_Genre.findUnique({
+    const genre = await prisma.movie_Genre.findUnique({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    if (!query) {
-      throw new Error("GENRE_NOT_FOUND");
+    if (!genre) {
+      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
     }
 
     await prisma.movie_Genre.delete({
       where: {
-        id: parseInt(id),
+        id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
       message: `Genre id: ${id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

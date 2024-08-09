@@ -1,105 +1,71 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { CustomResponse, ProtectedHandlerParams } from "@/defs/custom-response";
 import { Restaurant_CategoryModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Restaurant_Category } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+const findCategoryById = async (id: string) => {
+  const category = await prisma.restaurant_Category.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
 
-    const query = await prisma.restaurant_Category.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("COMPANY_NOT_FOUND");
-    }
-
-    return NextResponse.json<CustomResponse<Restaurant_Category>>({
-      statusCode: 200,
-      data: query,
-    });
-  } catch (err) {
-    return errorCreator(err);
+  if (!category) {
+    throw new NotFoundError(ErrorMessage.CATEGORY_NOT_FOUND);
   }
+
+  return category;
 };
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<
+  Restaurant_Category,
+  ProtectedHandlerParams
+>(async (_req, { params }) => {
+  const category = await findCategoryById(params.id);
 
-    const requestData = await parsingData(req);
-    const parsedData = Restaurant_CategoryModel.safeParse(requestData);
+  return NextResponse.json<CustomResponse<Restaurant_Category>>({
+    statusCode: 200,
+    data: category,
+  });
+});
 
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const query = await prisma.restaurant_Category.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("CATEGORY_NOT_FOUND");
-    }
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const requestBody = await getRequestBody(req);
+    const data = await Restaurant_CategoryModel.parseAsync(requestBody);
+    const category = await findCategoryById(params.id);
 
     await prisma.restaurant_Category.update({
       where: {
-        id: parseInt(id),
+        id: category.id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Category id: ${id} updated successfully`,
+      message: `Category id: ${category.id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
-
-    const query = await prisma.restaurant_Category.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("CATEGORY_NOT_FOUND");
-    }
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const category = await findCategoryById(params.id);
 
     await prisma.restaurant_Category.delete({
       where: {
-        id: parseInt(id),
+        id: category.id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Category id: ${id} deleted successfully`,
+      message: `Category id: ${category.id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

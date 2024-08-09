@@ -1,13 +1,11 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { News_ArticleModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.news_Article.findMany({
+  const articles = await prisma.news_Article.findMany({
     include: {
       User: {
         select: prismaExclude("User", ["password"]),
@@ -15,40 +13,29 @@ export const GET = withErrorHandler(async () => {
     },
   });
 
-  return NextResponse.json<CustomResponse<unknown>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: articles,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler(async (req) => {
+  const user = extractUserFromHeader(req);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
+  const requestBody = await getRequestBody(req);
+  requestBody.categoryId = parseInt(requestBody.categoryId);
+  requestBody.authorId = user.id;
 
-  const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-    JSON.parse(headersUserData);
+  const data = await News_ArticleModel.parseAsync(requestBody);
 
-  const requestData = await parsingData(req);
-  requestData.categoryId = parseInt(requestData.categoryId);
-  requestData.authorId = parsedHeadersUserData.id;
-
-  const parsedData = News_ArticleModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.news_Article.create({
-    data: parsedData.data,
+  const article = await prisma.news_Article.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<unknown>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: article,
     },
     {
       status: 201,

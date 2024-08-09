@@ -1,42 +1,31 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { Restaurant_CategoryModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Restaurant_Category } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler(async () => {
-  const query = await prisma.restaurant_Category.findMany();
+export const GET = withErrorHandler<Restaurant_Category[]>(async () => {
+  const categories = await prisma.restaurant_Category.findMany();
 
-  return NextResponse.json<CustomResponse<Restaurant_Category[]>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: categories,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler<Restaurant_Category>(async (req) => {
+  const requestBody = await getRequestBody(req);
+  const data = await Restaurant_CategoryModel.parseAsync(requestBody);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
-
-  const requestData = await parsingData(req);
-  const parsedData = Restaurant_CategoryModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.restaurant_Category.create({
-    data: parsedData.data,
+  const category = await prisma.restaurant_Category.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<Restaurant_Category>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: category,
     },
     {
       status: 201,

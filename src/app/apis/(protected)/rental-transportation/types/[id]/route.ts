@@ -1,105 +1,70 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, GlobalProtectedParams } from "@/defs/custom-response";
+import { ProtectedHandlerParams } from "@/defs/custom-response";
 import { Rental_TypeModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
-import { errorCreator } from "@/utils/error-creator";
+import { getRequestBody } from "@/utils/data-parser";
+import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { withErrorHandler } from "@/utils/with-error-handler";
 import { Rental_Type } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+const findTypeById = async (id: string) => {
+  const type = await prisma.rental_Type.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
 
-    const query = await prisma.rental_Type.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
-    }
-
-    return NextResponse.json<CustomResponse<Rental_Type>>({
-      statusCode: 200,
-      data: query,
-    });
-  } catch (err) {
-    return errorCreator(err);
+  if (!type) {
+    throw new NotFoundError(ErrorMessage.TYPE_NOT_FOUND);
   }
+
+  return type;
 };
 
-export const PUT = async (
-  req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
+export const GET = withErrorHandler<Rental_Type, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const type = await findTypeById(params.id);
 
-    const requestData = await parsingData(req);
-    const parsedData = Rental_TypeModel.safeParse(requestData);
-
-    if (!parsedData.success) {
-      throw parsedData.error;
-    }
-
-    const query = await prisma.rental_Type.findUnique({
-      where: {
-        id: parseInt(id),
-      },
+    return NextResponse.json({
+      statusCode: 200,
+      data: type,
     });
+  },
+);
 
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
-    }
+export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+  async (req, { params }) => {
+    const requestBody = await getRequestBody(req);
+    const data = await Rental_TypeModel.parseAsync(requestBody);
+    const type = await findTypeById(params.id);
 
     await prisma.rental_Type.update({
       where: {
-        id: parseInt(id),
+        id: type.id,
       },
-      data: parsedData.data,
+      data,
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Type id: ${id} updated successfully`,
+      message: `Type id: ${type.id} updated successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);
 
-export const DELETE = async (
-  _req: NextRequest,
-  { params }: { params: GlobalProtectedParams },
-) => {
-  try {
-    const { id } = params;
-
-    const query = await prisma.rental_Type.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!query) {
-      throw new Error("TYPE_NOT_FOUND");
-    }
+export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+  async (_req, { params }) => {
+    const type = await findTypeById(params.id);
 
     await prisma.rental_Type.delete({
       where: {
-        id: parseInt(id),
+        id: type.id,
       },
     });
 
-    return NextResponse.json<CustomResponse<unknown>>({
+    return NextResponse.json({
       statusCode: 200,
-      message: `Type id: ${id} deleted successfully`,
+      message: `Type id: ${type.id} deleted successfully`,
     });
-  } catch (err) {
-    return errorCreator(err);
-  }
-};
+  },
+);

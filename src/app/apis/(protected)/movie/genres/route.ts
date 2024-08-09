@@ -1,42 +1,31 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse } from "@/defs/custom-response";
 import { Movie_GenreModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Movie_Genre } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler(async () => {
-  const query = await prisma.movie_Genre.findMany();
+export const GET = withErrorHandler<Movie_Genre[]>(async () => {
+  const genres = await prisma.movie_Genre.findMany();
 
-  return NextResponse.json<CustomResponse<Movie_Genre[]>>({
+  return NextResponse.json({
     statusCode: 200,
-    data: query,
+    data: genres,
   });
 });
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const headersUserData = req.headers.get("x-custom-data-user");
+export const POST = withErrorHandler<Movie_Genre>(async (req) => {
+  const requestBody = await getRequestBody(req);
+  const data = await Movie_GenreModel.parseAsync(requestBody);
 
-  if (!headersUserData) {
-    throw new Error("INVALID_TOKEN");
-  }
-
-  const requestData = await parsingData(req);
-  const parsedData = Movie_GenreModel.safeParse(requestData);
-
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
-
-  const query = await prisma.movie_Genre.create({
-    data: parsedData.data,
+  const genre = await prisma.movie_Genre.create({
+    data,
   });
 
-  return NextResponse.json<CustomResponse<Movie_Genre>>(
+  return NextResponse.json(
     {
       statusCode: 201,
-      data: query,
+      data: genre,
     },
     {
       status: 201,

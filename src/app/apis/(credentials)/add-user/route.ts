@@ -1,21 +1,17 @@
 import prisma from "@/dbs/prisma";
 import { UserModel } from "@/defs/zod";
-import { parsingData } from "@/utils/data-parser";
+import { getRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const requestData = await parsingData(req);
-  const parsedData = UserModel.safeParse(requestData);
+  const requestBody = await getRequestBody(req);
+  const data = await UserModel.parseAsync(requestBody);
 
-  if (!parsedData.success) {
-    throw parsedData.error;
-  }
+  data.role = "Staff";
 
-  parsedData.data.role = "Staff";
-
-  const responseDb = await prisma.user.create({
-    data: parsedData.data,
+  const user = await prisma.user.create({
+    data,
   });
 
   return NextResponse.json(
@@ -23,8 +19,8 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
       statusCode: 201,
       message: "User created successfully",
       data: {
-        id: responseDb.id,
-        email: responseDb.email,
+        id: user.id,
+        email: user.email,
       },
     },
     {
