@@ -1,18 +1,18 @@
-import { ApiResponse } from "@/defs/custom-response";
 import { errorCreator } from "@/utils/error-creator";
 import { NextRequest, NextResponse } from "next/server";
 
-type RequestHandler<T, U> = (
+type RequestHandler<U> = (
   request: NextRequest,
   params: U,
-) => Promise<NextResponse<ApiResponse<T>>>;
+) => Promise<NextResponse>;
+
 type RequestParams = {
   searchParams?: Record<string, string>;
   params?: Record<string, string>;
 };
 
-export function withErrorHandler<T, U extends RequestParams = RequestParams>(
-  fn: RequestHandler<T, U>,
+export function withErrorHandler<U extends RequestParams = RequestParams>(
+  fn: RequestHandler<U>,
 ) {
   return async (request: NextRequest, requestParams: U) => {
     try {
