@@ -5,12 +5,17 @@ export type CustomResponse<T> = {
   data?: T | never;
 };
 
-export type ApiResponse<T = undefined> = {
+export interface ApiResponse {
   statusCode: number;
-  message?: string;
-  error?: string;
-  data?: T;
-};
+}
+
+export interface ApiResponseData<T> extends ApiResponse {
+  data: T;
+}
+
+export interface ApiResponseMessage extends ApiResponse {
+  message: string;
+}
 
 export type ProtectedHandlerParams = {
   params: {
@@ -18,17 +23,13 @@ export type ProtectedHandlerParams = {
   };
 };
 
-export type ResponseMessage = {
-  message: string;
+export type ProtectedParams = {
+  params: {
+    id: string;
+  };
 };
 
-export type GlobalPubParams = {
-  id: string;
-};
-
-export type GlobalProtectedParams = {
-  id: string;
-};
+export type PublicParams = ProtectedParams;
 
 export type OptionsQuery<T extends {} = {}> = {
   include?: {};

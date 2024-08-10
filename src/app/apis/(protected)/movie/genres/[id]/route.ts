@@ -1,87 +1,60 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedHandlerParams,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Movie_GenreModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Movie_Genre } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler<Movie_Genre, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedHandlerParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const genre = await findEntityById(params.id, prisma.movie_Genre);
 
-    const genre = await prisma.movie_Genre.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!genre) {
-      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
-    }
-
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Movie_Genre>>({
       statusCode: 200,
       data: genre,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    const requestBody = await getRequestBody(req);
-    const data = await Movie_GenreModel.parseAsync(requestBody);
-
-    const genre = await prisma.movie_Genre.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!genre) {
-      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
-    }
+    const data = await validateRequestBody(req, Movie_GenreModel);
+    const genre = await findEntityById(params.id, prisma.movie_Genre);
 
     await prisma.movie_Genre.update({
       where: {
-        id,
+        id: genre.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Genre id: ${id} updated successfully`,
+      message: `Genre id: ${genre.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
-
-    const genre = await prisma.movie_Genre.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!genre) {
-      throw new NotFoundError(ErrorMessage.GENRE_NOT_FOUND);
-    }
+    const genre = await findEntityById(params.id, prisma.movie_Genre);
 
     await prisma.movie_Genre.delete({
       where: {
-        id,
+        id: genre.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Genre id: ${id} deleted successfully`,
+      message: `Genre id: ${genre.id} deleted successfully`,
     });
   },
 );

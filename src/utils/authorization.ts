@@ -1,51 +1,21 @@
-import prisma from "@/dbs/prisma";
+import * as ZodSchema from "@/defs/zod";
 import { extractUserFromHeader } from "@/utils/data-parser";
-import {
-  ErrorMessage,
-  ForbiddenError,
-  NotFoundError,
-} from "@/utils/http-error";
-import { Prisma } from "@prisma/client";
+import { ErrorMessage, ForbiddenError } from "@/utils/http-error";
 import { NextRequest } from "next/server";
-import ModelName = Prisma.ModelName;
+import { z } from "zod";
 
-type TPrisma = typeof prisma;
-// type LowercaseKeys<T> = {
-//   [K in keyof T as K extends string ? Lowercase<K> : K]: T[K];
-// };
-// type L = LowercaseKeys<typeof Prisma.ModelName>;
-
-type CapitalizeAfterUnderscore<S extends string> =
-  S extends `${infer First}_${infer Rest}`
-    ? `${Lowercase<First>}_${Capitalize<Rest>}`
-    : Lowercase<S>;
-
-type TransformedTPrisma = {
-  [K in keyof typeof ModelName as CapitalizeAfterUnderscore<K & string>]: K;
+type InferZodTypes<T extends Record<string, z.ZodTypeAny>> = {
+  [K in keyof T]: z.infer<T[K]>;
 };
-type z = keyof TransformedTPrisma;
+type ZodTypes = InferZodTypes<typeof ZodSchema>;
 
-const data: z = "restaurant_Category";
-
-export const guardAdminAndAuthor = async <T extends (typeof prisma)[z]>(
+export const guardAdminAndAuthor = async <T extends ZodTypes[keyof ZodTypes]>(
   req: NextRequest,
-  id: number,
-  model: T,
-  notFoundMessage: ErrorMessage,
+  entity: T & { authorId: number },
 ) => {
   const user = extractUserFromHeader(req);
 
-  const product = await model.findFirst({
-    where: {
-      id,
-    },
-  });
-
-  if (!product) {
-    throw new NotFoundError(notFoundMessage);
-  }
-
-  if (user.role !== "Admin" && user.id !== product.authorId) {
+  if (user.role !== "Admin" && user.id !== entity.authorId) {
     throw new ForbiddenError(ErrorMessage.FORBIDDEN);
   }
 

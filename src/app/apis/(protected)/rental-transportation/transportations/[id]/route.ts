@@ -1,119 +1,106 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Rental_TransportationModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
-import imageKit from "@/utils/imagekit";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
+import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Rental_Transportation } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-const findTransportationById = async (stringId: string) => {
-  const id = parseInt(stringId);
-  const transportation = await prisma.rental_Transportation.findUnique({
-    where: {
-      id,
-    },
-  });
+export const GET = withErrorHandler<ProtectedParams>(
+  async (_req, { params }) => {
+    const transportation = await findEntityById(
+      params.id,
+      prisma.rental_Transportation,
+    );
 
-  if (!transportation) {
-    throw new NotFoundError(ErrorMessage.TRANSPORTATION_NOT_FOUND);
-  }
+    return NextResponse.json<ApiResponseData<Rental_Transportation>>({
+      statusCode: 200,
+      data: transportation,
+    });
+  },
+);
 
-  return { transportation, id };
-};
-
-export const GET = withErrorHandler<
-  Rental_Transportation,
-  ProtectedHandlerParams
->(async (_req, { params }) => {
-  const { transportation } = await findTransportationById(params.id);
-
-  return NextResponse.json({
-    statusCode: 200,
-    data: transportation,
-  });
-});
-
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const { transportation, id } = await findTransportationById(params.id);
+    const transportation = await findEntityById(
+      params.id,
+      prisma.rental_Transportation,
+    );
+    const user = await guardAdminAndAuthor(req, transportation);
 
-    const user = await guardAdminAndAuthor(transportation, req);
-
-    const requestBody = await getRequestBody(req);
-    requestBody.typeId = parseInt(requestBody.typeId);
-    requestBody.authorId = user.id;
-
-    const data = await Rental_TransportationModel.parseAsync(requestBody);
+    const data = await validateRequestBody(req, Rental_TransportationModel, {
+      authorId: user.id,
+    });
 
     await prisma.rental_Transportation.update({
       where: {
-        id,
+        id: transportation.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Transportation id: ${id} updated successfully`,
+      message: `Transportation id: ${transportation.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const { transportation, id } = await findTransportationById(params.id);
-
-    await guardAdminAndAuthor(transportation, req);
+    const transportation = await findEntityById(
+      params.id,
+      prisma.rental_Transportation,
+    );
+    await guardAdminAndAuthor(req, transportation);
 
     await prisma.rental_Transportation.delete({
       where: {
-        id,
+        id: transportation.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Transportation id: ${id} deleted successfully`,
+      message: `Transportation id: ${transportation.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const { transportation, id } = await findTransportationById(params.id);
+    const transportation = await findEntityById(
+      params.id,
+      prisma.rental_Transportation,
+    );
+    await guardAdminAndAuthor(req, transportation);
 
-    await guardAdminAndAuthor(transportation, req);
-
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const base64 = await data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: data.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["rental-transportation"],
-    });
+    const data = await validateRequestBody(req, PatchBodyFormData);
+    const responseImagekit = await uploadImage(
+      data.file,
+      "rental-transportation",
+    );
 
     await prisma.rental_Transportation.update({
       where: {
-        id,
+        id: transportation.id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Transportation id: ${id} image updated successfully`,
+      message: `Transportation id: ${transportation.id} image updated successfully`,
     });
   },
 );

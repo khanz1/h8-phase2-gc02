@@ -1,42 +1,31 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Rental_TypeModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Rental_Type } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-const findTypeById = async (id: string) => {
-  const type = await prisma.rental_Type.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  });
-
-  if (!type) {
-    throw new NotFoundError(ErrorMessage.TYPE_NOT_FOUND);
-  }
-
-  return type;
-};
-
-export const GET = withErrorHandler<Rental_Type, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const type = await findTypeById(params.id);
+    const type = await findEntityById(params.id, prisma.rental_Type);
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Rental_Type>>({
       statusCode: 200,
       data: type,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const requestBody = await getRequestBody(req);
-    const data = await Rental_TypeModel.parseAsync(requestBody);
-    const type = await findTypeById(params.id);
+    const data = await validateRequestBody(req, Rental_TypeModel);
+    const type = await findEntityById(params.id, prisma.rental_Type);
 
     await prisma.rental_Type.update({
       where: {
@@ -45,16 +34,16 @@ export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Type id: ${type.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const type = await findTypeById(params.id);
+    const type = await findEntityById(params.id, prisma.rental_Type);
 
     await prisma.rental_Type.delete({
       where: {
@@ -62,7 +51,7 @@ export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Type id: ${type.id} deleted successfully`,
     });

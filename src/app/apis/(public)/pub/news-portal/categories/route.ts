@@ -1,12 +1,14 @@
 import prisma from "@/dbs/prisma";
+import { ApiResponseData } from "@/defs/custom-response";
 import { withErrorHandler } from "@/utils/with-error-handler";
+import { News_Category } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
-  const query = await prisma.news_Category.findMany();
+  const categories = await prisma.news_Category.findMany();
 
-  return NextResponse.json({
+  return NextResponse.json<ApiResponseData<News_Category[]>>({
     statusCode: 200,
-    data: query,
+    data: categories,
   });
 });

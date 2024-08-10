@@ -1,87 +1,59 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Career_CompanyModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Career_Company } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler<Career_Company, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const company = await findEntityById(params.id, prisma.career_Company);
 
-    const company = await prisma.career_Company.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!company) {
-      throw new NotFoundError(ErrorMessage.COMPANY_NOT_FOUND);
-    }
-
-    return NextResponse.json<CustomResponse<Career_Company>>({
+    return NextResponse.json<ApiResponseData<Career_Company>>({
       statusCode: 200,
       data: company,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    const requestBody = await getRequestBody(req);
-    const data = await Career_CompanyModel.parseAsync(requestBody);
-
-    const company = await prisma.career_Company.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!company) {
-      throw new NotFoundError(ErrorMessage.COMPANY_NOT_FOUND);
-    }
+    const data = await validateRequestBody(req, Career_CompanyModel);
+    const company = await findEntityById(params.id, prisma.career_Company);
 
     await prisma.career_Company.update({
       where: {
-        id,
+        id: company.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Company id: ${id} updated successfully`,
+      message: `Company id: ${company.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
-
-    const company = await prisma.career_Company.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!company) {
-      throw new NotFoundError(ErrorMessage.COMPANY_NOT_FOUND);
-    }
+    const company = await findEntityById(params.id, prisma.career_Company);
 
     await prisma.career_Company.delete({
       where: {
-        id,
+        id: company.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Company id: ${id} deleted successfully`,
+      message: `Company id: ${company.id} deleted successfully`,
     });
   },
 );

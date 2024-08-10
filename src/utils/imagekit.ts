@@ -16,10 +16,8 @@ const createImageKitClient = () => {
   });
 };
 
-type ImageKitClient = ReturnType<typeof createImageKitClient>;
-
 const globalForImageKit = globalThis as unknown as {
-  imageKit: ImageKitClient | undefined;
+  imageKit: ImageKit | undefined;
 };
 
 const imageKit = globalForImageKit.imageKit ?? createImageKitClient();

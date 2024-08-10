@@ -1,7 +1,12 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
+import { ApiResponseData } from "@/defs/custom-response";
 import { Movie_MovieModel } from "@/defs/zod";
-import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
+import {
+  extractUserFromHeader,
+  validateRequestBody,
+} from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
+import { Movie_Movie } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
@@ -21,17 +26,15 @@ export const GET = withErrorHandler(async () => {
 
 export const POST = withErrorHandler(async (req) => {
   const user = extractUserFromHeader(req);
-  const requestBody = await getRequestBody(req);
-  requestBody.genreId = parseInt(requestBody.genreId);
-  requestBody.authorId = user.id;
-
-  const data = await Movie_MovieModel.parseAsync(requestBody);
+  const data = await validateRequestBody(req, Movie_MovieModel, {
+    authorId: user.id,
+  });
 
   const movie = await prisma.movie_Movie.create({
     data,
   });
 
-  return NextResponse.json(
+  return NextResponse.json<ApiResponseData<Movie_Movie>>(
     {
       statusCode: 201,
       data: movie,

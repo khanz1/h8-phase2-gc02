@@ -1,95 +1,82 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Blog_PostModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
 import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Blog_Post } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = withErrorHandler<Blog_Post, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const post = await findEntityById(params.id, prisma.blog_Post);
 
-    const post = await prisma.blog_Post.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!post) {
-      throw new NotFoundError(ErrorMessage.POST_NOT_FOUND);
-    }
-
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Blog_Post>>({
       statusCode: 200,
       data: post,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    const user = await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    requestBody.categoryId = parseInt(requestBody.categoryId);
-    requestBody.authorId = user.id;
-
-    const data = await Blog_PostModel.parseAsync(requestBody);
+    const post = await findEntityById(params.id, prisma.blog_Post);
+    const user = await guardAdminAndAuthor(req, post);
+    const data = await validateRequestBody(req, Blog_PostModel, {
+      authorId: user.id,
+    });
 
     await prisma.blog_Post.update({
       where: {
-        id,
+        id: post.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Post id: ${id} updated successfully`,
+      message: `Post id: ${post.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    await guardAdminAndAuthor(id, req);
+    const post = await findEntityById(params.id, prisma.blog_Post);
+    await guardAdminAndAuthor(req, post);
 
     await prisma.blog_Post.delete({
       where: {
-        id,
+        id: post.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Post id: ${id} deleted successfully`,
+      message: `Post id: ${post.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const data = await validateRequestBody(req, PatchBodyFormData);
+    const post = await findEntityById(params.id, prisma.blog_Post);
 
-    await guardAdminAndAuthor(id, req);
+    await guardAdminAndAuthor(req, post);
 
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const responseImagekit = await uploadImage(data.file);
+    const responseImagekit = await uploadImage(data.file, "blog");
 
     await prisma.blog_Post.update({
       where: {
-        id,
+        id: post.id,
       },
       data: {
         imgUrl: responseImagekit.url,
@@ -98,7 +85,7 @@ export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
 
     return NextResponse.json({
       statusCode: 200,
-      message: `Post id: ${id} image updated successfully`,
+      message: `Post id: ${post.id} image updated successfully`,
     });
   },
 );

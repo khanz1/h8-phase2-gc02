@@ -1,113 +1,90 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Movie_MovieModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
-import imageKit from "@/utils/imagekit";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
+import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Movie_Movie } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = withErrorHandler<Movie_Movie, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const movie = await findEntityById(params.id, prisma.movie_Movie);
 
-    const movie = await prisma.movie_Movie.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!movie) {
-      throw new NotFoundError(ErrorMessage.MOVIE_NOT_FOUND);
-    }
-
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Movie_Movie>>({
       statusCode: 200,
       data: movie,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    const user = await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    requestBody.genreId = parseInt(requestBody.genreId);
-    requestBody.authorId = user.id;
-
-    const data = await Movie_MovieModel.parseAsync(requestBody);
+    const movie = await findEntityById(params.id, prisma.movie_Movie);
+    const user = await guardAdminAndAuthor(req, movie);
+    const data = await validateRequestBody(req, Movie_MovieModel, {
+      authorId: user.id,
+    });
 
     await prisma.movie_Movie.update({
       where: {
-        id,
+        id: movie.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Movie id: ${id} updated successfully`,
+      message: `Movie id: ${movie.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const movie = await findEntityById(params.id, prisma.movie_Movie);
 
-    await guardAdminAndAuthor(id, req);
+    await guardAdminAndAuthor(req, movie);
 
     await prisma.movie_Movie.delete({
       where: {
-        id,
+        id: movie.id,
       },
     });
 
     return NextResponse.json({
       statusCode: 200,
-      message: `Movie id: ${id} deleted successfully`,
+      message: `Movie id: ${movie.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const base64 = await data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: data.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["movie"],
-    });
+    const movie = await findEntityById(params.id, prisma.movie_Movie);
+    await guardAdminAndAuthor(req, movie);
+    const data = await validateRequestBody(req, PatchBodyFormData);
+    const responseImagekit = await uploadImage(data.file, "movie");
 
     await prisma.movie_Movie.update({
       where: {
-        id,
+        id: movie.id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Movie id: ${id} image updated successfully`,
+      message: `Movie id: ${movie.id} image updated successfully`,
     });
   },
 );

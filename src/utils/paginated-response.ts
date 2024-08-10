@@ -1,22 +1,33 @@
-import { createParsedSearchParamsAndOptionQuery } from "@/utils/data-parser";
+import { ApiResponseData } from "@/defs/custom-response";
+import { getSearchParamsAndQueryOptions } from "@/utils/data-parser";
 
-type ParsedSearchParamsQuery = ReturnType<
-  typeof createParsedSearchParamsAndOptionQuery
->["parsedSearchParams"];
+type SearchParamsQuery = ReturnType<
+  typeof getSearchParamsAndQueryOptions
+>["searchParams"];
+
+export interface PaginatedApiResponse<T>
+  extends ApiResponseData<{
+    query: T;
+    pagination: {
+      currentPage: number;
+      totalPage: number;
+      totalRows: number;
+    };
+  }> {}
 
 export const getPaginatedResponse = <
   T extends Record<string, unknown>[],
-  U extends ParsedSearchParamsQuery,
+  U extends SearchParamsQuery,
 >(
   query: T,
-  parsedSearchParams: U,
+  searchParams: U,
   rows: number,
 ) => {
   return {
     query,
     pagination: {
-      currentPage: parsedSearchParams.data.page,
-      totalPage: Math.ceil(rows / parsedSearchParams.data.limit),
+      currentPage: searchParams.data.page,
+      totalPage: Math.ceil(rows / searchParams.data.limit),
       totalRows: rows,
     },
   };

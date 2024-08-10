@@ -7,6 +7,25 @@ import {
   UnauthorizedError,
 } from "@/utils/http-error";
 import { NextRequest } from "next/server";
+import { z, ZodSchema } from "zod";
+
+/**
+ * Regular expression to match strings ending with "Id" except for "userId".
+ *
+ * This regex matches any string that:
+ * - Contains one or more letters (both lowercase and uppercase).
+ * - Ends with "Id".
+ * - Does not match the exact string "userId".
+ *
+ * The negative lookahead `(?!userId$)` ensures that "userId" is excluded from matches.
+ *
+ * Examples:
+ * - "categoryId" matches.
+ * - "typeId" matches.
+ * - "genreId" matches.
+ * - "userId" does not match.
+ */
+const idRegex = /^(?!userId$)[a-zA-Z]+Id$/;
 
 export const extractUserFromHeader = (
   req: NextRequest,
@@ -40,6 +59,23 @@ export const getRequestBody = async (req: NextRequest) => {
   throw new BadRequestError(ErrorMessage.INVALID_CONTENT_TYPE);
 };
 
+export const validateRequestBody = async <T extends ZodSchema>(
+  req: NextRequest,
+  schema: T,
+  additionalProps?: Record<string, unknown>,
+): Promise<z.infer<T>> => {
+  const requestBody = await getRequestBody(req);
+  if (additionalProps) {
+    for (const key in additionalProps) {
+      if (idRegex.test(key)) {
+        additionalProps[key] = parseInt(additionalProps[key] as string);
+      }
+      requestBody[key] = additionalProps[key];
+    }
+  }
+  return await schema.parseAsync(requestBody);
+};
+
 export const validatePublicSearchParams = (req: NextRequest) => {
   // { q, i, sort, page, limit }
   const { searchParams } = new URL(req.nextUrl);
@@ -59,7 +95,7 @@ export const validatePublicSearchParams = (req: NextRequest) => {
   return parsedSearchParams;
 };
 
-export const createParsedSearchParamsAndOptionQuery = (
+export const getSearchParamsAndQueryOptions = (
   req: NextRequest,
   searchColumn: string,
   sortingColumn: string,
@@ -97,5 +133,5 @@ export const createParsedSearchParamsAndOptionQuery = (
     };
   }
 
-  return { parsedSearchParams: searchParams, options };
+  return { searchParams, options };
 };

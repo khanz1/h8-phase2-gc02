@@ -1,113 +1,91 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Branded_ProductModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
-import imageKit from "@/utils/imagekit";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
+import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Branded_Product } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = withErrorHandler<Branded_Product, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const product = await findEntityById(params.id, prisma.branded_Product);
 
-    const product = await prisma.branded_Product.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!product) {
-      throw new NotFoundError(ErrorMessage.PRODUCT_NOT_FOUND);
-    }
-
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Branded_Product>>({
       statusCode: 200,
       data: product,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    const user = await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    requestBody.categoryId = parseInt(requestBody.categoryId);
-    requestBody.authorId = user.id;
-
-    const data = await Branded_ProductModel.parseAsync(requestBody);
+    const product = await findEntityById(params.id, prisma.branded_Product);
+    const user = await guardAdminAndAuthor(req, product);
+    const data = await validateRequestBody(req, Branded_ProductModel, {
+      authorId: user.id,
+    });
 
     await prisma.branded_Product.update({
       where: {
-        id,
+        id: product.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Product id: ${id} updated successfully`,
+      message: `Product id: ${product.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
-
-    await guardAdminAndAuthor(id, req);
+    const product = await findEntityById(params.id, prisma.branded_Product);
+    await guardAdminAndAuthor(req, product);
 
     await prisma.branded_Product.delete({
       where: {
-        id,
+        id: product.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Product id: ${id} deleted successfully`,
+      message: `Product id: ${product.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const product = await findEntityById(params.id, prisma.branded_Product);
+    await guardAdminAndAuthor(req, product);
 
-    await guardAdminAndAuthor(id, req);
+    const data = await validateRequestBody(req, PatchBodyFormData);
 
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const base64 = await data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: requestBody.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["branded-things"],
-    });
+    const responseImagekit = await uploadImage(data.file, "branded-things");
 
     await prisma.branded_Product.update({
       where: {
-        id,
+        id: product.id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Product id: ${id} image updated successfully`,
+      message: `Product id: ${product.id} image updated successfully`,
     });
   },
 );

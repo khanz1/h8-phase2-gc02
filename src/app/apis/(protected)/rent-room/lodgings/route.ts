@@ -1,7 +1,12 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
+import { ApiResponseData } from "@/defs/custom-response";
 import { Room_LodgingModel } from "@/defs/zod";
-import { extractUserFromHeader, getRequestBody } from "@/utils/data-parser";
+import {
+  extractUserFromHeader,
+  validateRequestBody,
+} from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
+import { Room_Lodging } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export const GET = withErrorHandler(async () => {
@@ -21,17 +26,15 @@ export const GET = withErrorHandler(async () => {
 
 export const POST = withErrorHandler(async (req) => {
   const user = extractUserFromHeader(req);
-  const requestBody = await getRequestBody(req);
-  requestBody.typeId = parseInt(requestBody.typeId);
-  requestBody.authorId = user.id;
-
-  const data = await Room_LodgingModel.parseAsync(requestBody);
+  const data = await validateRequestBody(req, Room_LodgingModel, {
+    authorId: user.id,
+  });
 
   const lodging = await prisma.room_Lodging.create({
     data,
   });
 
-  return NextResponse.json(
+  return NextResponse.json<ApiResponseData<Room_Lodging>>(
     {
       statusCode: 201,
       data: lodging,

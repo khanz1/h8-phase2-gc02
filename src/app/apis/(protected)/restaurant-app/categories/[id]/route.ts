@@ -1,43 +1,37 @@
 import prisma from "@/dbs/prisma";
-import { CustomResponse, ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Restaurant_CategoryModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Restaurant_Category } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-const findCategoryById = async (id: string) => {
-  const category = await prisma.restaurant_Category.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  });
+export const GET = withErrorHandler<ProtectedParams>(
+  async (_req, { params }) => {
+    const category = await findEntityById(
+      params.id,
+      prisma.restaurant_Category,
+    );
 
-  if (!category) {
-    throw new NotFoundError(ErrorMessage.CATEGORY_NOT_FOUND);
-  }
+    return NextResponse.json<ApiResponseData<Restaurant_Category>>({
+      statusCode: 200,
+      data: category,
+    });
+  },
+);
 
-  return category;
-};
-
-export const GET = withErrorHandler<
-  Restaurant_Category,
-  ProtectedHandlerParams
->(async (_req, { params }) => {
-  const category = await findCategoryById(params.id);
-
-  return NextResponse.json<CustomResponse<Restaurant_Category>>({
-    statusCode: 200,
-    data: category,
-  });
-});
-
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const requestBody = await getRequestBody(req);
-    const data = await Restaurant_CategoryModel.parseAsync(requestBody);
-    const category = await findCategoryById(params.id);
+    const data = await validateRequestBody(req, Restaurant_CategoryModel);
+    const category = await findEntityById(
+      params.id,
+      prisma.restaurant_Category,
+    );
 
     await prisma.restaurant_Category.update({
       where: {
@@ -46,24 +40,26 @@ export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Category id: ${category.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const category = await findCategoryById(params.id);
-
+    const category = await findEntityById(
+      params.id,
+      prisma.restaurant_Category,
+    );
     await prisma.restaurant_Category.delete({
       where: {
         id: category.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Category id: ${category.id} deleted successfully`,
     });

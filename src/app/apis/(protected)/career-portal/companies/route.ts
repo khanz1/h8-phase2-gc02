@@ -1,36 +1,34 @@
 import prisma from "@/dbs/prisma";
+import { ApiResponseData } from "@/defs/custom-response";
 import { Career_CompanyModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
+import { validateRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Career_Company } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler<Career_Company[]>(async () => {
+export const GET = withErrorHandler(async () => {
   const companies = await prisma.career_Company.findMany();
 
-  return NextResponse.json({
+  return NextResponse.json<ApiResponseData<Career_Company[]>>({
     statusCode: 200,
     data: companies,
   });
 });
 
-export const POST = withErrorHandler<Career_Company>(
-  async (req: NextRequest) => {
-    const requestBody = await getRequestBody(req);
-    const data = await Career_CompanyModel.parseAsync(requestBody);
+export const POST = withErrorHandler(async (req) => {
+  const data = await validateRequestBody(req, Career_CompanyModel);
 
-    const company = await prisma.career_Company.create({
-      data,
-    });
+  const company = await prisma.career_Company.create({
+    data,
+  });
 
-    return NextResponse.json(
-      {
-        statusCode: 201,
-        data: company,
-      },
-      {
-        status: 201,
-      },
-    );
-  },
-);
+  return NextResponse.json<ApiResponseData<Career_Company>>(
+    {
+      statusCode: 201,
+      data: company,
+    },
+    {
+      status: 201,
+    },
+  );
+});

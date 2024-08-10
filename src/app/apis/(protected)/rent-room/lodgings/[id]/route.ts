@@ -1,113 +1,92 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Room_LodgingModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
-import imageKit from "@/utils/imagekit";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
+import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Room_Lodging } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-export const GET = withErrorHandler<Room_Lodging, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const id = parseInt(params.id);
+    const lodging = await findEntityById(params.id, prisma.room_Lodging);
 
-    const lodging = await prisma.room_Lodging.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!lodging) {
-      throw new NotFoundError(ErrorMessage.LODGING_NOT_FOUND);
-    }
-
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Room_Lodging>>({
       statusCode: 200,
       data: lodging,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const lodging = await findEntityById(params.id, prisma.room_Lodging);
+    const user = await guardAdminAndAuthor(req, lodging);
 
-    const user = await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    requestBody.typeId = parseInt(requestBody.typeId);
-    requestBody.authorId = user.id;
-
-    const data = await Room_LodgingModel.parseAsync(requestBody);
+    const data = await validateRequestBody(req, Room_LodgingModel, {
+      authorId: user.id,
+    });
 
     await prisma.room_Lodging.update({
       where: {
-        id,
+        id: lodging.id,
       },
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Lodging id: ${id} updated successfully`,
+      message: `Lodging id: ${lodging.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const lodging = await findEntityById(params.id, prisma.room_Lodging);
 
-    await guardAdminAndAuthor(id, req);
+    await guardAdminAndAuthor(req, lodging);
 
     await prisma.room_Lodging.delete({
       where: {
-        id,
+        id: lodging.id,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Lodging id: ${id} deleted successfully`,
+      message: `Lodging id: ${lodging.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const id = parseInt(params.id);
+    const lodging = await findEntityById(params.id, prisma.room_Lodging);
+    await guardAdminAndAuthor(req, lodging);
 
-    await guardAdminAndAuthor(id, req);
-
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const base64 = await data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: data.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["rent-room"],
-    });
+    const data = await validateRequestBody(req, PatchBodyFormData);
+    const responseImagekit = await uploadImage(data.file, "rent-room");
 
     await prisma.room_Lodging.update({
       where: {
-        id,
+        id: lodging.id,
       },
       data: {
         imgUrl: responseImagekit.url,
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
-      message: `Lodging id: ${id} image updated successfully`,
+      message: `Lodging id: ${lodging.id} image updated successfully`,
     });
   },
 );

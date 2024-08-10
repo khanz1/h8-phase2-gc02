@@ -1,49 +1,38 @@
 import prisma from "@/dbs/prisma";
-import { ProtectedHandlerParams } from "@/defs/custom-response";
+import {
+  ApiResponseData,
+  ApiResponseMessage,
+  ProtectedParams,
+} from "@/defs/custom-response";
 import { Restaurant_CuisineModel } from "@/defs/zod";
 import { PatchBodyFormData } from "@/defs/zod/x_custom_input";
-import { getRequestBody } from "@/utils/data-parser";
-import { ErrorMessage, NotFoundError } from "@/utils/http-error";
-import imageKit from "@/utils/imagekit";
+import { guardAdminAndAuthor } from "@/utils/authorization";
+import { validateRequestBody } from "@/utils/data-parser";
+import { findEntityById } from "@/utils/model-finder";
+import { uploadImage } from "@/utils/upload-image";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { Restaurant_Cuisine } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { guardAdminAndAuthor } from "../authorization";
 
-const findCuisineById = async (id: string) => {
-  const cuisine = await prisma.restaurant_Cuisine.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  });
-
-  if (!cuisine) {
-    throw new NotFoundError(ErrorMessage.CUISINE_NOT_FOUND);
-  }
-
-  return cuisine;
-};
-
-export const GET = withErrorHandler<Restaurant_Cuisine, ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
-    const cuisine = await findCuisineById(params.id);
+    const cuisine = await findEntityById(params.id, prisma.restaurant_Cuisine);
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseData<Restaurant_Cuisine>>({
       statusCode: 200,
       data: cuisine,
     });
   },
 );
 
-export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
+export const PUT = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const cuisine = await findCuisineById(params.id);
-    const user = await guardAdminAndAuthor(cuisine, req);
+    const cuisine = await findEntityById(params.id, prisma.restaurant_Cuisine);
+    const user = await guardAdminAndAuthor(req, cuisine);
 
-    const requestBody = await getRequestBody(req);
-    const data = await Restaurant_CuisineModel.parseAsync(requestBody);
-    requestBody.categoryId = parseInt(requestBody.categoryId);
-    requestBody.authorId = user.id;
+    const data = await validateRequestBody(req, Restaurant_CuisineModel, {
+      authorId: user.id,
+    });
 
     await prisma.restaurant_Cuisine.update({
       where: {
@@ -52,18 +41,17 @@ export const PUT = withErrorHandler<null, ProtectedHandlerParams>(
       data,
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Cuisine id: ${cuisine.id} updated successfully`,
     });
   },
 );
 
-export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
+export const DELETE = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const cuisine = await findCuisineById(params.id);
-
-    await guardAdminAndAuthor(cuisine, req);
+    const cuisine = await findEntityById(params.id, prisma.restaurant_Cuisine);
+    await guardAdminAndAuthor(req, cuisine);
 
     await prisma.restaurant_Cuisine.delete({
       where: {
@@ -71,32 +59,20 @@ export const DELETE = withErrorHandler<null, ProtectedHandlerParams>(
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Cuisine id: ${cuisine.id} deleted successfully`,
     });
   },
 );
 
-export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
+export const PATCH = withErrorHandler<ProtectedParams>(
   async (req, { params }) => {
-    const cuisine = await findCuisineById(params.id);
+    const cuisine = await findEntityById(params.id, prisma.restaurant_Cuisine);
+    await guardAdminAndAuthor(req, cuisine);
 
-    await guardAdminAndAuthor(cuisine, req);
-
-    const requestBody = await getRequestBody(req);
-    const data = await PatchBodyFormData.parseAsync(requestBody);
-
-    const base64 = await data.file.arrayBuffer();
-    const base64String = Buffer.from(base64).toString("base64");
-
-    // We will force upload to imagekit here
-    const responseImagekit = await imageKit.upload({
-      file: base64String,
-      fileName: data.file.name,
-      folder: "phase2/challenge/all-in-one",
-      tags: ["career-portal"],
-    });
+    const data = await validateRequestBody(req, PatchBodyFormData);
+    const responseImagekit = await uploadImage(data.file, "career-portal");
 
     await prisma.restaurant_Cuisine.update({
       where: {
@@ -107,7 +83,7 @@ export const PATCH = withErrorHandler<null, ProtectedHandlerParams>(
       },
     });
 
-    return NextResponse.json({
+    return NextResponse.json<ApiResponseMessage>({
       statusCode: 200,
       message: `Cuisine id: ${cuisine.id} image updated successfully`,
     });

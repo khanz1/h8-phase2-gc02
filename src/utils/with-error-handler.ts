@@ -11,10 +11,10 @@ type RequestParams = {
   params?: Record<string, string>;
 };
 
-export function withErrorHandler<U extends RequestParams = RequestParams>(
-  fn: RequestHandler<U>,
+export function withErrorHandler<T extends RequestParams = RequestParams>(
+  fn: RequestHandler<T>,
 ) {
-  return async (request: NextRequest, requestParams: U) => {
+  return async (request: NextRequest, requestParams: T) => {
     try {
       return await fn(request, requestParams);
     } catch (err) {
