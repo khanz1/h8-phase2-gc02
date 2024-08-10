@@ -1,4 +1,3 @@
-import { hashText } from "@/utils/bcrypt";
 import { faker } from "@faker-js/faker";
 import {
   Blog_Category,
@@ -21,6 +20,7 @@ import {
   User,
   UserRole,
 } from "@prisma/client";
+import { hashText } from "../src/utils/bcrypt";
 
 // Core
 const createObjUsers = () => ({
