@@ -1,6 +1,7 @@
 import * as ZodSchema from "@/defs/zod";
 import { extractUserFromHeader } from "@/utils/data-parser";
 import { ErrorMessage, ForbiddenError } from "@/utils/http-error";
+import { UserRole } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -15,7 +16,7 @@ export const guardAdminAndAuthor = async <T extends ZodTypes[keyof ZodTypes]>(
 ) => {
   const user = extractUserFromHeader(req);
 
-  if (user.role !== "Admin" && user.id !== entity.authorId) {
+  if (user.role !== UserRole.Admin && user.id !== entity.authorId) {
     throw new ForbiddenError(ErrorMessage.FORBIDDEN);
   }
 

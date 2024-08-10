@@ -1,14 +1,14 @@
 import prisma from "@/dbs/prisma";
 import { UserModel } from "@/defs/zod";
-import { getRequestBody } from "@/utils/data-parser";
+import { validateRequestBody } from "@/utils/data-parser";
 import { withErrorHandler } from "@/utils/with-error-handler";
+import { UserRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
-  const requestBody = await getRequestBody(req);
-  const data = await UserModel.parseAsync(requestBody);
+  const data = await validateRequestBody(req, UserModel);
 
-  data.role = "Staff";
+  data.role = UserRole.Staff;
 
   const user = await prisma.user.create({
     data,

@@ -1,6 +1,7 @@
 import { UserJWTPayload } from "@/defs/jwt-payload";
 import { MiddlewareFactory } from "@/defs/middleware-type";
 import { errorCreator } from "@/utils/error-creator";
+import { UserRole } from "@prisma/client";
 import { NextFetchEvent, NextMiddleware, NextRequest } from "next/server";
 
 let includePath = ["/add-user"];
@@ -34,7 +35,7 @@ export const withAuthorizationAdminOnly: MiddlewareFactory =
         const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
           JSON.parse(headersUserData);
 
-        if (parsedHeadersUserData.role !== "Admin") {
+        if (parsedHeadersUserData.role !== UserRole.Admin) {
           throw new Error("FORBIDDEN");
         }
       } catch (err) {

@@ -1,5 +1,6 @@
+import { hashText } from "@/utils/bcrypt";
 import { faker } from "@faker-js/faker";
-import type {
+import {
   Blog_Category,
   Blog_Post,
   Branded_Category,
@@ -10,6 +11,7 @@ import type {
   Movie_Movie,
   News_Article,
   News_Category,
+  PrismaClient,
   Rental_Transportation,
   Rental_Type,
   Restaurant_Category,
@@ -17,18 +19,17 @@ import type {
   Room_Lodging,
   Room_Type,
   User,
+  UserRole,
 } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
-import { hashText } from "../src/utils/bcrypt";
 
 // Core
-const createObjUsers = (idx: number) => ({
+const createObjUsers = () => ({
   username: faker.internet.userName().toLowerCase(),
   email: faker.internet.email().toLowerCase(),
   password: hashText("123456"),
   phoneNumber: faker.phone.number(),
   address: faker.location.streetAddress(),
-  role: Math.random() > 0.5 ? "Staff" : "Admin",
+  role: Math.random() > 0.5 ? UserRole.Staff : UserRole.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
 });
@@ -40,7 +41,7 @@ let dataUsers: Omit<User, "id">[] = [
     password: hashText("123456"),
     phoneNumber: faker.phone.number(),
     address: faker.location.streetAddress(),
-    role: "Admin",
+    role: UserRole.Admin,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
@@ -50,20 +51,20 @@ let dataUsers: Omit<User, "id">[] = [
     password: hashText("123456"),
     phoneNumber: faker.phone.number(),
     address: faker.location.streetAddress(),
-    role: "Staff",
+    role: UserRole.Staff,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
 ];
 
 // Blog
-const createObjBlogCategory = (idx: number) => ({
+const createObjBlogCategory = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjBlogPost = (idx: number) => ({
+const createObjBlogPost = () => ({
   title: faker.lorem.sentence(),
   content: faker.lorem.paragraph(),
   imgUrl: faker.image.url({ width: 100, height: 100 }),
@@ -77,13 +78,13 @@ let dataBlogCategory: Omit<Blog_Category, "id">[] = [];
 let dataBlogPost: Omit<Blog_Post, "id">[] = [];
 
 // Branded
-const createObjBrandedCategory = (idx: number) => ({
+const createObjBrandedCategory = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjBrandedProduct = (idx: number) => ({
+const createObjBrandedProduct = () => ({
   name: faker.lorem.word(),
   description: faker.lorem.paragraph(),
   price: faker.number.int({ min: 1000, max: 1000000 }),
@@ -99,13 +100,13 @@ let dataBrandedCategory: Omit<Branded_Category, "id">[] = [];
 let dataBrandedProduct: Omit<Branded_Product, "id">[] = [];
 
 // Movie
-const createObjMovieGenre = (idx: number) => ({
+const createObjMovieGenre = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjMovieMovie = (idx: number) => ({
+const createObjMovieMovie = () => ({
   title: faker.lorem.sentence(),
   synopsis: faker.lorem.paragraph(),
   trailerUrl: faker.image.url({ width: 100, height: 100 }),
@@ -121,13 +122,13 @@ let dataMovieGenre: Omit<Movie_Genre, "id">[] = [];
 let dataMovieMovie: Omit<Movie_Movie, "id">[] = [];
 
 // Rental Transportation
-const createObjRentalType = (idx: number) => ({
+const createObjRentalType = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjRentalTransportation = (idx: number) => ({
+const createObjRentalTransportation = () => ({
   name: faker.lorem.word(),
   description: faker.lorem.paragraph(),
   imgUrl: faker.image.url({ width: 100, height: 100 }),
@@ -143,13 +144,13 @@ let dataRentalType: Omit<Rental_Type, "id">[] = [];
 let dataRentalTransportation: Omit<Rental_Transportation, "id">[] = [];
 
 // Rent Room
-const createObjRoomType = (idx: number) => ({
+const createObjRoomType = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjRoomLodging = (idx: number) => ({
+const createObjRoomLodging = () => ({
   name: faker.lorem.word(),
   facility: faker.lorem.paragraph(),
   roomCapacity: faker.number.int({ min: 1, max: 10 }),
@@ -165,13 +166,13 @@ let dataRoomType: Omit<Room_Type, "id">[] = [];
 let dataRoomLodging: Omit<Room_Lodging, "id">[] = [];
 
 // News Portal
-const createObjNewsCategory = (idx: number) => ({
+const createObjNewsCategory = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjNewsArticle = (idx: number) => ({
+const createObjNewsArticle = () => ({
   title: faker.lorem.sentence(),
   content: faker.lorem.paragraph(),
   imgUrl: faker.image.url({ width: 100, height: 100 }),
@@ -185,7 +186,7 @@ let dataNewsCategory: Omit<News_Category, "id">[] = [];
 let dataNewsArticle: Omit<News_Article, "id">[] = [];
 
 // Career Portal
-const createObjCareerCompany = (idx: number) => ({
+const createObjCareerCompany = () => ({
   name: faker.lorem.word(),
   companyLogo: faker.image.url({ width: 100, height: 100 }),
   location: faker.location.city(),
@@ -195,7 +196,7 @@ const createObjCareerCompany = (idx: number) => ({
   updatedAt: new Date(),
 });
 
-const createObjCareerJob = (idx: number) => ({
+const createObjCareerJob = () => ({
   title: faker.lorem.sentence(),
   description: faker.lorem.paragraph(),
   imgUrl: faker.image.url({ width: 100, height: 100 }),
@@ -210,13 +211,13 @@ let dataCareerCompany: Omit<Career_Company, "id">[] = [];
 let dataCareerJob: Omit<Career_Job, "id">[] = [];
 
 // Restaurant
-const createObjRestaurantCategory = (idx: number) => ({
+const createObjRestaurantCategory = () => ({
   name: faker.lorem.word(),
   createdAt: new Date(),
   updatedAt: new Date(),
 });
 
-const createObjRestaurantCuisine = (idx: number) => ({
+const createObjRestaurantCuisine = () => ({
   name: faker.lorem.word(),
   description: faker.lorem.paragraph(),
   price: faker.number.int({ min: 1000, max: 1000000 }),
@@ -232,27 +233,27 @@ let dataRestaurantCuisine: Omit<Restaurant_Cuisine, "id">[] = [];
 
 // loop 10 times
 for (let i = 0; i < 10; i++) {
-  dataUsers.push(createObjUsers(i + 1));
-  dataBlogCategory.push(createObjBlogCategory(i + 1));
-  dataBrandedCategory.push(createObjBrandedCategory(i + 1));
-  dataMovieGenre.push(createObjMovieGenre(i + 1));
-  dataRentalType.push(createObjRentalType(i + 1));
-  dataRoomType.push(createObjRoomType(i + 1));
-  dataNewsCategory.push(createObjNewsCategory(i + 1));
-  dataCareerCompany.push(createObjCareerCompany(i + 1));
-  dataRestaurantCategory.push(createObjRestaurantCategory(i + 1));
+  dataUsers.push(createObjUsers());
+  dataBlogCategory.push(createObjBlogCategory());
+  dataBrandedCategory.push(createObjBrandedCategory());
+  dataMovieGenre.push(createObjMovieGenre());
+  dataRentalType.push(createObjRentalType());
+  dataRoomType.push(createObjRoomType());
+  dataNewsCategory.push(createObjNewsCategory());
+  dataCareerCompany.push(createObjCareerCompany());
+  dataRestaurantCategory.push(createObjRestaurantCategory());
 }
 
 // Loop 100 times
 for (let i = 0; i < 100; i++) {
-  dataBlogPost.push(createObjBlogPost(i + 1));
-  dataBrandedProduct.push(createObjBrandedProduct(i + 1));
-  dataMovieMovie.push(createObjMovieMovie(i + 1));
-  dataRentalTransportation.push(createObjRentalTransportation(i + 1));
-  dataRoomLodging.push(createObjRoomLodging(i + 1));
-  dataNewsArticle.push(createObjNewsArticle(i + 1));
-  dataCareerJob.push(createObjCareerJob(i + 1));
-  dataRestaurantCuisine.push(createObjRestaurantCuisine(i + 1));
+  dataBlogPost.push(createObjBlogPost());
+  dataBrandedProduct.push(createObjBrandedProduct());
+  dataMovieMovie.push(createObjMovieMovie());
+  dataRentalTransportation.push(createObjRentalTransportation());
+  dataRoomLodging.push(createObjRoomLodging());
+  dataNewsArticle.push(createObjNewsArticle());
+  dataCareerJob.push(createObjCareerJob());
+  dataRestaurantCuisine.push(createObjRestaurantCuisine());
 }
 
 const prisma = new PrismaClient();
