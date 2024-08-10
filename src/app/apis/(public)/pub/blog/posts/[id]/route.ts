@@ -1,32 +1,34 @@
 import prisma, { prismaExclude } from "@/dbs/prisma";
-import { PublicParams } from "@/defs/custom-response";
+import { PublicDetailParams } from "@/defs/custom-response";
 import { ErrorMessage, NotFoundError } from "@/utils/http-error";
 import { withErrorHandler } from "@/utils/with-error-handler";
 import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler<PublicParams>(async (_req, { params }) => {
-  const id = parseInt(params.id);
+export const GET = withErrorHandler<PublicDetailParams>(
+  async (_, { params }) => {
+    const id = parseInt(params.id);
 
-  const post = await prisma.blog_Post.findUnique({
-    where: {
-      id,
-    },
-    include: {
-      Category: {
-        select: prismaExclude("Blog_Category", ["id"]),
+    const post = await prisma.blog_Post.findUnique({
+      where: {
+        id,
       },
-      User: {
-        select: prismaExclude("User", ["id", "password", "role"]),
+      include: {
+        Category: {
+          select: prismaExclude("Blog_Category", ["id"]),
+        },
+        User: {
+          select: prismaExclude("User", ["id", "password", "role"]),
+        },
       },
-    },
-  });
+    });
 
-  if (!post) {
-    throw new NotFoundError(ErrorMessage.POST_NOT_FOUND);
-  }
+    if (!post) {
+      throw new NotFoundError(ErrorMessage.POST_NOT_FOUND);
+    }
 
-  return NextResponse.json({
-    statusCode: 200,
-    data: post,
-  });
-});
+    return NextResponse.json({
+      statusCode: 200,
+      data: post,
+    });
+  },
+);

@@ -43,7 +43,7 @@ export const PatchBodyFormData = z.object({
 });
 
 // Search Params (req.query) validator for public /GET
-export const PublicGlobalSearchParams = z.object({
+export const PublicSearchParamsSchema = z.object({
   q: z.string().nullable().optional(),
   i: z.string().nullable().optional(),
   // Sorting order, case-insensitive, defaults to 'ASC'
@@ -83,3 +83,15 @@ export const PublicGlobalSearchParams = z.object({
     )
     .transform((data) => parseInt(data || "10", 10)),
 });
+export type TPublicSearchParams = z.infer<typeof PublicSearchParamsSchema>;
+export const validatePublicSearchParams = async (
+  searchParams: URLSearchParams,
+): Promise<TPublicSearchParams> => {
+  return await PublicSearchParamsSchema.parseAsync({
+    q: searchParams.get("q"),
+    i: searchParams.get("i"),
+    sort: searchParams.get("sort"),
+    page: searchParams.get("page"),
+    limit: searchParams.get("limit"),
+  });
+};

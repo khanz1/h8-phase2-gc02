@@ -1,6 +1,6 @@
 import { OptionsQuery } from "@/defs/custom-response";
 import { UserJWTPayload } from "@/defs/jwt-payload";
-import { PublicGlobalSearchParams } from "@/defs/zod/x_custom_input";
+import { TPublicSearchParams } from "@/defs/zod/x_custom_input";
 import {
   BadRequestError,
   ErrorMessage,
@@ -76,62 +76,41 @@ export const validateRequestBody = async <T extends ZodSchema>(
   return await schema.parseAsync(requestBody);
 };
 
-export const validatePublicSearchParams = (req: NextRequest) => {
-  // { q, i, sort, page, limit }
-  const { searchParams } = new URL(req.nextUrl);
-
-  const parsedSearchParams = PublicGlobalSearchParams.safeParse({
-    q: searchParams.get("q"),
-    i: searchParams.get("i"),
-    sort: searchParams.get("sort"),
-    page: searchParams.get("page"),
-    limit: searchParams.get("limit"),
-  });
-
-  if (!parsedSearchParams.success) {
-    throw parsedSearchParams.error;
-  }
-
-  return parsedSearchParams;
-};
-
-export const getSearchParamsAndQueryOptions = (
-  req: NextRequest,
+export const getQueryOptions = (
+  searchParams: TPublicSearchParams,
   searchColumn: string,
   sortingColumn: string,
   secondEntityName: string,
 ) => {
-  const searchParams = validatePublicSearchParams(req);
-
   const options: OptionsQuery = {
     where: {},
-    skip: (searchParams.data.page - 1) * searchParams.data.limit,
-    take: searchParams.data.limit,
+    skip: (searchParams.page - 1) * searchParams.limit,
+    take: searchParams.limit,
     orderBy: {
-      [sortingColumn]: searchParams.data.sort,
+      [sortingColumn]: searchParams.sort,
     },
     include: {
       [secondEntityName]: true,
     },
   };
 
-  if (searchParams.data.q) {
+  if (searchParams.q) {
     options.where = {
       [searchColumn]: {
-        contains: `%${searchParams.data.q}%`,
+        contains: `%${searchParams.q}%`,
         mode: "insensitive",
       },
     };
   }
 
-  if (searchParams.data.i) {
+  if (searchParams.i) {
     options.where = {
       ...options.where,
       [secondEntityName]: {
-        name: searchParams.data.i,
+        name: searchParams.i,
       },
     };
   }
 
-  return { searchParams, options };
+  return options;
 };

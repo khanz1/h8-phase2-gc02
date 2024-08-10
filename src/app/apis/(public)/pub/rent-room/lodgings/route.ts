@@ -1,5 +1,6 @@
 import prisma from "@/dbs/prisma";
-import { getSearchParamsAndQueryOptions } from "@/utils/data-parser";
+import { validatePublicSearchParams } from "@/defs/zod/x_custom_input";
+import { getQueryOptions } from "@/utils/data-parser";
 import {
   getPaginatedResponse,
   PaginatedApiResponse,
@@ -8,13 +9,9 @@ import { withErrorHandler } from "@/utils/with-error-handler";
 import { Room_Lodging } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler(async (req) => {
-  const { searchParams, options } = getSearchParamsAndQueryOptions(
-    req,
-    "name",
-    "createdAt",
-    "Type",
-  );
+export const GET = withErrorHandler(async (_, params) => {
+  const searchParams = await validatePublicSearchParams(params.searchParams);
+  const options = getQueryOptions(searchParams, "name", "createdAt", "Type");
 
   const [lodgings, rows] = await prisma.$transaction([
     prisma.room_Lodging.findMany(options),

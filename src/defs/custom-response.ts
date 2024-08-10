@@ -17,19 +17,14 @@ export interface ApiResponseMessage extends ApiResponse {
   message: string;
 }
 
-export type ProtectedHandlerParams = {
-  params: {
-    id: string;
-  };
-};
-
 export type ProtectedParams = {
+  searchParams: URLSearchParams;
   params: {
     id: string;
   };
 };
 
-export type PublicParams = ProtectedParams;
+export type PublicDetailParams = ProtectedParams;
 
 export type OptionsQuery<T extends {} = {}> = {
   include?: {};

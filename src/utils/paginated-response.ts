@@ -1,9 +1,5 @@
 import { ApiResponseData } from "@/defs/custom-response";
-import { getSearchParamsAndQueryOptions } from "@/utils/data-parser";
-
-type SearchParamsQuery = ReturnType<
-  typeof getSearchParamsAndQueryOptions
->["searchParams"];
+import { TPublicSearchParams } from "@/defs/zod/x_custom_input";
 
 export interface PaginatedApiResponse<T>
   extends ApiResponseData<{
@@ -17,7 +13,7 @@ export interface PaginatedApiResponse<T>
 
 export const getPaginatedResponse = <
   T extends Record<string, unknown>[],
-  U extends SearchParamsQuery,
+  U extends TPublicSearchParams,
 >(
   query: T,
   searchParams: U,
@@ -26,8 +22,8 @@ export const getPaginatedResponse = <
   return {
     query,
     pagination: {
-      currentPage: searchParams.data.page,
-      totalPage: Math.ceil(rows / searchParams.data.limit),
+      currentPage: searchParams.page,
+      totalPage: Math.ceil(rows / searchParams.limit),
       totalRows: rows,
     },
   };

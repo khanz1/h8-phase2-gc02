@@ -2,7 +2,6 @@ import prisma from "@/dbs/prisma";
 import {
   ApiResponseData,
   ApiResponseMessage,
-  ProtectedHandlerParams,
   ProtectedParams,
 } from "@/defs/custom-response";
 import { Movie_GenreModel } from "@/defs/zod";
@@ -12,7 +11,7 @@ import { withErrorHandler } from "@/utils/with-error-handler";
 import { Movie_Genre } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export const GET = withErrorHandler<ProtectedHandlerParams>(
+export const GET = withErrorHandler<ProtectedParams>(
   async (_req, { params }) => {
     const genre = await findEntityById(params.id, prisma.movie_Genre);
 

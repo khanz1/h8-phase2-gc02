@@ -6,15 +6,16 @@ type RequestHandler<U> = (
   params: U,
 ) => Promise<NextResponse>;
 
-type RequestParams = {
-  searchParams?: Record<string, string>;
+export interface RequestParams {
+  searchParams: URLSearchParams;
   params?: Record<string, string>;
-};
+}
 
 export function withErrorHandler<T extends RequestParams = RequestParams>(
   fn: RequestHandler<T>,
 ) {
   return async (request: NextRequest, requestParams: T) => {
+    requestParams.searchParams = request.nextUrl.searchParams;
     try {
       return await fn(request, requestParams);
     } catch (err) {
