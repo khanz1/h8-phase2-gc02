@@ -1,3 +1,4 @@
+import { hashText } from "@/utils/bcrypt";
 import { faker } from "@faker-js/faker";
 import {
   Blog_Category,
@@ -20,7 +21,7 @@ import {
   User,
   UserRole,
 } from "@prisma/client";
-import { hashText } from "../src/utils/bcrypt";
+import fs from "fs/promises";
 
 // Core
 const createObjUsers = () => ({
@@ -57,275 +58,142 @@ let dataUsers: Omit<User, "id">[] = [
   },
 ];
 
-// Blog
-const createObjBlogCategory = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjBlogPost = () => ({
-  title: faker.lorem.sentence(),
-  content: faker.lorem.paragraph(),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  categoryId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataBlogCategory: Omit<Blog_Category, "id">[] = [];
-let dataBlogPost: Omit<Blog_Post, "id">[] = [];
-
-// Branded
-const createObjBrandedCategory = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjBrandedProduct = () => ({
-  name: faker.lorem.word(),
-  description: faker.lorem.paragraph(),
-  price: faker.number.int({ min: 1000, max: 1000000 }),
-  stock: faker.number.int({ min: 1, max: 100 }),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  categoryId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataBrandedCategory: Omit<Branded_Category, "id">[] = [];
-let dataBrandedProduct: Omit<Branded_Product, "id">[] = [];
-
-// Movie
-const createObjMovieGenre = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjMovieMovie = () => ({
-  title: faker.lorem.sentence(),
-  synopsis: faker.lorem.paragraph(),
-  trailerUrl: faker.image.url({ width: 100, height: 100 }),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  rating: faker.number.int({ min: 1, max: 10 }),
-  genreId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataMovieGenre: Omit<Movie_Genre, "id">[] = [];
-let dataMovieMovie: Omit<Movie_Movie, "id">[] = [];
-
-// Rental Transportation
-const createObjRentalType = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjRentalTransportation = () => ({
-  name: faker.lorem.word(),
-  description: faker.lorem.paragraph(),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  location: faker.location.city(),
-  price: faker.number.int({ min: 1000, max: 1000000 }),
-  typeId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataRentalType: Omit<Rental_Type, "id">[] = [];
-let dataRentalTransportation: Omit<Rental_Transportation, "id">[] = [];
-
-// Rent Room
-const createObjRoomType = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjRoomLodging = () => ({
-  name: faker.lorem.word(),
-  facility: faker.lorem.paragraph(),
-  roomCapacity: faker.number.int({ min: 1, max: 10 }),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  location: faker.location.city(),
-  typeId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataRoomType: Omit<Room_Type, "id">[] = [];
-let dataRoomLodging: Omit<Room_Lodging, "id">[] = [];
-
-// News Portal
-const createObjNewsCategory = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjNewsArticle = () => ({
-  title: faker.lorem.sentence(),
-  content: faker.lorem.paragraph(),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  categoryId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataNewsCategory: Omit<News_Category, "id">[] = [];
-let dataNewsArticle: Omit<News_Article, "id">[] = [];
-
-// Career Portal
-const createObjCareerCompany = () => ({
-  name: faker.lorem.word(),
-  companyLogo: faker.image.url({ width: 100, height: 100 }),
-  location: faker.location.city(),
-  email: faker.internet.email().toLowerCase(),
-  description: faker.lorem.paragraph(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjCareerJob = () => ({
-  title: faker.lorem.sentence(),
-  description: faker.lorem.paragraph(),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  jobType: faker.lorem.word(),
-  companyId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataCareerCompany: Omit<Career_Company, "id">[] = [];
-let dataCareerJob: Omit<Career_Job, "id">[] = [];
-
-// Restaurant
-const createObjRestaurantCategory = () => ({
-  name: faker.lorem.word(),
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-const createObjRestaurantCuisine = () => ({
-  name: faker.lorem.word(),
-  description: faker.lorem.paragraph(),
-  price: faker.number.int({ min: 1000, max: 1000000 }),
-  imgUrl: faker.image.url({ width: 100, height: 100 }),
-  categoryId: Math.floor(Math.random() * 10) + 1,
-  authorId: Math.floor(Math.random() * 10) + 1,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
-
-let dataRestaurantCategory: Omit<Restaurant_Category, "id">[] = [];
-let dataRestaurantCuisine: Omit<Restaurant_Cuisine, "id">[] = [];
-
 // loop 10 times
 for (let i = 0; i < 10; i++) {
   dataUsers.push(createObjUsers());
-  dataBlogCategory.push(createObjBlogCategory());
-  dataBrandedCategory.push(createObjBrandedCategory());
-  dataMovieGenre.push(createObjMovieGenre());
-  dataRentalType.push(createObjRentalType());
-  dataRoomType.push(createObjRoomType());
-  dataNewsCategory.push(createObjNewsCategory());
-  dataCareerCompany.push(createObjCareerCompany());
-  dataRestaurantCategory.push(createObjRestaurantCategory());
-}
-
-// Loop 100 times
-for (let i = 0; i < 100; i++) {
-  dataBlogPost.push(createObjBlogPost());
-  dataBrandedProduct.push(createObjBrandedProduct());
-  dataMovieMovie.push(createObjMovieMovie());
-  dataRentalTransportation.push(createObjRentalTransportation());
-  dataRoomLodging.push(createObjRoomLodging());
-  dataNewsArticle.push(createObjNewsArticle());
-  dataCareerJob.push(createObjCareerJob());
-  dataRestaurantCuisine.push(createObjRestaurantCuisine());
 }
 
 const prisma = new PrismaClient();
+
+const readFileAndParse = async <T>(path: string): Promise<T> => {
+  const file = await fs.readFile(path, "utf-8");
+  return JSON.parse(file);
+};
 
 async function main() {
   await prisma.user.createMany({
     data: dataUsers,
   });
 
+  const blogCategories = await readFileAndParse<Pick<Blog_Category, "name">[]>(
+    "./data/blog/categories.json",
+  );
+  const blogPosts = await readFileAndParse<Omit<Blog_Post, "id">[]>(
+    "./data/blog/posts.json",
+  );
+
   await prisma.blog_Category.createMany({
-    data: dataBlogCategory,
+    data: blogCategories,
   });
 
   await prisma.blog_Post.createMany({
-    data: dataBlogPost,
+    data: blogPosts,
   });
 
+  const brandedCategories = await readFileAndParse<
+    Pick<Branded_Category, "name">[]
+  >("./data/branded/categories.json");
+  const brandedProducts = await readFileAndParse<Omit<Branded_Product, "id">[]>(
+    "./data/branded/products.json",
+  );
+
   await prisma.branded_Category.createMany({
-    data: dataBrandedCategory,
+    data: brandedCategories,
   });
 
   await prisma.branded_Product.createMany({
-    data: dataBrandedProduct,
+    data: brandedProducts,
   });
 
+  const movieGenres = await readFileAndParse<Pick<Movie_Genre, "name">[]>(
+    "./data/movie/genres.json",
+  );
+  const movieMovies = await readFileAndParse<Omit<Movie_Movie, "id">[]>(
+    "./data/movie/movies.json",
+  );
+
   await prisma.movie_Genre.createMany({
-    data: dataMovieGenre,
+    data: movieGenres,
   });
 
   await prisma.movie_Movie.createMany({
-    data: dataMovieMovie,
+    data: movieMovies,
   });
 
+  const rentalTypes = await readFileAndParse<Pick<Rental_Type, "name">[]>(
+    "./data/rental/types.json",
+  );
+  const rentalTransportations = await readFileAndParse<
+    Omit<Rental_Transportation, "id">[]
+  >("./data/rental/transportations.json");
+
   await prisma.rental_Type.createMany({
-    data: dataRentalType,
+    data: rentalTypes,
   });
 
   await prisma.rental_Transportation.createMany({
-    data: dataRentalTransportation,
+    data: rentalTransportations,
   });
 
+  const roomTypes = await readFileAndParse<Pick<Room_Type, "name">[]>(
+    "./data/room/types.json",
+  );
+  const roomLodgings = await readFileAndParse<Omit<Room_Lodging, "id">[]>(
+    "./data/room/lodgings.json",
+  );
+
   await prisma.room_Type.createMany({
-    data: dataRoomType,
+    data: roomTypes,
   });
 
   await prisma.room_Lodging.createMany({
-    data: dataRoomLodging,
+    data: roomLodgings,
   });
 
+  const newsCategories = await readFileAndParse<Pick<News_Category, "name">[]>(
+    "./data/news/categories.json",
+  );
+  const newsArticles = await readFileAndParse<Omit<News_Article, "id">[]>(
+    "./data/news/articles.json",
+  );
+
   await prisma.news_Category.createMany({
-    data: dataNewsCategory,
+    data: newsCategories,
   });
 
   await prisma.news_Article.createMany({
-    data: dataNewsArticle,
+    data: newsArticles,
   });
 
+  const careerCompanies = await readFileAndParse<Omit<Career_Company, "id">[]>(
+    "./data/career/companies.json",
+  );
+  const careerJobs = await readFileAndParse<Omit<Career_Job, "id">[]>(
+    "./data/career/jobs.json",
+  );
+
   await prisma.career_Company.createMany({
-    data: dataCareerCompany,
+    data: careerCompanies,
   });
 
   await prisma.career_Job.createMany({
-    data: dataCareerJob,
+    data: careerJobs,
   });
 
+  const restaurantCategories = await readFileAndParse<
+    Pick<Restaurant_Category, "name">[]
+  >("./data/restaurant/categories.json");
+  const restaurantCuisines = await readFileAndParse<
+    Omit<Restaurant_Cuisine, "id">[]
+  >("./data/restaurant/cuisines.json");
+
   await prisma.restaurant_Category.createMany({
-    data: dataRestaurantCategory,
+    data: restaurantCategories,
   });
 
   await prisma.restaurant_Cuisine.createMany({
-    data: dataRestaurantCuisine,
+    data: restaurantCuisines,
   });
 }
 
-main();
+void main();

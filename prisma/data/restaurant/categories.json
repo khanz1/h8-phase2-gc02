@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Appetizer"
+  },
+  {
+    "name": "Noodle"
+  },
+  {
+    "name": "Nasi Bakar"
+  },
+  {
+    "name": "Nasi Bakul"
+  },
+  {
+    "name": "Nasi Goreng"
+  },
+  {
+    "name": "Aneka Nasi"
+  },
+  {
+    "name": "Shirataki"
+  },
+  {
+    "name": "Soup"
+  },
+  {
+    "name": "Chicken"
+  },
+  {
+    "name": "Seafood"
+  },
+  {
+    "name": "Beef & Lamb"
+  },
+  {
+    "name": "Satay"
+  },
+  {
+    "name": "Vegetable"
+  },
+  {
+    "name": "Aneka Cobekan"
+  },
+  {
+    "name": "Aneka Sambal"
+  },
+  {
+    "name": "Lain - Lain"
+  },
+  {
+    "name": "Service"
+  },
+  {
+    "name": "Dessert"
+  },
+  {
+    "name": "Coffee"
+  },
+  {
+    "name": "Aneka Es"
+  },
+  {
+    "name": "Aneka Minuman"
+  },
+  {
+    "name": "Minuman Tradisional"
+  },
+  {
+    "name": "Minuman Botol"
+  },
+  {
+    "name": "Festival Pemuda"
+  }
+]
