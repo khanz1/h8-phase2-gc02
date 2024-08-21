@@ -1,6 +1,7 @@
-import { UserJWTPayload } from "@/defs/jwt-payload";
 import { MiddlewareFactory } from "@/defs/middleware-type";
+import { extractUserFromHeader } from "@/utils/data-parser";
 import { errorCreator } from "@/utils/error-creator";
+import { ErrorMessage, ForbiddenError } from "@/utils/http-error";
 import { UserRole } from "@prisma/client";
 import { NextFetchEvent, NextMiddleware, NextRequest } from "next/server";
 
@@ -26,17 +27,10 @@ export const withAuthorizationAdminOnly: MiddlewareFactory =
 
     if (include && !exclude) {
       try {
-        const headersUserData = req.headers.get("x-custom-data-user");
+        const user = extractUserFromHeader(req);
 
-        if (!headersUserData) {
-          throw new Error("INVALID_TOKEN");
-        }
-
-        const parsedHeadersUserData: Pick<UserJWTPayload, "id" | "role"> =
-          JSON.parse(headersUserData);
-
-        if (parsedHeadersUserData.role !== UserRole.Admin) {
-          throw new Error("FORBIDDEN");
+        if (user.role !== UserRole.Admin) {
+          return errorCreator(new ForbiddenError(ErrorMessage.FORBIDDEN));
         }
       } catch (err) {
         return errorCreator(err);

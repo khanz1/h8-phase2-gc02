@@ -1,5 +1,6 @@
 import { MiddlewareFactory } from "@/defs/middleware-type";
 import { errorCreator } from "@/utils/error-creator";
+import { ErrorMessage, ForbiddenError } from "@/utils/http-error";
 import { NextFetchEvent, NextMiddleware, NextRequest } from "next/server";
 
 let includePath = [
@@ -15,9 +16,7 @@ let includePath = [
 
 // check from process.env.PERMISSION_TO_DELETE_SECOND_ENTITY
 const numberToCheck = Number(process.env.PERMISSION_TO_DELETE_SECOND_ENTITY);
-const PERMISSION = isNaN(numberToCheck)
-  ? false
-  : numberToCheck > 0;
+const PERMISSION = isNaN(numberToCheck) ? false : numberToCheck > 0;
 
 export const withEnableDeletion: MiddlewareFactory =
   (next: NextMiddleware) => async (req: NextRequest, _next: NextFetchEvent) => {
@@ -30,11 +29,7 @@ export const withEnableDeletion: MiddlewareFactory =
     });
 
     if (include && req.method.toUpperCase() === "DELETE" && !PERMISSION) {
-      try {
-        throw new Error("FORBIDDEN_BY_ENV");
-      } catch (err) {
-        return errorCreator(err);
-      }
+      return errorCreator(new ForbiddenError(ErrorMessage.FORBIDDEN_BY_ENV));
     }
 
     return next(req, _next);

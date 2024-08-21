@@ -20,11 +20,14 @@ export const errorCreator = (
   let statusCode = code;
   let errorMessage = "Internal Server Error";
 
-  // Need to check this first,
-  // since Prisma.PrismaClientKnownRequestError is an instance of Error
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    // Dirty hack to get the error message
+  if (err instanceof HttpError) {
+    statusCode = err.statusCode;
+    errorMessage = err.message;
 
+    // Need to check this first,
+    // since Prisma.PrismaClientKnownRequestError is an instance of Error
+    // Dirty hack to get the error message
+  } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (
       err.code === "P2002" &&
       err.meta &&
@@ -37,9 +40,6 @@ export const errorCreator = (
       statusCode = 400;
       errorMessage = `${err.meta.field_name} - Foreign key invalid`;
     }
-  } else if (err instanceof HttpError) {
-    statusCode = err.statusCode;
-    errorMessage = err.message;
   } else if (err instanceof ZodError) {
     const errPath = err.errors[0].path[0];
     const errMessage = err.errors[0].message;
