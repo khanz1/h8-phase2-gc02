@@ -1,4 +1,3 @@
-import { hashText } from "@/utils/bcrypt";
 import { faker } from "@faker-js/faker";
 import {
   Blog_Category,
@@ -22,6 +21,8 @@ import {
   UserRole,
 } from "@prisma/client";
 import fs from "fs/promises";
+import * as path from "path";
+import { hashText } from "../src/utils/bcrypt";
 
 // Core
 const createObjUsers = () => ({
@@ -59,14 +60,15 @@ let dataUsers: Omit<User, "id">[] = [
 ];
 
 // loop 10 times
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 8; i++) {
   dataUsers.push(createObjUsers());
 }
 
 const prisma = new PrismaClient();
 
-const readFileAndParse = async <T>(path: string): Promise<T> => {
-  const file = await fs.readFile(path, "utf-8");
+const readFileAndParse = async <T>(filePath: string): Promise<T> => {
+  const absoluteFilePath = path.join(__dirname, filePath);
+  const file = await fs.readFile(absoluteFilePath, "utf-8");
   return JSON.parse(file);
 };
 
@@ -106,10 +108,10 @@ async function main() {
   });
 
   const movieGenres = await readFileAndParse<Pick<Movie_Genre, "name">[]>(
-    "./data/movie/genres.json",
+    "./data/movies/genres.json",
   );
   const movieMovies = await readFileAndParse<Omit<Movie_Movie, "id">[]>(
-    "./data/movie/movies.json",
+    "./data/movies/movies.json",
   );
 
   await prisma.movie_Genre.createMany({

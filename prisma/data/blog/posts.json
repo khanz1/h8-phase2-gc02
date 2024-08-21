@@ -684,14 +684,6 @@
     "updatedAt": "2024-08-11T14:27:05.653Z"
   },
   {
-    "title": "Node FINALLY Supports TypeScript",
-    "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723522622/hacktiv8/blog/node-finally-supports-typescript-72zhf9fp2aj.jpg",
-    "categoryId": 1,
-    "authorId": 6,
-    "createdAt": "2024-07-29T01:02:48.715Z",
-    "updatedAt": "2024-08-11T14:27:06.853Z"
-  },
-  {
     "title": "Optimizing Web Backends",
     "content": "The post discusses common techniques for optimizing web backend performance, focusing on issues related to high response times. It categorizes optimization strategies into three main layers: Application, Database, and Infrastructure. Key methods include optimizing algorithms, using asynchronous functions, leveraging concurrency, indexing databases, scaling databases, data compression, using CDNs, upgrading to HTTP/2 or HTTP/3, and replicating infrastructure. Continuous measurement and testing are emphasized to ensure effectiveness.",
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723522623/hacktiv8/blog/optimizing-web-backends-f8e7oyxftka.jpg",
