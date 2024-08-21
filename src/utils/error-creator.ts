@@ -16,7 +16,7 @@ export const errorCreator = (
   err: unknown,
   code: number = 500,
 ): NextResponse => {
-  console.log(err, "<<< e");
+  console.log(err, "errorCreator");
   let statusCode = code;
   let errorMessage = "Internal Server Error";
 

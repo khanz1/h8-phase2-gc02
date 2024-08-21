@@ -30,7 +30,6 @@ export const withAuthentication: MiddlewareFactory =
         const headerAuthorization = req.headers.get("authorization");
 
         if (!headerAuthorization) {
-          console.log(UnauthorizedError, "<<x");
           return errorCreator(
             new UnauthorizedError(ErrorMessage.INVALID_TOKEN),
           );
