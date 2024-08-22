@@ -4,8 +4,8 @@ import { ErrorMessage, UnauthorizedError } from "@/utils/http-error";
 import { verifyToken } from "@/utils/jwt";
 import { NextFetchEvent, NextMiddleware, NextRequest } from "next/server";
 
-const includePath = ["/apis"];
-const excludePath = ["/apis/login", "/apis/pub"];
+const includePath = ["/apis", "/apis/lectures/movies"];
+const excludePath = ["/apis/login", "/apis/pub", "/apis/lectures/pub/movies"];
 
 export const withAuthentication: MiddlewareFactory =
   (next: NextMiddleware) => async (req: NextRequest, _next: NextFetchEvent) => {

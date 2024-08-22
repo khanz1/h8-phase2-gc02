@@ -49,6 +49,27 @@ model User {
   @@map("Users")
 }
 
+model Lecture_Movie {
+  /// @zod.optional()
+  id Int @id @default(autoincrement())
+
+  /// @zod.trim().min(1, { message: "must not be empty" })
+  title String
+
+  /// @zod.optional()
+  synopsis String?
+
+  /// @zod.url()
+  coverUrl String
+
+  /// @zod.optional()
+  createdAt DateTime @default(now())
+  /// @zod.optional()
+  updatedAt DateTime @updatedAt
+
+  @@map("Lecture_Movies")
+}
+
 model Blog_Category {
   /// @zod.optional()
   id        Int      @id @default(autoincrement())

@@ -1,4 +1,5 @@
 export * from "./user"
+export * from "./lecture_movie"
 export * from "./blog_category"
 export * from "./blog_post"
 export * from "./branded_category"

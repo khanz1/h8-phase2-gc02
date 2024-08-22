@@ -6,6 +6,7 @@ import {
   Branded_Product,
   Career_Company,
   Career_Job,
+  Lecture_Movie,
   Movie_Genre,
   Movie_Movie,
   News_Article,
@@ -18,7 +19,7 @@ import {
   Room_Lodging,
   Room_Type,
   User,
-  UserRole,
+  UserRole
 } from "@prisma/client";
 import fs from "fs/promises";
 import * as path from "path";
@@ -72,11 +73,13 @@ const readFileAndParse = async <T>(filePath: string): Promise<T> => {
   return JSON.parse(file);
 };
 
-async function main() {
+const seedUsers = async () => {
   await prisma.user.createMany({
     data: dataUsers,
   });
+}
 
+async function seedBlog() {
   const blogCategories = await readFileAndParse<Pick<Blog_Category, "name">[]>(
     "./data/blog/categories.json",
   );
@@ -91,7 +94,9 @@ async function main() {
   await prisma.blog_Post.createMany({
     data: blogPosts,
   });
+}
 
+async function seedBranded() {
   const brandedCategories = await readFileAndParse<
     Pick<Branded_Category, "name">[]
   >("./data/branded/categories.json");
@@ -106,7 +111,9 @@ async function main() {
   await prisma.branded_Product.createMany({
     data: brandedProducts,
   });
+}
 
+async function seedMovies() {
   const movieGenres = await readFileAndParse<Pick<Movie_Genre, "name">[]>(
     "./data/movies/genres.json",
   );
@@ -121,7 +128,9 @@ async function main() {
   await prisma.movie_Movie.createMany({
     data: movieMovies,
   });
+}
 
+async function seedRental() {
   const rentalTypes = await readFileAndParse<Pick<Rental_Type, "name">[]>(
     "./data/rental/types.json",
   );
@@ -136,7 +145,9 @@ async function main() {
   await prisma.rental_Transportation.createMany({
     data: rentalTransportations,
   });
+}
 
+async function seedRoom() {
   const roomTypes = await readFileAndParse<Pick<Room_Type, "name">[]>(
     "./data/room/types.json",
   );
@@ -151,7 +162,9 @@ async function main() {
   await prisma.room_Lodging.createMany({
     data: roomLodgings,
   });
+}
 
+async function seedNews() {
   const newsCategories = await readFileAndParse<Pick<News_Category, "name">[]>(
     "./data/news/categories.json",
   );
@@ -166,7 +179,9 @@ async function main() {
   await prisma.news_Article.createMany({
     data: newsArticles,
   });
+}
 
+async function seedCareer() {
   const careerCompanies = await readFileAndParse<Omit<Career_Company, "id">[]>(
     "./data/career/companies.json",
   );
@@ -181,7 +196,9 @@ async function main() {
   await prisma.career_Job.createMany({
     data: careerJobs,
   });
+}
 
+async function seedRestaurant() {
   const restaurantCategories = await readFileAndParse<
     Pick<Restaurant_Category, "name">[]
   >("./data/restaurant/categories.json");
@@ -196,6 +213,27 @@ async function main() {
   await prisma.restaurant_Cuisine.createMany({
     data: restaurantCuisines,
   });
+}
+
+async function seedLectureMovies() {
+  const lectureMovies = await readFileAndParse<Omit<Lecture_Movie, 'id' | 'createdAt' | 'updatedAt'>>("./data/lectures/movies.json");
+  await prisma.lecture_Movie.createMany({
+    data: lectureMovies,
+  });
+}
+
+
+async function main() {
+  // await seedUsers();
+  // await seedBlog();
+  // await seedBranded();
+  // await seedMovies();
+  // await seedRental();
+  // await seedRoom();
+  // await seedNews();
+  // await seedCareer();
+  // await seedRestaurant();
+  await seedLectureMovies();
 }
 
 void main();
