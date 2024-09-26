@@ -1,5 +1,5 @@
 import { HttpError } from "@/utils/http-error";
-import { JWTExpired } from "jose/errors";
+import { JWSInvalid, JWTExpired } from "jose/errors";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -17,6 +17,9 @@ export const errorCreator = (
   } else if (err instanceof JWTExpired) {
     statusCode = 401;
     errorMessage = "Access token expired, please re-login";
+  } else if (err instanceof JWSInvalid) {
+    statusCode = 401;
+    errorMessage = "Invalid token format";
   } else if (err && typeof err === "object" && "code" in err) {
     const prismaError = err as { code: string; meta?: any };
     if (
