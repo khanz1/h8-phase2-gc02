@@ -13,7 +13,7 @@ export const GET = withErrorHandler(async (_, params) => {
   const searchParams = await validatePublicSearchParams(params.searchParams);
   const options = getQueryOptions(
     searchParams,
-    "description",
+    "name",
     "createdAt",
     "Category",
   );
