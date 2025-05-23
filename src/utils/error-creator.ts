@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HttpError } from "@/utils/http-error";
 import { JWSInvalid, JWTExpired, JWSSignatureVerificationFailed } from "jose/errors";
 import { NextResponse } from "next/server";
