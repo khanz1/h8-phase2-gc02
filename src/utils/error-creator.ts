@@ -1,5 +1,5 @@
 import { HttpError } from "@/utils/http-error";
-import { JWSInvalid, JWTExpired } from "jose/errors";
+import { JWSInvalid, JWTExpired, JWSSignatureVerificationFailed } from "jose/errors";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -44,19 +44,17 @@ export const errorCreator = (
 
     statusCode = 400;
     errorMessage = `${errPath} - ${errMessage}`;
-  } else if (err instanceof Error) {
-    if (
-      err.message === "INVALID_TOKEN" ||
-      err.name === "JWSSignatureVerificationFailed" ||
-      err.name === "JWSInvalid" ||
-      err.name === "gi" ||
-      err.name === "jn" ||
-      err.name === "ke"
+  } else if (
+      err?.message === "INVALID_TOKEN" ||
+      err?.name === "JWSSignatureVerificationFailed" ||
+      err?.name === "JWSInvalid" ||
+      err?.name === "gi" ||
+      err?.name === "jn" ||
+      err?.name === "ke"
     ) {
       statusCode = 401;
       errorMessage = "Invalid token";
     }
-  }
 
   return NextResponse.json(
     {
