@@ -8,7 +8,7 @@
 -- =============================================================================
 
 -- Users table with improved constraints and indexes
-CREATE TABLE "Users" (
+CREATE TABLE IF NOT EXISTS "Users" (
     "id" SERIAL NOT NULL,
     "username" VARCHAR(50) UNIQUE NOT NULL,
     "email" VARCHAR(255) UNIQUE NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE "Users" (
 -- =============================================================================
 
 -- Blog categories with validation
-CREATE TABLE "Blog_Categories" (
+CREATE TABLE IF NOT EXISTS "Blog_Categories" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -41,7 +41,7 @@ CREATE TABLE "Blog_Categories" (
 );
 
 -- Blog posts with enhanced validation
-CREATE TABLE "Blog_Posts" (
+CREATE TABLE IF NOT EXISTS "Blog_Posts" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR(500) NOT NULL,
     "content" TEXT NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE "Blog_Posts" (
 -- =============================================================================
 
 -- Branded product categories
-CREATE TABLE "Branded_Categories" (
+CREATE TABLE IF NOT EXISTS "Branded_Categories" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -72,7 +72,7 @@ CREATE TABLE "Branded_Categories" (
 );
 
 -- Branded products with business logic constraints
-CREATE TABLE "Branded_Products" (
+CREATE TABLE IF NOT EXISTS "Branded_Products" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE "Branded_Products" (
 -- =============================================================================
 
 -- Movie genres
-CREATE TABLE "Movie_Genres" (
+CREATE TABLE IF NOT EXISTS "Movie_Genres" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(50) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -107,7 +107,7 @@ CREATE TABLE "Movie_Genres" (
 );
 
 -- Movies with rating validation
-CREATE TABLE "Movie_Movies" (
+CREATE TABLE IF NOT EXISTS "Movie_Movies" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR(500) NOT NULL,
     "synopsis" TEXT NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE "Movie_Movies" (
 -- =============================================================================
 
 -- Rental types
-CREATE TABLE "Rental_Types" (
+CREATE TABLE IF NOT EXISTS "Rental_Types" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(50) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -141,7 +141,7 @@ CREATE TABLE "Rental_Types" (
 );
 
 -- Rental transportations with location and pricing validation
-CREATE TABLE "Rental_Transportations" (
+CREATE TABLE IF NOT EXISTS "Rental_Transportations" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE "Rental_Transportations" (
 -- =============================================================================
 
 -- Room types
-CREATE TABLE "Room_Types" (
+CREATE TABLE IF NOT EXISTS "Room_Types" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(50) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -175,7 +175,7 @@ CREATE TABLE "Room_Types" (
 );
 
 -- Room lodgings with capacity validation
-CREATE TABLE "Room_Lodgings" (
+CREATE TABLE IF NOT EXISTS "Room_Lodgings" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "facility" TEXT NOT NULL,
@@ -198,7 +198,7 @@ CREATE TABLE "Room_Lodgings" (
 -- =============================================================================
 
 -- News categories
-CREATE TABLE "News_Categories" (
+CREATE TABLE IF NOT EXISTS "News_Categories" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -209,7 +209,7 @@ CREATE TABLE "News_Categories" (
 );
 
 -- News articles with content validation
-CREATE TABLE "News_Articles" (
+CREATE TABLE IF NOT EXISTS "News_Articles" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR(500) NOT NULL,
     "content" TEXT NOT NULL,
@@ -229,7 +229,7 @@ CREATE TABLE "News_Articles" (
 -- =============================================================================
 
 -- Career companies with validation
-CREATE TABLE "Career_Companies" (
+CREATE TABLE IF NOT EXISTS "Career_Companies" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(1000) UNIQUE NOT NULL,
     "company_logo" TEXT NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE "Career_Companies" (
 );
 
 -- Career jobs with job type validation
-CREATE TABLE "Career_Jobs" (
+CREATE TABLE IF NOT EXISTS "Career_Jobs" (
     "id" SERIAL NOT NULL,
     "title" VARCHAR(1000) NOT NULL,
     "description" TEXT NOT NULL,
@@ -268,7 +268,7 @@ CREATE TABLE "Career_Jobs" (
 -- =============================================================================
 
 -- Restaurant categories
-CREATE TABLE "Restaurant_Categories" (
+CREATE TABLE IF NOT EXISTS "Restaurant_Categories" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) UNIQUE NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -279,7 +279,7 @@ CREATE TABLE "Restaurant_Categories" (
 );
 
 -- Restaurant cuisines with pricing validation
-CREATE TABLE "Restaurant_Cuisines" (
+CREATE TABLE IF NOT EXISTS "Restaurant_Cuisines" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(500) NOT NULL,
     "description" TEXT NOT NULL,
@@ -300,61 +300,61 @@ CREATE TABLE "Restaurant_Cuisines" (
 -- =============================================================================
 
 -- Users table indexes
-CREATE INDEX "idx_users_email" ON "Users"("email");
-CREATE INDEX "idx_users_username" ON "Users"("username");
-CREATE INDEX "idx_users_role" ON "Users"("role");
-CREATE INDEX "idx_users_created_at" ON "Users"("created_at");
+CREATE INDEX IF NOT EXISTS "idx_users_email" ON "Users"("email");
+CREATE INDEX IF NOT EXISTS "idx_users_username" ON "Users"("username");
+CREATE INDEX IF NOT EXISTS "idx_users_role" ON "Users"("role");
+CREATE INDEX IF NOT EXISTS "idx_users_created_at" ON "Users"("created_at");
 
 -- Blog module indexes
-CREATE INDEX "idx_blog_posts_category_id" ON "Blog_Posts"("category_id");
-CREATE INDEX "idx_blog_posts_author_id" ON "Blog_Posts"("author_id");
-CREATE INDEX "idx_blog_posts_created_at" ON "Blog_Posts"("created_at");
-CREATE INDEX "idx_blog_posts_title" ON "Blog_Posts"("title");
+CREATE INDEX IF NOT EXISTS "idx_blog_posts_category_id" ON "Blog_Posts"("category_id");
+CREATE INDEX IF NOT EXISTS "idx_blog_posts_author_id" ON "Blog_Posts"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_blog_posts_created_at" ON "Blog_Posts"("created_at");
+CREATE INDEX IF NOT EXISTS "idx_blog_posts_title" ON "Blog_Posts"("title");
 
 -- Branded products module indexes
-CREATE INDEX "idx_branded_products_category_id" ON "Branded_Products"("category_id");
-CREATE INDEX "idx_branded_products_author_id" ON "Branded_Products"("author_id");
-CREATE INDEX "idx_branded_products_price" ON "Branded_Products"("price");
-CREATE INDEX "idx_branded_products_stock" ON "Branded_Products"("stock");
-CREATE INDEX "idx_branded_products_name" ON "Branded_Products"("name");
+CREATE INDEX IF NOT EXISTS "idx_branded_products_category_id" ON "Branded_Products"("category_id");
+CREATE INDEX IF NOT EXISTS "idx_branded_products_author_id" ON "Branded_Products"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_branded_products_price" ON "Branded_Products"("price");
+CREATE INDEX IF NOT EXISTS "idx_branded_products_stock" ON "Branded_Products"("stock");
+CREATE INDEX IF NOT EXISTS "idx_branded_products_name" ON "Branded_Products"("name");
 
 -- Movie module indexes
-CREATE INDEX "idx_movie_movies_genre_id" ON "Movie_Movies"("genre_id");
-CREATE INDEX "idx_movie_movies_author_id" ON "Movie_Movies"("author_id");
-CREATE INDEX "idx_movie_movies_rating" ON "Movie_Movies"("rating");
-CREATE INDEX "idx_movie_movies_title" ON "Movie_Movies"("title");
+CREATE INDEX IF NOT EXISTS "idx_movie_movies_genre_id" ON "Movie_Movies"("genre_id");
+CREATE INDEX IF NOT EXISTS "idx_movie_movies_author_id" ON "Movie_Movies"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_movie_movies_rating" ON "Movie_Movies"("rating");
+CREATE INDEX IF NOT EXISTS "idx_movie_movies_title" ON "Movie_Movies"("title");
 
 -- Rental module indexes
-CREATE INDEX "idx_rental_transportations_type_id" ON "Rental_Transportations"("type_id");
-CREATE INDEX "idx_rental_transportations_author_id" ON "Rental_Transportations"("author_id");
-CREATE INDEX "idx_rental_transportations_price" ON "Rental_Transportations"("price");
-CREATE INDEX "idx_rental_transportations_location" ON "Rental_Transportations"("location");
+CREATE INDEX IF NOT EXISTS "idx_rental_transportations_type_id" ON "Rental_Transportations"("type_id");
+CREATE INDEX IF NOT EXISTS "idx_rental_transportations_author_id" ON "Rental_Transportations"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_rental_transportations_price" ON "Rental_Transportations"("price");
+CREATE INDEX IF NOT EXISTS "idx_rental_transportations_location" ON "Rental_Transportations"("location");
 
 -- Room module indexes
-CREATE INDEX "idx_room_lodgings_type_id" ON "Room_Lodgings"("type_id");
-CREATE INDEX "idx_room_lodgings_author_id" ON "Room_Lodgings"("author_id");
-CREATE INDEX "idx_room_lodgings_room_capacity" ON "Room_Lodgings"("room_capacity");
-CREATE INDEX "idx_room_lodgings_location" ON "Room_Lodgings"("location");
+CREATE INDEX IF NOT EXISTS "idx_room_lodgings_type_id" ON "Room_Lodgings"("type_id");
+CREATE INDEX IF NOT EXISTS "idx_room_lodgings_author_id" ON "Room_Lodgings"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_room_lodgings_room_capacity" ON "Room_Lodgings"("room_capacity");
+CREATE INDEX IF NOT EXISTS "idx_room_lodgings_location" ON "Room_Lodgings"("location");
 
 -- News module indexes
-CREATE INDEX "idx_news_articles_category_id" ON "News_Articles"("category_id");
-CREATE INDEX "idx_news_articles_author_id" ON "News_Articles"("author_id");
-CREATE INDEX "idx_news_articles_created_at" ON "News_Articles"("created_at");
-CREATE INDEX "idx_news_articles_title" ON "News_Articles"("title");
+CREATE INDEX IF NOT EXISTS "idx_news_articles_category_id" ON "News_Articles"("category_id");
+CREATE INDEX IF NOT EXISTS "idx_news_articles_author_id" ON "News_Articles"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_news_articles_created_at" ON "News_Articles"("created_at");
+CREATE INDEX IF NOT EXISTS "idx_news_articles_title" ON "News_Articles"("title");
 
 -- Career module indexes
-CREATE INDEX "idx_career_companies_email" ON "Career_Companies"("email");
-CREATE INDEX "idx_career_companies_location" ON "Career_Companies"("location");
-CREATE INDEX "idx_career_jobs_company_id" ON "Career_Jobs"("company_id");
-CREATE INDEX "idx_career_jobs_author_id" ON "Career_Jobs"("author_id");
-CREATE INDEX "idx_career_jobs_job_type" ON "Career_Jobs"("job_type");
-CREATE INDEX "idx_career_jobs_title" ON "Career_Jobs"("title");
+CREATE INDEX IF NOT EXISTS "idx_career_companies_email" ON "Career_Companies"("email");
+CREATE INDEX IF NOT EXISTS "idx_career_companies_location" ON "Career_Companies"("location");
+CREATE INDEX IF NOT EXISTS "idx_career_jobs_company_id" ON "Career_Jobs"("company_id");
+CREATE INDEX IF NOT EXISTS "idx_career_jobs_author_id" ON "Career_Jobs"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_career_jobs_job_type" ON "Career_Jobs"("job_type");
+CREATE INDEX IF NOT EXISTS "idx_career_jobs_title" ON "Career_Jobs"("title");
 
 -- Restaurant module indexes
-CREATE INDEX "idx_restaurant_cuisines_category_id" ON "Restaurant_Cuisines"("category_id");
-CREATE INDEX "idx_restaurant_cuisines_author_id" ON "Restaurant_Cuisines"("author_id");
-CREATE INDEX "idx_restaurant_cuisines_price" ON "Restaurant_Cuisines"("price");
-CREATE INDEX "idx_restaurant_cuisines_name" ON "Restaurant_Cuisines"("name");
+CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_category_id" ON "Restaurant_Cuisines"("category_id");
+CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_author_id" ON "Restaurant_Cuisines"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_price" ON "Restaurant_Cuisines"("price");
+CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_name" ON "Restaurant_Cuisines"("name");
 
 -- =============================================================================
 -- Foreign Key Constraints

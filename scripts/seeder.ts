@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "dotenv/config";
 import { DatabaseConnection } from "../src/config/database";
 import { Logger } from "../src/config/logger";
@@ -183,7 +184,7 @@ class SeedRunner {
   private async createDefaultUsers(): Promise<any[]> {
     const users = [
       {
-        username: "admin",
+        username: "admin1",
         email: "admin@mail.com",
         password: "123456",
         role: "Admin",
@@ -279,6 +280,10 @@ class SeedRunner {
     try {
       logger.info("Seeding users...");
 
+      // console.log(
+      //   "ANGGA_DEBUG",
+      //   await this.models.User.findAll({ transaction })
+      // );
       const users = await this.createDefaultUsers();
       await this.models.User.bulkCreate(users, {
         transaction,
@@ -587,41 +592,147 @@ class SeedRunner {
   }
 
   /**
-   * Clear all data from database
+   * Clear all data from database using destroy method
    */
   private async clearDatabase(transaction: any): Promise<void> {
     try {
       logger.info("Clearing existing database data...");
 
       // Clear in reverse dependency order
-      await this.models.RestaurantCuisine.destroy({ where: {}, transaction });
-      await this.models.RestaurantCategory.destroy({ where: {}, transaction });
+      await this.models.RestaurantCuisine.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.RestaurantCategory.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.CareerJob.destroy({ where: {}, transaction });
-      await this.models.CareerCompany.destroy({ where: {}, transaction });
+      await this.models.CareerJob.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.CareerCompany.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.NewsArticle.destroy({ where: {}, transaction });
-      await this.models.NewsCategory.destroy({ where: {}, transaction });
+      await this.models.NewsArticle.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.NewsCategory.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.RoomLodging.destroy({ where: {}, transaction });
-      await this.models.RoomType.destroy({ where: {}, transaction });
+      await this.models.RoomLodging.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.RoomType.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.RentalType.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
       await this.models.RentalTransportation.destroy({
         where: {},
         transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
       });
-      await this.models.RentalType.destroy({ where: {}, transaction });
+      await this.models.RentalType.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.Movie.destroy({ where: {}, transaction });
-      await this.models.MovieGenre.destroy({ where: {}, transaction });
+      await this.models.Movie.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.MovieGenre.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.BrandedProduct.destroy({ where: {}, transaction });
-      await this.models.BrandedCategory.destroy({ where: {}, transaction });
+      await this.models.BrandedProduct.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.BrandedCategory.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.BlogPost.destroy({ where: {}, transaction });
-      await this.models.BlogCategory.destroy({ where: {}, transaction });
+      await this.models.BlogPost.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
+      await this.models.BlogCategory.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
-      await this.models.User.destroy({ where: {}, transaction });
+      await this.models.User.destroy({
+        where: {},
+        transaction,
+        truncate: true,
+        restartIdentity: true,
+        cascade: true,
+      });
 
       logger.info("Database cleared successfully");
     } catch (error) {
@@ -631,9 +742,229 @@ class SeedRunner {
   }
 
   /**
+   * Advanced undo functionality with options for truncate, restart identity, and cascade
+   */
+  public async undoSeeds(
+    options: {
+      restartIdentity?: boolean;
+      truncate?: boolean;
+      cascade?: boolean;
+    } = {}
+  ): Promise<void> {
+    const dbConnection = DatabaseConnection.getInstance();
+    await dbConnection.connect();
+    await this.initializeModels();
+    const sequelize = dbConnection.getSequelize();
+    const transaction = await sequelize.transaction();
+    const startTime = Date.now();
+
+    try {
+      logger.info("Starting database undo process...", { options });
+
+      if (options.truncate) {
+        await this.truncateAllTables(transaction, options);
+      } else {
+        // Use regular destroy method
+        await this.clearDatabase(transaction);
+      }
+
+      await transaction.commit();
+
+      const duration = Date.now() - startTime;
+      logger.info("Database undo completed successfully", {
+        duration: `${duration}ms`,
+        options,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      const duration = Date.now() - startTime;
+      logger.error("Database undo failed", {
+        error: error instanceof Error ? error.message : error,
+        duration: `${duration}ms`,
+        options,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Truncate all tables with advanced options
+   */
+  private async truncateAllTables(
+    transaction: any,
+    options: {
+      restartIdentity?: boolean;
+      cascade?: boolean;
+    }
+  ): Promise<void> {
+    try {
+      logger.info("Truncating all tables...", { options });
+
+      // Get sequelize instance
+      const dbConnection = DatabaseConnection.getInstance();
+      const sequelize = dbConnection.getSequelize();
+
+      // Define table order for truncation (reverse dependency order)
+      const tableOrder = [
+        '"Restaurant_Cuisines"',
+        '"Restaurant_Categories"',
+        '"Career_Jobs"',
+        '"Career_Companies"',
+        '"News_Articles"',
+        '"News_Categories"',
+        '"Room_Lodgings"',
+        '"Room_Types"',
+        '"Rental_Transportations"',
+        '"Rental_Types"',
+        '"Movie_Movies"',
+        '"Movie_Genres"',
+        '"Branded_Products"',
+        '"Branded_Categories"',
+        '"Blog_Posts"',
+        '"Blog_Categories"',
+        '"Users"',
+      ];
+
+      // Build truncate options
+      const truncateOptions: string[] = [];
+      if (options.restartIdentity) {
+        truncateOptions.push("RESTART IDENTITY");
+      }
+      if (options.cascade) {
+        truncateOptions.push("CASCADE");
+      }
+
+      const optionsString =
+        truncateOptions.length > 0 ? ` ${truncateOptions.join(" ")}` : "";
+
+      // Method 1: Individual table truncation (safer, more control)
+      if (!options.cascade) {
+        for (const tableName of tableOrder) {
+          try {
+            const sql = `TRUNCATE TABLE ${tableName}${optionsString};`;
+            logger.info(`Truncating table: ${tableName}`);
+            await sequelize.query(sql, { transaction });
+            logger.info(`Successfully truncated: ${tableName}`);
+          } catch (error) {
+            logger.warn(`Failed to truncate ${tableName}:`, {
+              error: error instanceof Error ? error.message : error,
+            });
+            // Continue with other tables
+          }
+        }
+      } else {
+        // Method 2: Cascade truncation (all at once)
+        try {
+          const allTables = tableOrder.join(", ");
+          const sql = `TRUNCATE TABLE ${allTables}${optionsString};`;
+          logger.info("Truncating all tables with CASCADE");
+          await sequelize.query(sql, { transaction });
+          logger.info("Successfully truncated all tables");
+        } catch (error) {
+          logger.warn(
+            "CASCADE truncation failed, falling back to individual truncation"
+          );
+          // Fallback to individual truncation
+          for (const tableName of tableOrder) {
+            try {
+              const sql = `TRUNCATE TABLE ${tableName}${optionsString};`;
+              await sequelize.query(sql, { transaction });
+              logger.info(`Fallback truncated: ${tableName}`);
+            } catch (innerError) {
+              logger.warn(`Fallback truncation failed for ${tableName}:`, {
+                error:
+                  innerError instanceof Error ? innerError.message : innerError,
+              });
+            }
+          }
+        }
+      }
+
+      logger.info("Table truncation completed");
+    } catch (error) {
+      logger.error("Failed to truncate tables", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Quick truncate method using Sequelize's built-in truncate
+   */
+  public async quickTruncate(
+    options: {
+      restartIdentity?: boolean;
+      cascade?: boolean;
+    } = {}
+  ): Promise<void> {
+    const dbConnection = DatabaseConnection.getInstance();
+    await dbConnection.connect();
+    await this.initializeModels();
+    const sequelize = dbConnection.getSequelize();
+    const transaction = await sequelize.transaction();
+    const startTime = Date.now();
+
+    try {
+      logger.info("Starting quick truncate process...", { options });
+
+      // Truncate using Sequelize's built-in method
+      const modelOrder = [
+        this.models.RestaurantCuisine,
+        this.models.RestaurantCategory,
+        this.models.CareerJob,
+        this.models.CareerCompany,
+        this.models.NewsArticle,
+        this.models.NewsCategory,
+        this.models.RoomLodging,
+        this.models.RoomType,
+        this.models.RentalTransportation,
+        this.models.RentalType,
+        this.models.Movie,
+        this.models.MovieGenre,
+        this.models.BrandedProduct,
+        this.models.BrandedCategory,
+        this.models.BlogPost,
+        this.models.BlogCategory,
+        this.models.User,
+      ];
+
+      for (const model of modelOrder) {
+        try {
+          await model.truncate({
+            transaction,
+            restartIdentity: options.restartIdentity ?? false,
+            cascade: options.cascade ?? false,
+          });
+          logger.info(`Quick truncated: ${model.name}`);
+        } catch (error) {
+          logger.warn(`Quick truncate failed for ${model.name}:`, {
+            error: error instanceof Error ? error.message : error,
+          });
+        }
+      }
+
+      await transaction.commit();
+
+      const duration = Date.now() - startTime;
+      logger.info("Quick truncate completed successfully", {
+        duration: `${duration}ms`,
+        options,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      const duration = Date.now() - startTime;
+      logger.error("Quick truncate failed", {
+        error: error instanceof Error ? error.message : error,
+        duration: `${duration}ms`,
+        options,
+      });
+      throw error;
+    }
+  }
+
+  /**
    * Run the seeding process
    */
-  public async seed(clearFirst: boolean = false): Promise<void> {
+  public async seed(clearFirst: boolean = true): Promise<void> {
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
     await this.initializeModels();
@@ -646,6 +977,7 @@ class SeedRunner {
 
       // Clear database if requested
       if (clearFirst) {
+        logger.info("Clearing database...");
         await this.clearDatabase(transaction);
       }
 
@@ -710,6 +1042,12 @@ async function main(): Promise<void> {
   const command = args[0];
   const clearFirst = args.includes("--clear") || args.includes("-c");
 
+  // Parse undo options
+  const restartIdentity =
+    args.includes("--restart-identity") || args.includes("-r");
+  const truncate = args.includes("--truncate") || args.includes("-t");
+  const cascade = args.includes("--cascade") || args.includes("--force");
+
   if (!command) {
     console.log(`
 Usage: npx ts-node scripts/seeder.ts <command> [options]
@@ -717,15 +1055,25 @@ Usage: npx ts-node scripts/seeder.ts <command> [options]
 Commands:
   seed       - Run database seeding
   clear      - Clear all data and seed fresh
+  undo       - Undo seeds with advanced options
+  truncate   - Quick truncate using Sequelize
   test       - Test database connection
 
 Options:
-  --clear, -c  - Clear existing data before seeding
-
+  --clear, -c           - Clear existing data before seeding
+  --restart-identity, -r - Restart identity sequences when truncating
+  --truncate, -t        - Use TRUNCATE instead of DELETE for undo
+  --cascade, --force    - Use CASCADE to handle foreign key constraints
+  
 Examples:
   npx ts-node scripts/seeder.ts seed
   npx ts-node scripts/seeder.ts seed --clear
   npx ts-node scripts/seeder.ts clear
+  npx ts-node scripts/seeder.ts undo
+  npx ts-node scripts/seeder.ts undo --truncate
+  npx ts-node scripts/seeder.ts undo --truncate --restart-identity
+  npx ts-node scripts/seeder.ts undo --truncate --restart-identity --cascade
+  npx ts-node scripts/seeder.ts truncate --restart-identity
   npx ts-node scripts/seeder.ts test
     `);
     process.exit(1);
@@ -741,6 +1089,21 @@ Examples:
 
       case "clear":
         await seeder.seed(true);
+        break;
+
+      case "undo":
+        await seeder.undoSeeds({
+          restartIdentity,
+          truncate,
+          cascade,
+        });
+        break;
+
+      case "truncate":
+        await seeder.quickTruncate({
+          restartIdentity,
+          cascade,
+        });
         break;
 
       case "test":
