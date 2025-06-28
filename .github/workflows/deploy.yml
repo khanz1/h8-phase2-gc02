@@ -3,7 +3,7 @@ name: CI/CD → AWS EC2
 on:
   push:
     branches:
-      - production
+      - main
 
 jobs:
   deploy:
