@@ -29,7 +29,7 @@ export class DatabaseConnection {
       this.sequelize = new Sequelize({
         ...dbConfig,
         dialect: "postgres",
-        logging: (msg: string) => {
+        logging: (msg: string): void => {
           if (process.env.NODE_ENV === "development") {
             this.logger.debug(msg);
           }

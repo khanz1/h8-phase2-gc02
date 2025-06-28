@@ -1,5 +1,4 @@
 import pino from "pino";
-import { createWriteStream } from "fs";
 import { join } from "path";
 import { mkdirSync, existsSync } from "fs";
 
