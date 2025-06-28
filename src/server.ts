@@ -28,7 +28,6 @@ class Server {
         );
       });
 
-      // Handle server errors
       this.httpServer.on("error", (error: Error) => {
         this.logger.error("❌ Server error:", error);
         process.exit(1);
@@ -48,7 +47,6 @@ class Server {
     this.logger.info("🛑 Starting graceful shutdown...");
 
     try {
-      // Close HTTP server first
       if (this.httpServer) {
         await new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
@@ -67,7 +65,6 @@ class Server {
         this.logger.info("✅ HTTP server closed");
       }
 
-      // Then close database connections
       await this.app.shutdown();
       this.logger.info("🛑 Server stopped gracefully");
     } catch (error) {
@@ -79,7 +76,6 @@ class Server {
 
 const server = new Server();
 
-// Graceful shutdown handlers
 process.on("SIGTERM", async () => {
   Logger.getInstance().info("📨 SIGTERM received");
   await server.stop();
@@ -102,12 +98,10 @@ process.on("uncaughtException", (error: Error) => {
   process.exit(1);
 });
 
-// Handle additional signals for Docker and other environments
 process.on("SIGHUP", async () => {
   Logger.getInstance().info("📨 SIGHUP received");
   await server.stop();
   process.exit(0);
 });
 
-// Start the server
 void server.start();

@@ -3,39 +3,38 @@ version: "3.8"
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: phase2-postgres-dev
+    container_name: app-postgres-dev
     environment:
-      POSTGRES_DB: phase2_challenge
+      POSTGRES_DB: h8_phase2_gc02
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - phase2-network
+      - app-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
 
   app:
     build:
       context: ..
       dockerfile: Dockerfile
       target: development
-    container_name: phase2-app-dev
+    container_name: app-dev
     environment:
       NODE_ENV: development
       PORT: 8001
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: phase2_challenge
+      DB_NAME: h8_phase2_gc02
       DB_USERNAME: postgres
-      DB_PASSWORD: password
+      DB_PASSWORD: postgres
       JWT_SECRET: your-super-secret-jwt-key-here-dev
       JWT_REFRESH_SECRET: your-super-secret-jwt-refresh-key-here-dev
       JWT_EXPIRES_IN: 15m
@@ -48,9 +47,6 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-your-cloudinary-cloud-name}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-your-cloudinary-api-key}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-your-cloudinary-api-secret}
-      # Database initialization control
-      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-auto}
-      RUN_SEEDING: ${RUN_SEEDING:-auto}
     ports:
       - "8001:8001"
     volumes:
@@ -61,17 +57,11 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - phase2-network
+      - app-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
 networks:
-  phase2-network:
+  app-network:
     driver: bridge
 
 volumes:

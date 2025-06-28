@@ -23,18 +23,14 @@ jobs:
       # 3) Install dependencies & run tests
       - name: Install dependencies
         run: npm ci
-
       - name: Run type check
         run: npm run type-check
-
       - name: Run linting
         run: npm run lint
 
       # 3.5) Prepare environment setup
       - name: Verify Environment Setup
         run: |
-          # Ensure deployment setup script exists and is executable
-          chmod +x scripts/deploy-setup.sh
           # Verify env.example exists for reference
           ls -la env.example
 
@@ -54,8 +50,10 @@ jobs:
           target: production
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/phase2-graded-challenge:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/phase2-graded-challenge:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # 6) SSH into EC2 and deploy
       - name: Deploy to EC2
@@ -76,70 +74,68 @@ jobs:
             echo "PORT=8001" >> ~/app/.env
 
             # Pull latest application image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/phase2-graded-challenge:latest
+            echo "📥 Pulling latest application image..."
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
             # Stop and remove existing containers with better error handling
             echo "🔄 Checking for existing containers..."
-            if docker ps -a --format "table {{.Names}}" | grep -q "phase2-app"; then
-              echo "🛑 Stopping existing phase2-app container..."
-              docker stop phase2-app
-              echo "🗑️ Removing existing phase2-app container..."
-              docker rm phase2-app
+            if docker ps -a --format "table {{.Names}}" | grep -q "h8-phase2-gc02-app"; then
+              echo "🛑 Stopping existing h8-phase2-gc02-app container..."
+              docker stop h8-phase2-gc02-app
+              echo "🗑️ Removing existing h8-phase2-gc02-app container..."
+              docker rm h8-phase2-gc02-app
             else
-              echo "ℹ️ No existing phase2-app container found (this is normal for first deployment)"
+              echo "ℹ️ No existing h8-phase2-gc02-app container found (this is normal for first deployment)"
             fi
 
-            if docker ps -a --format "table {{.Names}}" | grep -q "phase2-postgres"; then
-              echo "ℹ️ PostgreSQL container already exists"
-            else
+            # Start PostgreSQL if not running (for database functionality)
+            if ! docker ps | grep -q h8-phase2-gc02-postgres; then
               echo "🚀 Starting PostgreSQL database..."
               docker run -d \
-                --name phase2-postgres \
+                --name h8-phase2-gc02-postgres \
                 --restart unless-stopped \
-                -e POSTGRES_DB=phase2_challenge \
+                -e POSTGRES_DB=h8_phase2_gc02 \
                 -e POSTGRES_USER=postgres \
                 -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
                 -v postgres_data:/var/lib/postgresql/data \
                 -p 5432:5432 \
                 postgres:15-alpine
               
+              # Wait for PostgreSQL to be ready
               echo "⏳ Waiting for PostgreSQL to be ready..."
               sleep 15
               echo "✅ PostgreSQL setup completed"
+            else
+              echo "✅ PostgreSQL already running"
             fi
 
             # Start the main application
-            echo "🚀 Starting phase2-graded-challenge application..."
+            echo "🚀 Starting h8-phase2-gc02 application..."
             docker run -d \
-              --name phase2-app \
+              --name h8-phase2-gc02-app \
               --restart unless-stopped \
               --env-file ~/app/.env \
-              --link phase2-postgres:postgres \
+              --link h8-phase2-gc02-postgres:postgres \
               -p 8001:8001 \
-              -v ~/app/uploads:/app/uploads \
               -v ~/app/logs:/app/logs \
-              ${{ secrets.DOCKERHUB_USERNAME }}/phase2-graded-challenge:latest
+              ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
             # Wait for application to be ready
             echo "⏳ Waiting for application to be ready..."
-            sleep 15
-
-            # Run database migrations
-            echo "🔄 Running database migrations..."
-            docker exec phase2-app npm run db:migrate
+            sleep 20
 
             # Check application health
             if curl -f http://localhost:8001/health > /dev/null 2>&1; then
               echo "✅ Application is healthy and running on port 8001"
             else
               echo "⚠️ Application health check failed, checking logs..."
-              docker logs phase2-app --tail 20
+              docker logs h8-phase2-gc02-app --tail 20
             fi
 
             # Show running containers
             echo "📊 Running containers:"
-            docker ps --filter "name=phase2"
+            docker ps --filter "name=h8-phase2-gc02"
 
             # Clean up old images
             echo "🧹 Cleaning up old Docker images..."
-            docker image prune -f
+            docker image prune -f --filter "until=24h"

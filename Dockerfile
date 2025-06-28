@@ -38,9 +38,6 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY data/ ./data/
 
-# Make initialization script executable
-RUN chmod +x scripts/docker-init.sh
-
 # Create logs directory
 RUN mkdir -p logs
 
@@ -51,8 +48,8 @@ EXPOSE 8001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8001/health || exit 1
 
-# Start with initialization script
-CMD ["./scripts/docker-init.sh"]
+# Start development server directly
+CMD ["npm", "run", "dev"]
 
 # Production stage
 FROM node:22-alpine AS production
@@ -76,9 +73,6 @@ COPY --chown=nodejs:nodejs scripts/ ./scripts/
 COPY --chown=nodejs:nodejs data/ ./data/
 COPY --chown=nodejs:nodejs tsconfig.json ./
 
-# Make initialization script executable
-RUN chmod +x scripts/docker-init.sh
-
 # Create logs directory
 RUN mkdir -p logs && chown -R nodejs:nodejs logs
 
@@ -92,5 +86,5 @@ EXPOSE 8001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8001/health || exit 1
 
-# Start with initialization script
-CMD ["./scripts/docker-init.sh"] 
+# Start production server directly
+CMD ["npm", "start"] 
