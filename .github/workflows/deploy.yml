@@ -107,7 +107,7 @@ jobs:
               
               # Wait for PostgreSQL to be ready
               echo "⏳ Waiting for PostgreSQL to be ready..."
-              sleep 15
+              sleep 10
               echo "✅ PostgreSQL setup completed"
             else
               echo "✅ PostgreSQL already running"
@@ -126,7 +126,7 @@ jobs:
 
             # Wait for application to be ready
             echo "⏳ Waiting for application to be ready..."
-            sleep 20
+            sleep 10
 
             # Check application health
             if curl -f http://localhost:8001/health > /dev/null 2>&1; then
