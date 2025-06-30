@@ -1,12 +1,11 @@
 {
   "name": "phase2-graded-challenge",
   "version": "1.0.0",
-  "type": "module",
   "description": "Phase2 Graded Challenge - TypeScript Express.js Application",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
@@ -71,6 +70,7 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
   },
