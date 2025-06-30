@@ -1,17 +1,18 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: app-postgres-prod
+    container_name: h8-phase2-gc02-postgres-prod
     environment:
       POSTGRES_DB: ${DB_NAME:-h8_phase2_gc02}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - h8-phase2-gc02-network
     restart: no
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
@@ -25,7 +26,7 @@ services:
       context: ..
       dockerfile: Dockerfile
       target: production
-    container_name: app-prod
+    container_name: h8-phase2-gc02-app-prod
     environment:
       NODE_ENV: production
       PORT: ${PORT:-8002}
@@ -54,11 +55,11 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - app-network
+      - h8-phase2-gc02-network
     restart: no
 
 networks:
-  app-network:
+  h8-phase2-gc02-network:
     driver: bridge
 
 volumes:
