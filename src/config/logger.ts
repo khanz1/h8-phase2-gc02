@@ -7,7 +7,7 @@ export class Logger {
   private readonly logger: pino.Logger;
 
   private constructor() {
-    const logLevel = process.env.LOG_LEVEL || "debug";
+    const logLevel = process.env.LOG_LEVEL || "info";
     const isProduction = process.env.NODE_ENV === "production";
     const enableFileLogging = process.env.LOG_FILE === "true";
 
@@ -18,7 +18,7 @@ export class Logger {
     }
 
     if (isProduction && enableFileLogging) {
-      // Production: Log to files with daily rotation
+      // Production: Log to both files and console
       const today = new Date().toISOString().split("T")[0];
       const appLogFile = join(logsDir, `app-${today}.log`);
       const errorLogFile = join(logsDir, `error-${today}.log`);
@@ -28,6 +28,17 @@ export class Logger {
         timestamp: pino.stdTimeFunctions.isoTime,
         transport: {
           targets: [
+            // Console output with pretty formatting
+            {
+              target: "pino-pretty",
+              level: logLevel,
+              options: {
+                colorize: true,
+                ignore: "pid,hostname",
+                translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
+              },
+            },
+            // File output for all logs
             {
               target: "pino/file",
               level: logLevel,
@@ -35,6 +46,7 @@ export class Logger {
                 destination: appLogFile,
               },
             },
+            // Separate error file
             {
               target: "pino/file",
               level: "error",

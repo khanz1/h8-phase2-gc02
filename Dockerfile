@@ -42,11 +42,11 @@ COPY data/ ./data/
 RUN mkdir -p logs
 
 # Expose port
-EXPOSE 8001
+EXPOSE 8002
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8001/health || exit 1
+  CMD curl -f http://localhost:8002/health || exit 1
 
 # Start development server directly
 CMD ["npm", "run", "dev"]
@@ -84,11 +84,11 @@ RUN mkdir -p logs && chown -R nodejs:nodejs logs
 USER nodejs
 
 # Expose port
-EXPOSE 8001
+EXPOSE 8002
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:8001/health || exit 1
+  CMD curl -f http://localhost:8002/health || exit 1
 
 # Start production server directly
 CMD ["npm", "start"] 

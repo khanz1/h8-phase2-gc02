@@ -17,15 +17,7 @@
     "db:sync": "npm run db:migrate",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "docker:dev": "docker-compose -f docker/docker-compose.yml up --build",
-    "docker:prod": "docker-compose -f docker/docker-compose.prod.yml up --build",
-    "docker:dev:detached": "docker-compose -f docker/docker-compose.yml up --build -d",
-    "docker:prod:detached": "docker-compose -f docker/docker-compose.prod.yml up --build -d",
-    "docker:dev:down": "docker-compose -f docker/docker-compose.yml down",
-    "docker:prod:down": "docker-compose -f docker/docker-compose.prod.yml down",
-    "docker:dev:logs": "docker-compose -f docker/docker-compose.yml logs -f",
-    "docker:prod:logs": "docker-compose -f docker/docker-compose.prod.yml logs -f",
-    "docker:clean": "docker system prune -f && docker volume prune -f",
-    "docker:verify-auth": "chmod +x scripts/verify-docker-auth.sh && ./scripts/verify-docker-auth.sh"
+    "docker:prod": "docker-compose -f docker/docker-compose.prod.yml up --build"
   },
   "keywords": [
     "typescript",
