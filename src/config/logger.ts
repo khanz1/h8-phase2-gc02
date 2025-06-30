@@ -7,7 +7,7 @@ export class Logger {
   private readonly logger: pino.Logger;
 
   private constructor() {
-    const logLevel = process.env.LOG_LEVEL || "info";
+    const logLevel = process.env.LOG_LEVEL || "debug";
     const isProduction = process.env.NODE_ENV === "production";
     const enableFileLogging = process.env.LOG_FILE === "true";
 
@@ -30,7 +30,7 @@ export class Logger {
           targets: [
             {
               target: "pino/file",
-              level: "info",
+              level: logLevel,
               options: {
                 destination: appLogFile,
               },
@@ -88,6 +88,10 @@ export class Logger {
 
   public debug(message: string, ...args: unknown[]): void {
     this.logger.debug(message, ...args);
+  }
+
+  public trace(message: string, ...args: unknown[]): void {
+    this.logger.trace(message, ...args);
   }
 
   public fatal(message: string, error?: unknown): void {
