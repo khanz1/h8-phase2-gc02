@@ -8,8 +8,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
     "type-check": "tsc --noEmit",
     "db:migrate": "ts-node -r tsconfig-paths/register scripts/migration-runner.ts migrate",
     "db:migrate:undo": "ts-node -r tsconfig-paths/register scripts/migration-runner.ts rollback",
@@ -25,7 +25,8 @@
     "docker:prod:down": "docker-compose -f docker/docker-compose.prod.yml down",
     "docker:dev:logs": "docker-compose -f docker/docker-compose.yml logs -f",
     "docker:prod:logs": "docker-compose -f docker/docker-compose.prod.yml logs -f",
-    "docker:clean": "docker system prune -f && docker volume prune -f"
+    "docker:clean": "docker system prune -f && docker volume prune -f",
+    "docker:verify-auth": "chmod +x scripts/verify-docker-auth.sh && ./scripts/verify-docker-auth.sh"
   },
   "keywords": [
     "typescript",

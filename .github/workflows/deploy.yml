@@ -28,15 +28,11 @@ jobs:
       - name: Run linting
         run: npm run lint
 
-      # 3.5) Prepare environment setup
-      - name: Verify Environment Setup
+      # 4) Verify Docker Authentication Setup
+      - name: Verify Docker Authentication
         run: |
-          # Verify env.example exists for reference
-          ls -la env.example
-
-      # 4) Set up Docker Buildx (required for cache export)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+          chmod +x scripts/verify-docker-auth.sh
+          ./scripts/verify-docker-auth.sh
 
       # 5) Log in to Docker Hub
       - name: Docker Hub Login
@@ -56,8 +52,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       # 7) SSH into EC2 and deploy
       - name: Deploy to EC2
@@ -74,27 +68,15 @@ jobs:
             ${{ secrets.PROD_ENV_FILE }}
             EOF
 
-            # Ensure PORT is set to 8001
-            echo "PORT=8001" >> ~/app/.env
-
             # Pull latest application image
-            echo "📥 Pulling latest application image..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
-            # Stop and remove existing containers with better error handling
-            echo "🔄 Checking for existing containers..."
-            if docker ps -a --format "table {{.Names}}" | grep -q "h8-phase2-gc02-app"; then
-              echo "🛑 Stopping existing h8-phase2-gc02-app container..."
-              docker stop h8-phase2-gc02-app
-              echo "🗑️ Removing existing h8-phase2-gc02-app container..."
-              docker rm h8-phase2-gc02-app
-            else
-              echo "ℹ️ No existing h8-phase2-gc02-app container found (this is normal for first deployment)"
-            fi
+            # Stop and remove existing containers
+            docker stop h8-phase2-gc02-app 2>/dev/null || true
+            docker rm h8-phase2-gc02-app 2>/dev/null || true
 
-            # Start PostgreSQL if not running (for database functionality)
+            # Start PostgreSQL if not running
             if ! docker ps | grep -q h8-phase2-gc02-postgres; then
-              echo "🚀 Starting PostgreSQL database..."
               docker run -d \
                 --name h8-phase2-gc02-postgres \
                 --restart unless-stopped \
@@ -104,17 +86,10 @@ jobs:
                 -v postgres_data:/var/lib/postgresql/data \
                 -p 5432:5432 \
                 postgres:15-alpine
-              
-              # Wait for PostgreSQL to be ready
-              echo "⏳ Waiting for PostgreSQL to be ready..."
               sleep 10
-              echo "✅ PostgreSQL setup completed"
-            else
-              echo "✅ PostgreSQL already running"
             fi
 
             # Start the main application
-            echo "🚀 Starting h8-phase2-gc02 application..."
             docker run -d \
               --name h8-phase2-gc02-app \
               --restart unless-stopped \
@@ -124,22 +99,9 @@ jobs:
               -v ~/app/logs:/app/logs \
               ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
-            # Wait for application to be ready
-            echo "⏳ Waiting for application to be ready..."
+            # Wait and check health
             sleep 10
-
-            # Check application health
-            if curl -f http://localhost:8001/health > /dev/null 2>&1; then
-              echo "✅ Application is healthy and running on port 8001"
-            else
-              echo "⚠️ Application health check failed, checking logs..."
-              docker logs h8-phase2-gc02-app --tail 20
-            fi
-
-            # Show running containers
-            echo "📊 Running containers:"
-            docker ps --filter "name=h8-phase2-gc02"
+            curl -f http://localhost:8001/health || docker logs h8-phase2-gc02-app --tail 20
 
             # Clean up old images
-            echo "🧹 Cleaning up old Docker images..."
             docker image prune -f --filter "until=24h"
