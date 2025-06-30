@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { Logger } from "@/config/logger";
 import { BadRequestError, InternalServerError } from "@/shared/errors";
+import { Express } from "express";
 
 export interface CloudinaryUploadResult {
   publicId: string;

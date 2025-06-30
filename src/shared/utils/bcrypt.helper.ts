@@ -36,7 +36,6 @@ export class BcryptHelper {
     hashedPassword: string
   ): Promise<boolean> {
     try {
-      console.log({ plainPassword, hashedPassword }, "<<< angga");
       if (!plainPassword || !hashedPassword) {
         throw new UnauthorizedError("Invalid email or password");
       }
