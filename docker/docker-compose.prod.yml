@@ -12,7 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-    restart: always
+    restart: no
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -55,7 +55,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
-    restart: always
+    restart: no
 
 networks:
   app-network:
