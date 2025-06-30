@@ -17,17 +17,6 @@ export class Logger {
       mkdirSync(logsDir, { recursive: true });
     }
 
-    // Configure base logger options
-    const baseOptions: pino.LoggerOptions = {
-      level: logLevel,
-      timestamp: pino.stdTimeFunctions.isoTime,
-      formatters: {
-        level: (label: string): Record<string, string> => {
-          return { level: label };
-        },
-      },
-    };
-
     if (isProduction && enableFileLogging) {
       // Production: Log to files with daily rotation
       const today = new Date().toISOString().split("T")[0];
@@ -35,7 +24,8 @@ export class Logger {
       const errorLogFile = join(logsDir, `error-${today}.log`);
 
       this.logger = pino({
-        ...baseOptions,
+        level: logLevel,
+        timestamp: pino.stdTimeFunctions.isoTime,
         transport: {
           targets: [
             {
@@ -56,9 +46,15 @@ export class Logger {
         },
       });
     } else {
-      // Development: Pretty print to console
+      // Development: Pretty print to console with custom formatters
       this.logger = pino({
-        ...baseOptions,
+        level: logLevel,
+        timestamp: pino.stdTimeFunctions.isoTime,
+        formatters: {
+          level: (label: string): Record<string, string> => {
+            return { level: label };
+          },
+        },
         transport: {
           target: "pino-pretty",
           options: {
