@@ -43,10 +43,12 @@ class Server {
 
       this.httpServer.on("error", (error: Error) => {
         this.logger.error("❌ Server error:", error);
+        console.log(error, '1');
         process.exit(1);
       });
     } catch (error) {
       this.logger.error("❌ Failed to start server:", error);
+      console.log(error, '2');
       process.exit(1);
     }
   }
@@ -82,6 +84,7 @@ class Server {
       this.logger.info("🛑 Server stopped gracefully");
     } catch (error) {
       this.logger.error("❌ Error during server shutdown:", error);
+      console.log(error, '3');
       process.exit(1);
     }
   }
@@ -91,28 +94,33 @@ const server = new Server();
 
 process.on("SIGTERM", async () => {
   Logger.getInstance().info("📨 SIGTERM received");
+  console.log('SIGTERM', '4');
   await server.stop();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
   Logger.getInstance().info("📨 SIGINT received");
+  console.log('SIGINT', '5');
   await server.stop();
   process.exit(0);
 });
 
 process.on("unhandledRejection", (reason: unknown) => {
   Logger.getInstance().error("🚨 Unhandled Promise Rejection:", reason);
+  console.log('Unhandled Promise Rejection', '6');
   process.exit(1);
 });
 
 process.on("uncaughtException", (error: Error) => {
   Logger.getInstance().error("🚨 Uncaught Exception:", error);
+  console.log('Uncaught Exception', '7');
   process.exit(1);
 });
 
 process.on("SIGHUP", async () => {
   Logger.getInstance().info("📨 SIGHUP received");
+  console.log('SIGHUP', '8');
   await server.stop();
   process.exit(0);
 });
