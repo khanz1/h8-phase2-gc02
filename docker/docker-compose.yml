@@ -3,9 +3,9 @@ services:
     image: postgres:15-alpine
     container_name: h8-phase2-gc02-postgres-dev
     environment:
-      POSTGRES_DB: ${DB_NAME:-h8_phase2_gc02}
-      POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: h8_phase2_gc02
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
@@ -14,7 +14,7 @@ services:
       - h8-phase2-gc02-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,10 +29,10 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-8002}
       DB_HOST: postgres
-      DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME:-h8_phase2_gc02}
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_PORT: 5432
+      DB_NAME: h8_phase2_gc02
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-dev}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-dev}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
