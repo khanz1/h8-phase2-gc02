@@ -75,19 +75,21 @@ jobs:
             docker stop h8-phase2-gc02-app 2>/dev/null || true
             docker rm h8-phase2-gc02-app 2>/dev/null || true
 
+            # Stop and remove existing pg container
+            docker stop h8-phase2-gc02-postgres 2>/dev/null || true
+            docker rm h8-phase2-gc02-postgres 2>/dev/null || true
+
             # Start PostgreSQL if not running
-            if ! docker ps | grep -q h8-phase2-gc02-postgres; then
-              docker run -d \
-                --name h8-phase2-gc02-postgres \
-                --restart unless-stopped \
-                -e POSTGRES_DB=h8_phase2_gc02 \
-                -e POSTGRES_USER=postgres \
-                -e POSTGRES_PASSWORD=postgres \
-                -v postgres_data:/var/lib/postgresql/data \
-                -p 5432:5432 \
-                postgres:15-alpine
-              sleep 10
-            fi
+            docker run -d \
+              --name h8-phase2-gc02-postgres \
+              --restart unless-stopped \
+              -e POSTGRES_DB=h8_phase2_gc02 \
+              -e POSTGRES_USER=postgres \
+              -e POSTGRES_PASSWORD=postgres \
+              -v postgres_data:/var/lib/postgresql/data \
+              -p 5432:5432 \
+              postgres:15-alpine
+            sleep 5
 
             # Start the main application
             docker run -d \
