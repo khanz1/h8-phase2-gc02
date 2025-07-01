@@ -26,6 +26,19 @@ class Server {
         this.logger.info(
           `🗄️  Database: ${process.env.DB_NAME || "phase2_challenge"}`
         );
+        const memoryUsage = process.memoryUsage();
+        const formatBytes = (bytes: number): string => {
+          const kb = (bytes / 1024).toFixed(2);
+          const mb = (bytes / 1024 / 1024).toFixed(2);
+          return `${bytes} bytes (${kb} KB / ${mb} MB)`;
+        };
+
+        this.logger.info("💾 Memory Usage Information:");
+        this.logger.info(`  RSS (Resident Set Size): ${formatBytes(memoryUsage.rss)} - Total memory allocated`);
+        this.logger.info(`  Heap Used: ${formatBytes(memoryUsage.heapUsed)} - V8 heap memory currently used`);
+        this.logger.info(`  Heap Total: ${formatBytes(memoryUsage.heapTotal)} - V8 heap memory allocated`);
+        this.logger.info(`  External: ${formatBytes(memoryUsage.external)} - Memory used by C++ objects bound to JS`);
+        this.logger.info(`  Array Buffers: ${formatBytes(memoryUsage.arrayBuffers)} - Memory allocated for ArrayBuffers`);
       });
 
       this.httpServer.on("error", (error: Error) => {
