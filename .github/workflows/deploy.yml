@@ -82,7 +82,7 @@ jobs:
                 --restart unless-stopped \
                 -e POSTGRES_DB=h8_phase2_gc02 \
                 -e POSTGRES_USER=postgres \
-                -e POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                -e POSTGRES_PASSWORD=postgres \
                 -v postgres_data:/var/lib/postgresql/data \
                 -p 5432:5432 \
                 postgres:15-alpine
@@ -95,13 +95,13 @@ jobs:
               --restart unless-stopped \
               --env-file ~/app/.env \
               --link h8-phase2-gc02-postgres:postgres \
-              -p 8001:8001 \
+              -p 8002:8002 \
               -v ~/app/logs:/app/logs \
               ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
             # Wait and check health
             sleep 10
-            curl -f http://localhost:8001/health || docker logs h8-phase2-gc02-app --tail 20
+            curl -f http://localhost:8002/health || docker logs h8-phase2-gc02-app --tail 20
 
             # Clean up old images
             docker image prune -f --filter "until=24h"
