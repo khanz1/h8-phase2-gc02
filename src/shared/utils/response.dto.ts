@@ -1,5 +1,13 @@
 import { Response } from "express";
 
+// Rate limit information interface
+interface RateLimitInfo {
+  limit: number;
+  remaining: number;
+  resetTime: number;
+  retryAfter?: number;
+}
+
 // Base response interface
 interface BaseResponse {
   success: boolean;
@@ -17,6 +25,7 @@ interface SuccessResponse extends BaseResponse {
 interface FailedResponse extends BaseResponse {
   success: false;
   data?: any;
+  rateLimitInfo?: RateLimitInfo;
 }
 
 // Paginated response interface
@@ -61,14 +70,25 @@ export class ResponseDTO {
    * Transform data to failed response format
    * @param message - Error message
    * @param data - Optional error data
+   * @param rateLimitInfo - Optional rate limit information (for 429 responses)
    * @returns FailedResponse object
    */
-  static failed(message: string, data?: any): FailedResponse {
-    return {
+  static failed(
+    message: string,
+    data?: any,
+    rateLimitInfo?: RateLimitInfo
+  ): FailedResponse {
+    const response: FailedResponse = {
       success: false,
       message,
       data,
     };
+
+    if (rateLimitInfo) {
+      response.rateLimitInfo = rateLimitInfo;
+    }
+
+    return response;
   }
 
   /**
@@ -113,10 +133,20 @@ export class ResponseDTO {
 
     return res.status(201).json(response);
   }
+
+  /**
+   * Helper method to extract rate limit info from response locals
+   * @param res - Express response object
+   * @returns RateLimitInfo or undefined
+   */
+  static getRateLimitInfo(res: Response): RateLimitInfo | undefined {
+    return res.locals.rateLimitInfo as RateLimitInfo | undefined;
+  }
 }
 
 // Export types for external use
 export type {
+  RateLimitInfo,
   BaseResponse,
   SuccessResponse,
   FailedResponse,

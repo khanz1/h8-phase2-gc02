@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { Logger } from "@/config/logger";
 import { DatabaseConnection } from "@/config/database";
 import { ErrorHandler } from "@/shared/middleware/errorHandler";
+import { SlidingWindowRateLimiter } from "@/shared/middleware/rateLimiter.middleware";
 import { AuthRoutes } from "@/features/auth/auth.routes";
 import { BlogRoutes } from "@/features/blog/blog.routes";
 import { RouteMapper } from "@/shared/utils/route-mapper";
@@ -62,6 +63,9 @@ export class App {
         },
       })
     );
+
+    const rateLimiter = new SlidingWindowRateLimiter(5000, 10);
+    this.app.use(rateLimiter.middleware);
 
     this.logger.info("✅ Middleware setup completed");
   }
