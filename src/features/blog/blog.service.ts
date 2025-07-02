@@ -135,6 +135,8 @@ export class BlogPostService implements IBlogPostService {
           limit: query.limit,
           total,
           totalPages,
+          hasNext: query.page < totalPages,
+          hasPrev: query.page > 1,
         },
       };
     } catch (error) {

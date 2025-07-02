@@ -112,7 +112,13 @@ export class BlogPostController {
 
     res
       .status(200)
-      .json(ResponseDTO.success("Blog posts retrieved successfully", result));
+      .json(
+        ResponseDTO.successPaginated(
+          "Blog posts retrieved successfully",
+          result.data,
+          result.pagination
+        )
+      );
   };
 
   public getPostById = async (req: Request, res: Response) => {
