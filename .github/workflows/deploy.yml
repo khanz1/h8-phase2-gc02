@@ -35,20 +35,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 5) Build & push the Migration image
-      - name: Build & Push Migration Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          target: migration
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:migration-latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:migration-${{ github.sha }}
-
-      # 6) Build & push the Production image
-      - name: Build & Push Production Image
+      # 5) Build & push the Docker image (using your Dockerfile)
+      - name: Build & Push Image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -59,7 +47,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:${{ github.sha }}
 
-      # 7) Copy docker-compose file to EC2
+      # 6) Copy docker-compose file to EC2
       - name: Copy docker-compose to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -70,7 +58,7 @@ jobs:
           source: "docker-compose.prod.yml"
           target: "~/app/"
 
-      # 8) SSH into EC2 and deploy
+      # 7) SSH into EC2 and deploy
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -90,44 +78,17 @@ jobs:
             # Navigate to app directory
             cd ~/app
 
-            # Pull latest images
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:migration-latest
+            # Pull latest application image
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
             # Stop and remove existing containers using docker-compose
             docker-compose -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
 
-            # Set environment variables for Docker images
+            # Set environment variable for the Docker image
             export DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
-            export MIGRATION_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:migration-latest
 
-            # Start PostgreSQL first
-            docker-compose -f docker-compose.prod.yml up -d postgres
-
-            # Wait for PostgreSQL to be ready
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 10
-
-            # Run database migrations
-            echo "Running database migrations..."
-            docker run --rm \
-              --network app_default \
-              --env-file .env \
-              $MIGRATION_IMAGE migrate
-
-            # Check if seeding is required (you can control this via environment variable)
-            if [ "${ENABLE_SEEDING:-false}" = "true" ]; then
-              echo "Running database seeding..."
-              docker run --rm \
-                --network app_default \
-                --env-file .env \
-                $MIGRATION_IMAGE seed
-            else
-              echo "Seeding skipped (set ENABLE_SEEDING=true to enable)"
-            fi
-
-            # Start the main application
-            docker-compose -f docker-compose.prod.yml up -d app
+            # Start services using docker-compose
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Wait for services to be ready
             sleep 15
