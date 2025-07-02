@@ -8,6 +8,7 @@ import { ErrorHandler } from "@/shared/middleware/errorHandler";
 import { SlidingWindowRateLimiter } from "@/shared/middleware/rateLimiter.middleware";
 import { AuthRoutes } from "@/features/auth/auth.routes";
 import { BlogRoutes } from "@/features/blog/blog.routes";
+import { CareerRoutes } from "@/features/careers/career.routes";
 import { RouteMapper } from "@/shared/utils/route-mapper";
 import { AppService } from "@/app.service";
 
@@ -89,6 +90,10 @@ export class App {
     const blogRoutes = new BlogRoutes();
     this.app.use("/apis/blog", blogRoutes.getRouter());
     this.app.use("/apis/pub/blog", blogRoutes.getPublicRouter());
+
+    const careerRoutes = new CareerRoutes();
+    this.app.use("/apis/careers", careerRoutes.getRouter());
+    this.app.use("/apis/pub/careers", careerRoutes.getPublicRouter());
 
     this.app.use("*", (req: Request, res: Response) => {
       res.status(404).json({

@@ -1,16 +1,15 @@
 {
   "info": {
-    "_postman_id": "92687c94-2953-4b5c-8aeb-d77e441b1d7d",
+    "_postman_id": "48f47dae-7186-4ccf-bd5c-f7610cc5949e",
     "name": "Phase 2 GC02 - Blog Management API",
     "description": "Comprehensive API collection for a blog management system with authentication, user management, and blog content operations. This API supports role-based access control (Admin, Staff, User) and provides both authenticated and public endpoints for blog content.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22247928",
-    "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/H8-Phase2-GC02~617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-92687c94-2953-4b5c-8aeb-d77e441b1d7d?action=share&source=collection_link&creator=22247928"
+    "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/H8-Phase2-GC02~617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-48f47dae-7186-4ccf-bd5c-f7610cc5949e?action=share&source=collection_link&creator=22247928"
   },
   "item": [
     {
       "name": "Authentication",
-      "description": "User authentication and management endpoints. Includes login functionality and user creation (admin only).",
       "item": [
         {
           "name": "User Login",
@@ -142,15 +141,14 @@
           },
           "response": []
         }
-      ]
+      ],
+      "description": "User authentication and management endpoints. Includes login functionality and user creation (admin only)."
     },
     {
       "name": "Blog Management",
-      "description": "Protected blog content management endpoints. Requires authentication and appropriate permissions.",
       "item": [
         {
           "name": "Posts",
-          "description": "Blog post management operations",
           "item": [
             {
               "name": "Get All Posts",
@@ -363,11 +361,11 @@
               },
               "response": []
             }
-          ]
+          ],
+          "description": "Blog post management operations"
         },
         {
           "name": "Categories",
-          "description": "Blog category management operations",
           "item": [
             {
               "name": "Get All Categories",
@@ -542,91 +540,578 @@
               },
               "response": []
             }
-          ]
+          ],
+          "description": "Blog category management operations"
+        },
+        {
+          "name": "Public Blog API",
+          "item": [
+            {
+              "name": "Get Public Posts (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/blog/posts?q=react&i=technology,programming&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "blog", "posts"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "react",
+                      "description": "Search in post titles (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "technology,programming",
+                      "description": "Filter by category names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Posts per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated blog posts for public consumption. Supports search by title, category filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Post by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/blog/posts/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "blog", "posts", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Blog post ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific blog post including author and category information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/blog/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "blog", "categories"]
+                },
+                "description": "Retrieve all available blog categories for public use. Useful for building category filters and navigation. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for blog content consumption. No authentication required."
         }
-      ]
+      ],
+      "description": "Protected blog content management endpoints. Requires authentication and appropriate permissions."
     },
     {
-      "name": "Public Blog API",
-      "description": "Public endpoints for blog content consumption. No authentication required.",
+      "name": "Career Management",
       "item": [
         {
-          "name": "Get Public Posts (Paginated)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/apis/pub/blog/posts?q=react&i=technology,programming&limit=8&page=1&sort=DESC",
-              "host": ["{{BASE_URL}}"],
-              "path": ["apis", "pub", "blog", "posts"],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "react",
-                  "description": "Search in post titles (optional)"
+          "name": "Companies",
+          "item": [
+            {
+              "name": "Get All Companies",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
                 },
-                {
-                  "key": "i",
-                  "value": "technology,programming",
-                  "description": "Filter by category names (comma-separated, optional)"
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/companies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "companies"]
                 },
-                {
-                  "key": "limit",
-                  "value": "8",
-                  "description": "Posts per page (4-12, default: 10)"
-                },
-                {
-                  "key": "page",
-                  "value": "1",
-                  "description": "Page number (min: 1, default: 1)"
-                },
-                {
-                  "key": "sort",
-                  "value": "DESC",
-                  "description": "Sort order: ASC or DESC (default: DESC)"
-                }
-              ]
+                "description": "Retrieve all career companies available in the system. Requires authentication."
+              },
+              "response": []
             },
-            "description": "Retrieve paginated blog posts for public consumption. Supports search by title, category filtering, and customizable pagination. No authentication required."
-          },
-          "response": []
+            {
+              "name": "Get Company by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/companies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "companies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Company ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific company including associated job postings."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Company",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"TechCorp Solutions\",\n    \"companyLogo\": \"https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400\",\n    \"location\": \"San Francisco, CA\",\n    \"email\": \"careers@techcorp-solutions.com\",\n    \"description\": \"TechCorp Solutions is a leading technology company specializing in innovative software solutions for enterprises. We're passionate about creating cutting-edge products that transform how businesses operate in the digital age. Our team of talented engineers, designers, and product managers work together to build scalable, reliable, and user-friendly applications that solve real-world problems.\\n\\nFounded in 2015, we've grown from a small startup to a company serving Fortune 500 clients worldwide. We foster a culture of innovation, continuous learning, and collaboration. Our modern office in downtown San Francisco provides an inspiring environment where creativity thrives and great ideas become reality.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/companies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "companies"]
+                },
+                "description": "Create a new company profile. Requires Admin role. Company names and emails must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Company",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"TechCorp Solutions Inc.\",\n    \"companyLogo\": \"https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600\",\n    \"location\": \"San Francisco, CA\",\n    \"email\": \"careers@techcorp-solutions.com\",\n    \"description\": \"TechCorp Solutions Inc. is a leading technology company specializing in innovative software solutions for enterprises worldwide. We're passionate about creating cutting-edge products that transform how businesses operate in the digital age. Our diverse team of talented engineers, designers, and product managers work collaboratively to build scalable, reliable, and user-friendly applications that solve complex real-world problems.\\n\\nSince our founding in 2015, we've evolved from a small startup to a company serving Fortune 500 clients globally. We foster a culture of innovation, continuous learning, and collaboration while maintaining work-life balance. Our modern offices provide inspiring environments where creativity thrives and breakthrough ideas become reality.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/companies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "companies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Company ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing company profile. Requires Admin role. Updated name and email must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Company",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/companies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "companies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Company ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a company profile. Requires Admin role. Cannot delete companies that have associated job postings."
+              },
+              "response": []
+            }
+          ],
+          "description": "Career company management operations"
         },
         {
-          "name": "Get Public Post by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/apis/pub/blog/posts/:id",
-              "host": ["{{BASE_URL}}"],
-              "path": ["apis", "pub", "blog", "posts", ":id"],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "1",
-                  "description": "Blog post ID"
-                }
-              ]
+          "name": "Jobs",
+          "item": [
+            {
+              "name": "Get All Jobs",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs"]
+                },
+                "description": "Retrieve all career job postings with company and author information. Requires authentication."
+              },
+              "response": []
             },
-            "description": "Retrieve detailed information for a specific blog post including author and category information. Public access, no authentication required."
-          },
-          "response": []
+            {
+              "name": "Get Job by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Job posting ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific job posting including company and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Job",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"Senior Full-Stack Developer - React/Node.js\",\n    \"description\": \"Join our dynamic engineering team as a Senior Full-Stack Developer! We're looking for an experienced developer who is passionate about building scalable web applications using modern technologies.\\n\\n**Key Responsibilities:**\\n• Design and develop high-quality, scalable web applications using React, Node.js, and TypeScript\\n• Collaborate with cross-functional teams including product managers, designers, and other engineers\\n• Write clean, maintainable, and well-tested code following industry best practices\\n• Participate in code reviews and contribute to technical decision-making\\n• Mentor junior developers and contribute to team growth\\n• Work with cloud technologies (AWS/GCP) and containerization (Docker/Kubernetes)\\n\\n**Required Qualifications:**\\n• 5+ years of experience in full-stack development\\n• Strong proficiency in React, Node.js, JavaScript/TypeScript\\n• Experience with RESTful APIs and GraphQL\\n• Knowledge of database design (PostgreSQL, MongoDB)\\n• Familiarity with version control systems (Git)\\n• Experience with testing frameworks (Jest, Cypress)\\n\\n**Preferred Qualifications:**\\n• Experience with microservices architecture\\n• Knowledge of DevOps practices and CI/CD pipelines\\n• Familiarity with Agile development methodologies\\n• Experience with cloud platforms and containerization\\n\\n**What We Offer:**\\n• Competitive salary with equity options\\n• Comprehensive health, dental, and vision insurance\\n• Flexible work arrangements and remote work options\\n• Professional development budget for courses and conferences\\n• Modern office with latest technology and equipment\\n• Collaborative and inclusive work environment\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800\",\n    \"jobType\": \"Full-time\",\n    \"companyId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs"]
+                },
+                "description": "Create a new job posting. Requires Staff or Admin role. The job will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Job",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"Senior Full-Stack Developer - React/Node.js (Remote Available)\",\n    \"description\": \"Join our dynamic engineering team as a Senior Full-Stack Developer! We're looking for an experienced developer who is passionate about building scalable web applications using modern technologies. This position now offers flexible remote work arrangements.\\n\\n**Key Responsibilities:**\\n• Design and develop high-quality, scalable web applications using React, Node.js, and TypeScript\\n• Collaborate with cross-functional teams including product managers, designers, and other engineers\\n• Write clean, maintainable, and well-tested code following industry best practices\\n• Participate in code reviews and contribute to technical decision-making\\n• Mentor junior developers and contribute to team growth\\n• Work with cloud technologies (AWS/GCP) and containerization (Docker/Kubernetes)\\n• Lead technical initiatives and architecture decisions\\n\\n**Required Qualifications:**\\n• 5+ years of experience in full-stack development\\n• Strong proficiency in React, Node.js, JavaScript/TypeScript\\n• Experience with RESTful APIs and GraphQL\\n• Knowledge of database design (PostgreSQL, MongoDB)\\n• Familiarity with version control systems (Git)\\n• Experience with testing frameworks (Jest, Cypress)\\n• Excellent communication skills for remote collaboration\\n\\n**Preferred Qualifications:**\\n• Experience with microservices architecture\\n• Knowledge of DevOps practices and CI/CD pipelines\\n• Familiarity with Agile development methodologies\\n• Experience with cloud platforms and containerization\\n• Previous remote work experience\\n\\n**What We Offer:**\\n• Competitive salary with equity options\\n• Comprehensive health, dental, and vision insurance\\n• Flexible work arrangements including full remote options\\n• Professional development budget for courses and conferences\\n• Home office setup allowance for remote workers\\n• Modern office access when desired\\n• Collaborative and inclusive work environment\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200\",\n    \"jobType\": \"Full-time\",\n    \"companyId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Job posting ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing job posting. Requires Staff/Admin role and ownership of the job (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Job Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Job posting ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the featured image for a job posting. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Job",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/careers/jobs/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "careers", "jobs", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Job posting ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a job posting. Requires Staff/Admin role and ownership of the job (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Career job posting management operations"
         },
         {
-          "name": "Get Public Categories",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/apis/pub/blog/categories",
-              "host": ["{{BASE_URL}}"],
-              "path": ["apis", "pub", "blog", "categories"]
+          "name": "Public Career API",
+          "item": [
+            {
+              "name": "Get Public Jobs (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs?q=developer&i=Full-time,Remote&l=San Francisco,New York&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "careers", "jobs"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "developer",
+                      "description": "Search in job titles (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "Full-time,Remote",
+                      "description": "Filter by job types (comma-separated, optional)"
+                    },
+                    {
+                      "key": "l",
+                      "value": "San Francisco,New York",
+                      "description": "Filter by company locations (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Jobs per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated job postings for public consumption. Supports search by title, job type filtering, location filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
             },
-            "description": "Retrieve all available blog categories for public use. Useful for building category filters and navigation. No authentication required."
-          },
-          "response": []
+            {
+              "name": "Get Public Job by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "careers", "jobs", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Job posting ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific job posting including company and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Companies",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/careers/companies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "careers", "companies"]
+                },
+                "description": "Retrieve all available companies for public use. Useful for building company filters and exploring potential employers. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for career content consumption. No authentication required."
         }
-      ]
+      ],
+      "description": "Protected career content management endpoints. Requires authentication and appropriate permissions."
     }
   ],
   "auth": {
@@ -659,32 +1144,27 @@
     {
       "key": "TOKEN",
       "value": "",
-      "type": "string",
-      "description": "JWT authentication token (automatically set after login)"
+      "type": "string"
     },
     {
       "key": "EMAIL_ADMIN",
       "value": "admin@techblog.com",
-      "type": "string",
-      "description": "Admin user email for testing"
+      "type": "string"
     },
     {
       "key": "EMAIL_STAFF",
       "value": "staff@techblog.com",
-      "type": "string",
-      "description": "Staff user email for testing"
+      "type": "string"
     },
     {
       "key": "BASE_URL",
       "value": "http://localhost:8002",
-      "type": "string",
-      "description": "Local development server URL"
+      "type": "string"
     },
     {
       "key": "BASE_URL",
       "value": "https://h8-phase2-gc.vercel.app",
       "type": "string",
-      "description": "Production server URL",
       "disabled": true
     }
   ]
