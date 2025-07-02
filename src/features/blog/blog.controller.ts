@@ -104,23 +104,6 @@ export class BlogPostController {
       .json(ResponseDTO.success("Blog posts retrieved successfully", posts));
   };
 
-  public getAllPostsPublic = async (req: Request, res: Response) => {
-    const validatedQuery = blogQuerySchema.parse(req.query);
-    this.logger.info("Fetching public blog posts with query:", validatedQuery);
-
-    const result = await this.postService.getAllPostsPublic(validatedQuery);
-
-    res
-      .status(200)
-      .json(
-        ResponseDTO.successPaginated(
-          "Blog posts retrieved successfully",
-          result.data,
-          result.pagination
-        )
-      );
-  };
-
   public getPostById = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id, 10);
 
@@ -131,19 +114,6 @@ export class BlogPostController {
     res
       .status(200)
       .json(ResponseDTO.success("Blog post retrieved successfully", post));
-  };
-
-  public getPostByIdPublic = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id, 10);
-    this.logger.info(`Fetching public blog post with ID: ${id}`);
-
-    const post = await this.postService.getPostByIdPublic(id);
-
-    res.status(200).json({
-      success: true,
-      message: "Blog post retrieved successfully",
-      data: post,
-    });
   };
 
   public createPost = async (req: Request, res: Response) => {
@@ -240,7 +210,13 @@ export class BlogPublicController {
 
     res
       .status(200)
-      .json(ResponseDTO.success("Blog posts retrieved successfully", result));
+      .json(
+        ResponseDTO.successPaginated(
+          "Blog posts retrieved successfully",
+          result.data,
+          result.pagination
+        )
+      );
   };
 
   public getPostByIdPublic = async (req: Request, res: Response) => {
