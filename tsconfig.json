@@ -23,7 +23,8 @@
       "@/config/*": ["config/*"],
       "@/features/*": ["features/*"],
       "@/shared/*": ["shared/*"],
-      "@/database/*": ["database/*"]
+      "@/database/*": ["database/*"],
+      "@/data/*": ["data/*"]
     },
     "typeRoots": ["node_modules/@types", "src/shared/types"]
   },

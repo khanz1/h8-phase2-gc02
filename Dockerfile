@@ -12,7 +12,7 @@ RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY src/ ./src/
-COPY scripts/ ./scripts/
+# COPY scripts/ ./scripts/
 
 # Build the application
 RUN npm run build
@@ -36,7 +36,7 @@ RUN npm ci
 # Copy source code
 COPY src/ ./src/
 COPY scripts/ ./scripts/
-COPY data/ ./data/
+# COPY data/ ./data/
 
 # Create logs directory
 RUN mkdir -p logs
@@ -74,7 +74,7 @@ COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
 
 # Copy scripts for database operations
 COPY --chown=nodejs:nodejs scripts/ ./scripts/
-COPY --chown=nodejs:nodejs data/ ./data/
+# COPY --chown=nodejs:nodejs data/ ./data/
 COPY --chown=nodejs:nodejs tsconfig.json ./
 
 # Create logs directory
