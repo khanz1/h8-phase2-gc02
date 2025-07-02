@@ -20,7 +20,6 @@ export class Logger {
     if (isProduction) {
       if (enableFileLogging) {
         // Production with file logging: Log to both files and console
-        // Note: Cannot use custom formatters with transport.targets
         const today = new Date().toISOString().split("T")[0];
         const appLogFile = join(logsDir, `app-${today}.log`);
         const errorLogFile = join(logsDir, `error-${today}.log`);
@@ -30,15 +29,18 @@ export class Logger {
           timestamp: pino.stdTimeFunctions.isoTime,
           transport: {
             targets: [
-              // Console output with simple formatting (no pino-pretty)
+              // Console output with pretty formatting
               {
-                target: "pino/file",
+                target: "pino-pretty",
                 level: logLevel,
                 options: {
-                  destination: 1, // stdout
+                  colorize: true,
+                  ignore: "pid,hostname",
+                  translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
+                  messageFormat: "{msg}",
                 },
               },
-              // File output for all logs
+              // File output for all logs (JSON format)
               {
                 target: "pino/file",
                 level: logLevel,
@@ -46,7 +48,7 @@ export class Logger {
                   destination: appLogFile,
                 },
               },
-              // Separate error file
+              // Separate error file (JSON format)
               {
                 target: "pino/file",
                 level: "error",
@@ -58,13 +60,17 @@ export class Logger {
           },
         });
       } else {
-        // Production without file logging: Simple console output with formatters
+        // Production without file logging: Pretty console output
         this.logger = pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
-          formatters: {
-            level: (label: string) => {
-              return { level: label.toUpperCase() };
+          transport: {
+            target: "pino-pretty",
+            options: {
+              colorize: true,
+              ignore: "pid,hostname",
+              translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
+              messageFormat: "{msg}",
             },
           },
         });
