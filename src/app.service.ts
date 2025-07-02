@@ -178,6 +178,9 @@ export class AppService {
           auth: "/apis/auth",
           blog: "/apis/blog",
           publicBlog: "/apis/pub/blog",
+          careers: "/apis/careers",
+          publicCareers: "/apis/pub/careers",
+          seed: "/apis/seed",
         },
       };
 

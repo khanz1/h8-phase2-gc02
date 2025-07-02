@@ -145,6 +145,118 @@
       "description": "User authentication and management endpoints. Includes login functionality and user creation (admin only)."
     },
     {
+      "name": "System Management",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            },
+            "description": "Check application health status including uptime, environment, and version information. Public endpoint with no authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Application Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/",
+              "host": ["{{BASE_URL}}"],
+              "path": [""]
+            },
+            "description": "Retrieve general application information including name, version, description, and available endpoints. Public endpoint with no authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Database Seed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/seed?code={{SEED_CODE}}&type=seed",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "seed"],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{SEED_CODE}}",
+                  "description": "Secret seed code (required for security)"
+                },
+                {
+                  "key": "type",
+                  "value": "seed",
+                  "description": "Seed operation type: seed, re-seed, or empty (default: seed)"
+                }
+              ]
+            },
+            "description": "Populate database with initial data. Requires secret seed code for security. Use 'seed' to add data, 're-seed' to clear and repopulate, or 'empty' to clear all data."
+          },
+          "response": []
+        },
+        {
+          "name": "Database Re-seed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/seed?code={{SEED_CODE}}&type=re-seed",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "seed"],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{SEED_CODE}}",
+                  "description": "Secret seed code (required for security)"
+                },
+                {
+                  "key": "type",
+                  "value": "re-seed",
+                  "description": "Clear existing data and repopulate with fresh seed data"
+                }
+              ]
+            },
+            "description": "Clear all existing data and repopulate database with fresh seed data. This operation will permanently delete all current data and replace it with initial data."
+          },
+          "response": []
+        },
+        {
+          "name": "Empty Database",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/seed?code={{SEED_CODE}}&type=empty",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "seed"],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{SEED_CODE}}",
+                  "description": "Secret seed code (required for security)"
+                },
+                {
+                  "key": "type",
+                  "value": "empty",
+                  "description": "Empty all data from database tables"
+                }
+              ]
+            },
+            "description": "Remove all data from database tables. This operation will permanently delete all data including users, blog posts, categories, companies, and job postings. Use with extreme caution."
+          },
+          "response": []
+        }
+      ],
+      "description": "System management and utility endpoints including health checks, application info, and database seeding operations."
+    },
+    {
       "name": "Blog Management",
       "item": [
         {
@@ -1154,6 +1266,11 @@
     {
       "key": "EMAIL_STAFF",
       "value": "staff@techblog.com",
+      "type": "string"
+    },
+    {
+      "key": "SEED_CODE",
+      "value": "your-secret-seed-code",
       "type": "string"
     },
     {
