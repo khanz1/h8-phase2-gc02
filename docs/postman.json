@@ -1,0 +1,691 @@
+{
+  "info": {
+    "_postman_id": "92687c94-2953-4b5c-8aeb-d77e441b1d7d",
+    "name": "Phase 2 GC02 - Blog Management API",
+    "description": "Comprehensive API collection for a blog management system with authentication, user management, and blog content operations. This API supports role-based access control (Admin, Staff, User) and provides both authenticated and public endpoints for blog content.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "22247928",
+    "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/H8-Phase2-GC02~617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-92687c94-2953-4b5c-8aeb-d77e441b1d7d?action=share&source=collection_link&creator=22247928"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and management endpoints. Includes login functionality and user creation (admin only).",
+      "item": [
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.token) {",
+                  "        pm.environment.set('TOKEN', response.data.token);",
+                  "        console.log('Token saved:', response.data.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "email",
+                  "value": "{{EMAIL_ADMIN}}",
+                  "description": "Admin user email",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "{{EMAIL_STAFF}}",
+                  "description": "Staff user email",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "password",
+                  "value": "123456",
+                  "description": "User password (minimum 6 characters)",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/apis/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "auth", "login"]
+            },
+            "description": "Authenticate user and receive JWT token. Returns user profile and access token for subsequent API calls."
+          },
+          "response": []
+        },
+        {
+          "name": "Create New User (Admin Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "john_blogger",
+                  "description": "Unique username (3-50 characters)",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "john.doe@techblog.com",
+                  "description": "Valid email address",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "securePass123",
+                  "description": "Password (minimum 6 characters)",
+                  "type": "text"
+                },
+                {
+                  "key": "role",
+                  "value": "Staff",
+                  "description": "User role: Admin, Staff, or User (defaults to Staff)",
+                  "type": "text"
+                },
+                {
+                  "key": "phoneNumber",
+                  "value": "+1-555-0123",
+                  "description": "Optional phone number",
+                  "type": "text"
+                },
+                {
+                  "key": "address",
+                  "value": "123 Tech Street, San Francisco, CA 94105",
+                  "description": "Optional address",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/apis/auth/add-user",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "auth", "add-user"]
+            },
+            "description": "Create a new user account. Requires admin authentication. Creates user with specified role and returns user profile with JWT token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Blog Management",
+      "description": "Protected blog content management endpoints. Requires authentication and appropriate permissions.",
+      "item": [
+        {
+          "name": "Posts",
+          "description": "Blog post management operations",
+          "item": [
+            {
+              "name": "Get All Posts",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts"]
+                },
+                "description": "Retrieve all blog posts with author and category information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Post by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Blog post ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific blog post including author and category details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Post",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"The Future of Web Development: React vs Vue in 2024\",\n    \"content\": \"As we move into 2024, the debate between React and Vue.js continues to evolve. Both frameworks have matured significantly, offering developers powerful tools for building modern web applications. React maintains its position as the most popular framework, backed by Meta's continuous investment and a vast ecosystem. Meanwhile, Vue.js has gained traction with its gentle learning curve and excellent documentation.\\n\\nReact's strength lies in its flexibility and the robust ecosystem of libraries and tools. The introduction of React 18 with concurrent features has further solidified its position. On the other hand, Vue 3's Composition API brings a more functional approach while maintaining the framework's renowned simplicity.\\n\\nPerformance-wise, both frameworks are highly optimized. React's virtual DOM and Vue's reactivity system both deliver excellent user experiences. The choice often comes down to team expertise, project requirements, and long-term maintainability considerations.\\n\\nIn conclusion, both frameworks will continue to thrive in 2024, serving different needs in the development ecosystem.\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=800\",\n    \"categoryId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts"]
+                },
+                "description": "Create a new blog post. Requires Staff or Admin role. The post will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Post",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"The Future of Web Development: React vs Vue in 2024 (Updated)\",\n    \"content\": \"As we move into 2024, the debate between React and Vue.js continues to evolve with exciting new developments. Both frameworks have matured significantly, offering developers powerful tools for building modern web applications.\\n\\nReact maintains its position as the most popular framework, backed by Meta's continuous investment and a vast ecosystem. The recent updates to React 18 have introduced groundbreaking concurrent features that revolutionize how we think about rendering and user experience.\\n\\nMeanwhile, Vue.js has gained significant traction with its gentle learning curve and excellent documentation. Vue 3's Composition API brings a more functional approach while maintaining the framework's renowned simplicity and developer-friendly approach.\\n\\nPerformance benchmarks show both frameworks delivering exceptional results. React's virtual DOM reconciliation and Vue's fine-grained reactivity system both ensure optimal user experiences across different application scales.\\n\\nThe choice between these frameworks often comes down to team expertise, project requirements, ecosystem needs, and long-term maintainability considerations. Both will continue to thrive and evolve in 2024.\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=1200\",\n    \"categoryId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Blog post ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing blog post. Requires Staff/Admin role and ownership of the post (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Post Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Blog post ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the featured image for a blog post. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Post",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/posts/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "posts", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Blog post ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a blog post. Requires Staff/Admin role and ownership of the post (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Categories",
+          "description": "Blog category management operations",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "categories"]
+                },
+                "description": "Retrieve all blog categories available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific category including associated blog posts."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Machine Learning",
+                      "description": "Category name (2-100 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "categories"]
+                },
+                "description": "Create a new blog category. Requires Admin role. Category names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Artificial Intelligence & Machine Learning",
+                      "description": "Updated category name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing blog category. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/blog/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "blog", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a blog category. Requires Admin role. Cannot delete categories that have associated blog posts."
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public Blog API",
+      "description": "Public endpoints for blog content consumption. No authentication required.",
+      "item": [
+        {
+          "name": "Get Public Posts (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/pub/blog/posts?q=react&i=technology,programming&limit=8&page=1&sort=DESC",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "pub", "blog", "posts"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "react",
+                  "description": "Search in post titles (optional)"
+                },
+                {
+                  "key": "i",
+                  "value": "technology,programming",
+                  "description": "Filter by category names (comma-separated, optional)"
+                },
+                {
+                  "key": "limit",
+                  "value": "8",
+                  "description": "Posts per page (4-12, default: 10)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (min: 1, default: 1)"
+                },
+                {
+                  "key": "sort",
+                  "value": "DESC",
+                  "description": "Sort order: ASC or DESC (default: DESC)"
+                }
+              ]
+            },
+            "description": "Retrieve paginated blog posts for public consumption. Supports search by title, category filtering, and customizable pagination. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Public Post by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/pub/blog/posts/:id",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "pub", "blog", "posts", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "Blog post ID"
+                }
+              ]
+            },
+            "description": "Retrieve detailed information for a specific blog post including author and category information. Public access, no authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Public Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/apis/pub/blog/categories",
+              "host": ["{{BASE_URL}}"],
+              "path": ["apis", "pub", "blog", "categories"]
+            },
+            "description": "Retrieve all available blog categories for public use. Useful for building category filters and navigation. No authentication required."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "TOKEN",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token (automatically set after login)"
+    },
+    {
+      "key": "EMAIL_ADMIN",
+      "value": "admin@techblog.com",
+      "type": "string",
+      "description": "Admin user email for testing"
+    },
+    {
+      "key": "EMAIL_STAFF",
+      "value": "staff@techblog.com",
+      "type": "string",
+      "description": "Staff user email for testing"
+    },
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8002",
+      "type": "string",
+      "description": "Local development server URL"
+    },
+    {
+      "key": "BASE_URL",
+      "value": "https://h8-phase2-gc.vercel.app",
+      "type": "string",
+      "description": "Production server URL",
+      "disabled": true
+    }
+  ]
+}
