@@ -11,9 +11,10 @@ import {
   BlogCategoryRepositoryImpl,
   BlogPostRepositoryImpl,
 } from "./blog.repository";
-import { BlogCategoryServiceImpl, BlogPostServiceImpl } from "./blog.service";
+import { BlogCategoryService, BlogPostService } from "./blog.service";
 import { Logger } from "@/config/logger";
-import { BlogCategory, BlogPost } from "@/database/models";
+import { BlogPost } from "./blog.model";
+import { RouteWrapper } from "@/shared/utils/route-wrapper";
 
 export class BlogRoutes {
   private readonly router: Router;
@@ -27,15 +28,11 @@ export class BlogRoutes {
     this.router = Router();
     this.publicRouter = Router();
 
-    // Initialize dependencies
     const categoryRepository = new BlogCategoryRepositoryImpl();
     const postRepository = new BlogPostRepositoryImpl();
 
-    const categoryService = new BlogCategoryServiceImpl(categoryRepository);
-    const postService = new BlogPostServiceImpl(
-      postRepository,
-      categoryRepository
-    );
+    const categoryService = new BlogCategoryService(categoryRepository);
+    const postService = new BlogPostService(postRepository, categoryRepository);
 
     this.categoryController = new BlogCategoryController(categoryService);
     this.postController = new BlogPostController(postService);
@@ -49,58 +46,56 @@ export class BlogRoutes {
   }
 
   private setupAuthenticatedRoutes(): void {
-    // Blog Categories Routes (Authenticated)
     this.router.get(
       "/categories",
       AuthMiddleware.authenticate,
-      this.categoryController.getAllCategories
+      RouteWrapper.withErrorHandler(this.categoryController.getAllCategories)
     );
 
     this.router.get(
       "/categories/:id",
       AuthMiddleware.authenticate,
-      this.categoryController.getCategoryById
+      RouteWrapper.withErrorHandler(this.categoryController.getCategoryById)
     );
 
     this.router.post(
       "/categories",
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdmin,
-      this.categoryController.createCategory
+      RouteWrapper.withErrorHandler(this.categoryController.createCategory)
     );
 
     this.router.put(
       "/categories/:id",
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdmin,
-      this.categoryController.updateCategory
+      RouteWrapper.withErrorHandler(this.categoryController.updateCategory)
     );
 
     this.router.delete(
       "/categories/:id",
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdmin,
-      this.categoryController.deleteCategory
+      RouteWrapper.withErrorHandler(this.categoryController.deleteCategory)
     );
 
-    // Blog Posts Routes (Authenticated)
     this.router.get(
       "/posts",
       AuthMiddleware.authenticate,
-      this.postController.getAllPosts
+      RouteWrapper.withErrorHandler(this.postController.getAllPosts)
     );
 
     this.router.get(
       "/posts/:id",
       AuthMiddleware.authenticate,
-      this.postController.getPostById
+      RouteWrapper.withErrorHandler(this.postController.getPostById)
     );
 
     this.router.post(
       "/posts",
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdminOrStaff,
-      this.postController.createPost
+      RouteWrapper.withErrorHandler(this.postController.createPost)
     );
 
     this.router.put(
@@ -108,7 +103,7 @@ export class BlogRoutes {
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdminOrStaff,
       AuthorizationMiddleware.requireOwnership(BlogPost),
-      this.postController.updatePost
+      RouteWrapper.withErrorHandler(this.postController.updatePost)
     );
 
     this.router.patch(
@@ -117,7 +112,7 @@ export class BlogRoutes {
       AuthorizationMiddleware.requireAdminOrStaff,
       AuthorizationMiddleware.requireOwnership(BlogPost),
       UploadMiddleware.singleImage("file"),
-      this.postController.updatePostImage
+      RouteWrapper.withErrorHandler(this.postController.updatePostImage)
     );
 
     this.router.delete(
@@ -125,24 +120,28 @@ export class BlogRoutes {
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdminOrStaff,
       AuthorizationMiddleware.requireOwnership(BlogPost),
-      this.postController.deletePost
+      RouteWrapper.withErrorHandler(this.postController.deletePost)
     );
 
     this.logger.info("✅ Blog authenticated routes configured successfully");
   }
 
   private setupPublicRoutes(): void {
-    // Public Blog Routes
-    this.publicRouter.get("/posts", this.publicController.getAllPostsPublic);
+    this.publicRouter.get(
+      "/posts",
+      RouteWrapper.withErrorHandler(this.publicController.getAllPostsPublic)
+    );
 
     this.publicRouter.get(
       "/posts/:id",
-      this.publicController.getPostByIdPublic
+      RouteWrapper.withErrorHandler(this.publicController.getPostByIdPublic)
     );
 
     this.publicRouter.get(
       "/categories",
-      this.publicController.getAllCategoriesPublic
+      RouteWrapper.withErrorHandler(
+        this.publicController.getAllCategoriesPublic
+      )
     );
 
     this.logger.info("✅ Blog public routes configured successfully");

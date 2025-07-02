@@ -16,7 +16,7 @@ import {
   BlogPostService as IBlogPostService,
 } from "./blog.types";
 
-export class BlogCategoryServiceImpl implements IBlogCategoryService {
+export class BlogCategoryService implements IBlogCategoryService {
   constructor(
     private readonly categoryRepository: BlogCategoryRepositoryImpl
   ) {}
@@ -107,7 +107,7 @@ export class BlogCategoryServiceImpl implements IBlogCategoryService {
   }
 }
 
-export class BlogPostServiceImpl implements IBlogPostService {
+export class BlogPostService implements IBlogPostService {
   constructor(
     private readonly postRepository: BlogPostRepositoryImpl,
     private readonly categoryRepository: BlogCategoryRepositoryImpl

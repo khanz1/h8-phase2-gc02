@@ -5,6 +5,7 @@ import { AuthRepository } from "./auth.repository";
 import { AuthMiddleware } from "@/shared/middleware/auth.middleware";
 import { AuthorizationMiddleware } from "@/shared/middleware/authorization.middleware";
 import { Logger } from "@/config/logger";
+import { RouteWrapper } from "@/shared/utils/route-wrapper";
 
 export class AuthRoutes {
   private readonly router: Router;
@@ -14,7 +15,6 @@ export class AuthRoutes {
   constructor() {
     this.router = Router();
 
-    // Initialize dependencies
     const authRepository = new AuthRepository();
     const authService = new AuthService(authRepository);
     this.authController = new AuthController(authService);
@@ -23,15 +23,16 @@ export class AuthRoutes {
   }
 
   private setupRoutes(): void {
-    // POST /api/auth/login
-    this.router.post("/login", this.authController.login);
+    this.router.post(
+      "/login",
+      RouteWrapper.withErrorHandler(this.authController.login)
+    );
 
-    // POST /api/auth/add-user - Admin only
     this.router.post(
       "/add-user",
       AuthMiddleware.authenticate,
       AuthorizationMiddleware.requireAdmin,
-      this.authController.addUser
+      RouteWrapper.withErrorHandler(this.authController.addUser)
     );
 
     this.logger.info("✅ Auth routes configured successfully");

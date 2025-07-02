@@ -1,73 +1,34 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
-import {
-  RegisterRequestSchema,
-  LoginRequestSchema,
-  AuthResponse,
-} from "./auth.types";
+import { RegisterRequestSchema, LoginRequestSchema } from "./auth.types";
 import { Logger } from "@/config/logger";
+import { ResponseDTO } from "@/shared/utils/response.dto";
 
 export class AuthController {
   private readonly authService: AuthService;
-  private readonly logger = Logger.getInstance();
+  private readonly logger = new Logger(AuthController.name);
 
   constructor(authService: AuthService) {
     this.authService = authService;
   }
 
-  public addUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      // Validate request body
-      const validatedData = RegisterRequestSchema.parse(req.body);
+  public addUser = async (req: Request, res: Response): Promise<void> => {
+    const validatedData = RegisterRequestSchema.parse(req.body);
 
-      // Process user creation
-      const result = await this.authService.addUser(validatedData);
+    const result = await this.authService.addUser(validatedData);
+    this.logger.info(`User added successfully for: ${result.user.email}`);
 
-      // Prepare response
-      const response: AuthResponse = {
-        success: true,
-        message: "User added successfully",
-        data: result,
-      };
-
-      this.logger.info(`User added successfully for: ${result.user.email}`);
-
-      res.status(201).json(response);
-    } catch (error) {
-      this.logger.error("Add user controller error:", error);
-      next(error);
-    }
+    res
+      .status(201)
+      .json(ResponseDTO.success("User added successfully", result));
   };
 
-  public login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      // Validate request body
-      const validatedData = LoginRequestSchema.parse(req.body);
+  public login = async (req: Request, res: Response): Promise<void> => {
+    const validatedData = LoginRequestSchema.parse(req.body);
 
-      // Process login
-      const result = await this.authService.login(validatedData);
+    const result = await this.authService.login(validatedData);
+    this.logger.info(`Login successful for: ${result.user.email}`);
 
-      // Prepare response
-      const response: AuthResponse = {
-        success: true,
-        message: "Login successful",
-        data: result,
-      };
-
-      this.logger.info(`Login successful for: ${result.user.email}`);
-
-      res.status(200).json(response);
-    } catch (error) {
-      this.logger.error("Login controller error:", error);
-      next(error);
-    }
+    res.status(200).json(ResponseDTO.success("Login successful", result));
   };
 }

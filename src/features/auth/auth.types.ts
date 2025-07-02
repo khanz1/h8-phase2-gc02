@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { UserProfile } from "@/features/users/user.types";
 
-// Validation schemas
 export const RegisterRequestSchema = z.object({
   username: z
     .string()
@@ -23,11 +22,9 @@ export const LoginRequestSchema = z.object({
     .min(6, "Password must be at least 6 characters long"),
 });
 
-// Type definitions from schemas
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
-// Response interfaces
 export interface AuthResponse {
   success: boolean;
   message: string;
@@ -37,11 +34,6 @@ export interface AuthResponse {
   };
 }
 
-// Remove this interface since we're using it from users module
-
-// Remove JWT payload from here since it's now in the helper
-
-// Service method return types
 export interface AuthServiceResponse {
   user: UserProfile;
   token: string;

@@ -3,10 +3,22 @@ import { join } from "path";
 import { mkdirSync, existsSync } from "fs";
 
 export class Logger {
-  private static instance: Logger;
+  private static baseLogger: pino.Logger;
   private readonly logger: pino.Logger;
 
-  private constructor() {
+  constructor(context?: string) {
+    // Initialize base logger only once
+    if (!Logger.baseLogger) {
+      Logger.baseLogger = Logger.createBaseLogger();
+    }
+
+    // Create child logger with context
+    this.logger = context
+      ? Logger.baseLogger.child({ context })
+      : Logger.baseLogger;
+  }
+
+  private static createBaseLogger(): pino.Logger {
     const logLevel = process.env.LOG_LEVEL || "info";
     const isProduction = process.env.NODE_ENV === "production";
     const enableFileLogging = process.env.LOG_FILE === "true";
@@ -24,7 +36,7 @@ export class Logger {
         const appLogFile = join(logsDir, `app-${today}.log`);
         const errorLogFile = join(logsDir, `error-${today}.log`);
 
-        this.logger = pino({
+        return pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
           transport: {
@@ -61,7 +73,7 @@ export class Logger {
         });
       } else {
         // Production without file logging: Pretty console output
-        this.logger = pino({
+        return pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
           transport: {
@@ -77,7 +89,7 @@ export class Logger {
       }
     } else {
       // Development: Pretty print to console with custom formatters
-      this.logger = pino({
+      return pino({
         level: logLevel,
         timestamp: pino.stdTimeFunctions.isoTime,
         formatters: {
@@ -97,11 +109,9 @@ export class Logger {
     }
   }
 
+  // Backward compatibility method - creates a logger without context
   public static getInstance(): Logger {
-    if (!Logger.instance) {
-      Logger.instance = new Logger();
-    }
-    return Logger.instance;
+    return new Logger();
   }
 
   public info(message: string, ...args: unknown[]): void {

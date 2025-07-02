@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { Logger } from "@/config/logger";
-import { BlogCategoryServiceImpl, BlogPostServiceImpl } from "./blog.service";
+import { BlogCategoryService, BlogPostService } from "./blog.service";
 import {
   createBlogCategorySchema,
   updateBlogCategorySchema,
@@ -10,457 +10,255 @@ import {
 } from "./blog.types";
 import { CloudinaryHelper } from "@/shared/utils/cloudinary.helper";
 import { BadRequestError } from "@/shared/errors";
+import { ResponseDTO } from "@/shared/utils/response.dto";
 
 export class BlogCategoryController {
-  private readonly logger = Logger.getInstance();
+  private readonly logger = new Logger(BlogCategoryController.name);
 
-  constructor(private readonly categoryService: BlogCategoryServiceImpl) {}
+  constructor(private readonly categoryService: BlogCategoryService) {}
 
-  public getAllCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      this.logger.info("Fetching all blog categories");
+  public getAllCategories = async (_: Request, res: Response) => {
+    this.logger.info("Fetching all blog categories");
 
-      const categories = await this.categoryService.getAllCategories();
+    const categories = await this.categoryService.getAllCategories();
 
-      res.status(200).json({
-        success: true,
-        message: "Blog categories retrieved successfully",
-        data: categories,
-      });
-    } catch (error) {
-      this.logger.error("Error fetching blog categories:", error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(
+        ResponseDTO.success(
+          "Blog categories retrieved successfully",
+          categories
+        )
+      );
   };
 
-  public getCategoryById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public getCategoryById = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
 
-      this.logger.info(`Fetching blog category with ID: ${id}`);
+    this.logger.info(`Fetching blog category with ID: ${id}`);
 
-      const category = await this.categoryService.getCategoryById(id);
+    const category = await this.categoryService.getCategoryById(id);
 
-      res.status(200).json({
-        success: true,
-        message: "Blog category retrieved successfully",
-        data: category,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error fetching blog category ${req.params.id}:`,
-        error
+    res
+      .status(200)
+      .json(
+        ResponseDTO.success("Blog category retrieved successfully", category)
       );
-      next(error);
-    }
   };
 
-  public createCategory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const validatedData = createBlogCategorySchema.parse(req.body);
+  public createCategory = async (req: Request, res: Response) => {
+    const validatedData = createBlogCategorySchema.parse(req.body);
+    this.logger.info("Creating new blog category:", validatedData);
 
-      this.logger.info("Creating new blog category:", validatedData);
+    const category = await this.categoryService.createCategory(validatedData);
 
-      const category = await this.categoryService.createCategory(validatedData);
-
-      res.status(201).json({
-        success: true,
-        message: "Blog category created successfully",
-        data: category,
-      });
-    } catch (error) {
-      this.logger.error("Error creating blog category:", error);
-      next(error);
-    }
+    res
+      .status(201)
+      .json(
+        ResponseDTO.success("Blog category created successfully", category)
+      );
   };
 
-  public updateCategory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
-      const validatedData = updateBlogCategorySchema.parse(req.body);
+  public updateCategory = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    const validatedData = updateBlogCategorySchema.parse(req.body);
+    this.logger.info(`Updating blog category ${id}:`, validatedData);
 
-      this.logger.info(`Updating blog category ${id}:`, validatedData);
+    const category = await this.categoryService.updateCategory(
+      id,
+      validatedData
+    );
 
-      const category = await this.categoryService.updateCategory(
-        id,
-        validatedData
+    res
+      .status(200)
+      .json(
+        ResponseDTO.success("Blog category updated successfully", category)
       );
-
-      res.status(200).json({
-        success: true,
-        message: "Blog category updated successfully",
-        data: category,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error updating blog category ${req.params.id}:`,
-        error
-      );
-      next(error);
-    }
   };
 
-  public deleteCategory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public deleteCategory = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    this.logger.info(`Deleting blog category with ID: ${id}`);
 
-      this.logger.info(`Deleting blog category with ID: ${id}`);
+    await this.categoryService.deleteCategory(id);
 
-      await this.categoryService.deleteCategory(id);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog category deleted successfully",
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error deleting blog category ${req.params.id}:`,
-        error
-      );
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog category deleted successfully"));
   };
 }
 
 export class BlogPostController {
-  private readonly logger = Logger.getInstance();
+  private readonly logger = new Logger(BlogPostController.name);
 
-  constructor(private readonly postService: BlogPostServiceImpl) {}
+  constructor(private readonly postService: BlogPostService) {}
 
-  public getAllPosts = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      this.logger.info("Fetching all blog posts");
+  public getAllPosts = async (_: Request, res: Response) => {
+    this.logger.info("Fetching all blog posts");
 
-      const posts = await this.postService.getAllPosts();
+    const posts = await this.postService.getAllPosts();
+    this.logger.info(`Fetched ${posts.length} blog posts`);
 
-      res.status(200).json({
-        success: true,
-        message: "Blog posts retrieved successfully",
-        data: posts,
-      });
-    } catch (error) {
-      this.logger.error("Error fetching blog posts:", error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog posts retrieved successfully", posts));
   };
 
-  public getAllPostsPublic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const validatedQuery = blogQuerySchema.parse(req.query);
+  public getAllPostsPublic = async (req: Request, res: Response) => {
+    const validatedQuery = blogQuerySchema.parse(req.query);
+    this.logger.info("Fetching public blog posts with query:", validatedQuery);
 
-      this.logger.info(
-        "Fetching public blog posts with query:",
-        validatedQuery
-      );
+    const result = await this.postService.getAllPostsPublic(validatedQuery);
 
-      const result = await this.postService.getAllPostsPublic(validatedQuery);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog posts retrieved successfully",
-        ...result,
-      });
-    } catch (error) {
-      this.logger.error("Error fetching public blog posts:", error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog posts retrieved successfully", result));
   };
 
-  public getPostById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public getPostById = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
 
-      this.logger.info(`Fetching blog post with ID: ${id}`);
+    this.logger.info(`Fetching blog post with ID: ${id}`);
 
-      const post = await this.postService.getPostById(id);
+    const post = await this.postService.getPostById(id);
 
-      res.status(200).json({
-        success: true,
-        message: "Blog post retrieved successfully",
-        data: post,
-      });
-    } catch (error) {
-      this.logger.error(`Error fetching blog post ${req.params.id}:`, error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog post retrieved successfully", post));
   };
 
-  public getPostByIdPublic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public getPostByIdPublic = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    this.logger.info(`Fetching public blog post with ID: ${id}`);
 
-      this.logger.info(`Fetching public blog post with ID: ${id}`);
+    const post = await this.postService.getPostByIdPublic(id);
 
-      const post = await this.postService.getPostByIdPublic(id);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog post retrieved successfully",
-        data: post,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error fetching public blog post ${req.params.id}:`,
-        error
-      );
-      next(error);
-    }
+    res.status(200).json({
+      success: true,
+      message: "Blog post retrieved successfully",
+      data: post,
+    });
   };
 
-  public createPost = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      console.log(req.body, "<<reqbody");
-      const validatedData = createBlogPostSchema.parse(req.body);
-      const authorId = req.user!.userId;
+  public createPost = async (req: Request, res: Response) => {
+    const validatedData = createBlogPostSchema.parse(req.body);
+    const authorId = req.user!.userId;
 
-      this.logger.info(
-        `Creating new blog post by user ${authorId}:`,
-        validatedData
-      );
+    this.logger.info(
+      `Creating new blog post by user ${authorId}:`,
+      validatedData
+    );
 
-      const post = await this.postService.createPost(validatedData, authorId);
+    const post = await this.postService.createPost(validatedData, authorId);
 
-      res.status(201).json({
-        success: true,
-        message: "Blog post created successfully",
-        data: post,
-      });
-    } catch (error) {
-      this.logger.error("Error creating blog post:", error);
-      next(error);
-    }
+    res
+      .status(201)
+      .json(ResponseDTO.success("Blog post created successfully", post));
   };
 
-  public updatePost = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
-      const validatedData = updateBlogPostSchema.parse(req.body);
+  public updatePost = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    const validatedData = updateBlogPostSchema.parse(req.body);
 
-      this.logger.info(`Updating blog post ${id}:`, validatedData);
+    this.logger.info(`Updating blog post ${id}:`, validatedData);
 
-      const post = await this.postService.updatePost(id, validatedData);
+    const post = await this.postService.updatePost(id, validatedData);
 
-      res.status(200).json({
-        success: true,
-        message: "Blog post updated successfully",
-        data: post,
-      });
-    } catch (error) {
-      this.logger.error(`Error updating blog post ${req.params.id}:`, error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog post updated successfully", post));
   };
 
-  public updatePostImage = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public updatePostImage = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
 
-      // Check if file was uploaded
-      if (!req.file) {
-        throw new BadRequestError("No image file provided");
-      }
+    if (!req.file) {
+      throw new BadRequestError("No image file provided");
+    }
 
-      this.logger.info(`Uploading image for blog post ${id}`, {
-        filename: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-      });
+    this.logger.info(`Updating image for blog post ${id}`);
 
-      // Upload image to Cloudinary
-      const uploadResult = await CloudinaryHelper.uploadImage(req.file, {
-        folder: "blog-posts",
-        transformation: {
-          width: 1200,
-          height: 800,
-          crop: "limit",
-          quality: "auto",
+    const uploadResult = await CloudinaryHelper.uploadImage(req.file, {
+      folder: "blog-posts",
+      transformation: {
+        width: 1200,
+        height: 800,
+        crop: "limit",
+        quality: "auto",
+      },
+    });
+
+    const post = await this.postService.updatePostImage(
+      id,
+      uploadResult.secureUrl
+    );
+
+    res.status(200).json(
+      ResponseDTO.success("Blog post image updated successfully", {
+        ...post,
+        uploadInfo: {
+          publicId: uploadResult.publicId,
+          url: uploadResult.secureUrl,
+          format: uploadResult.format,
+          width: uploadResult.width,
+          height: uploadResult.height,
+          bytes: uploadResult.bytes,
         },
-      });
-
-      this.logger.info(`Image uploaded successfully for blog post ${id}`, {
-        publicId: uploadResult.publicId,
-        url: uploadResult.secureUrl,
-      });
-
-      // Update blog post with new image URL
-      const post = await this.postService.updatePostImage(
-        id,
-        uploadResult.secureUrl
-      );
-
-      res.status(200).json({
-        success: true,
-        message: "Blog post image updated successfully",
-        data: {
-          ...post,
-          uploadInfo: {
-            publicId: uploadResult.publicId,
-            url: uploadResult.secureUrl,
-            format: uploadResult.format,
-            width: uploadResult.width,
-            height: uploadResult.height,
-            bytes: uploadResult.bytes,
-          },
-        },
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error updating blog post ${req.params.id} image:`,
-        error
-      );
-      next(error);
-    }
+      })
+    );
   };
 
-  public deletePost = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public deletePost = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    this.logger.info(`Deleting blog post with ID: ${id}`);
 
-      this.logger.info(`Deleting blog post with ID: ${id}`);
+    await this.postService.deletePost(id);
 
-      await this.postService.deletePost(id);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog post deleted successfully",
-      });
-    } catch (error) {
-      this.logger.error(`Error deleting blog post ${req.params.id}:`, error);
-      next(error);
-    }
+    res.status(200).json(ResponseDTO.success("Blog post deleted successfully"));
   };
 }
 
 export class BlogPublicController {
-  private readonly logger = Logger.getInstance();
+  private readonly logger = new Logger(BlogPublicController.name);
 
   constructor(
-    private readonly postService: BlogPostServiceImpl,
-    private readonly categoryService: BlogCategoryServiceImpl
+    private readonly postService: BlogPostService,
+    private readonly categoryService: BlogCategoryService
   ) {}
 
-  public getAllPostsPublic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const validatedQuery = blogQuerySchema.parse(req.query);
+  public getAllPostsPublic = async (req: Request, res: Response) => {
+    const validatedQuery = blogQuerySchema.parse(req.query);
+    this.logger.info("Fetching public blog posts with query:", validatedQuery);
 
-      this.logger.info(
-        "Fetching public blog posts with query:",
-        validatedQuery
-      );
+    const result = await this.postService.getAllPostsPublic(validatedQuery);
 
-      const result = await this.postService.getAllPostsPublic(validatedQuery);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog posts retrieved successfully",
-        ...result,
-      });
-    } catch (error) {
-      this.logger.error("Error fetching public blog posts:", error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog posts retrieved successfully", result));
   };
 
-  public getPostByIdPublic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const id = parseInt(req.params.id, 10);
+  public getPostByIdPublic = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    this.logger.info(`Fetching public blog post with ID: ${id}`);
 
-      this.logger.info(`Fetching public blog post with ID: ${id}`);
+    const post = await this.postService.getPostByIdPublic(id);
 
-      const post = await this.postService.getPostByIdPublic(id);
-
-      res.status(200).json({
-        success: true,
-        message: "Blog post retrieved successfully",
-        data: post,
-      });
-    } catch (error) {
-      this.logger.error(
-        `Error fetching public blog post ${req.params.id}:`,
-        error
-      );
-      next(error);
-    }
+    res
+      .status(200)
+      .json(ResponseDTO.success("Blog post retrieved successfully", post));
   };
 
-  public getAllCategoriesPublic = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      this.logger.info("Fetching all public blog categories");
+  public getAllCategoriesPublic = async (req: Request, res: Response) => {
+    this.logger.info("Fetching all public blog categories");
+    const categories = await this.categoryService.getAllCategories();
 
-      const categories = await this.categoryService.getAllCategories();
-
-      res.status(200).json({
-        success: true,
-        message: "Blog categories retrieved successfully",
-        data: categories,
-      });
-    } catch (error) {
-      this.logger.error("Error fetching public blog categories:", error);
-      next(error);
-    }
+    res
+      .status(200)
+      .json(
+        ResponseDTO.success(
+          "Blog categories retrieved successfully",
+          categories
+        )
+      );
   };
 }

@@ -1,0 +1,208 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+****# Phase2 Graded Challenge - Project Rules
+
+## ⚠️ CRITICAL WARNINGS - DO NOT REPEAT THESE MISTAKES
+
+### User Model Implementation Warning
+
+**NEVER create simplified models without checking the migration schema first!**
+
+#### What NOT to do:
+
+- ❌ Creating a User model in `auth/` folder with only basic fields (id, email, password)
+- ❌ Assuming authentication needs a simplified User model
+- ❌ Ignoring the migration schema when creating models
+- ❌ Creating models without reading the existing migration files
+
+#### What TO do:
+
+- ✅ ALWAYS read `scripts/migrations.sql` first to understand the complete schema
+- ✅ Create User model in `users/` folder with ALL migration fields:
+  - `id` (INTEGER, not UUID)
+  - `username` (required, unique)
+  - `email` (required, unique)
+  - `password` (required)
+  - `role` (Admin/Staff/User, defaults to Staff)
+  - `phoneNumber` (optional)
+  - `address` (optional)
+  - `createdAt/updatedAt` (timestamps)
+- ✅ Use the complete User model from `users/` folder in auth operations
+- ✅ Maintain separation of concerns: users for model, auth for authentication logic
+
+#### Why this matters:
+
+- Authentication should use the COMPLETE user model, not a simplified version
+- Models must match the database schema exactly
+- Feature separation doesn't mean data model separation
+- Migration schema is the single source of truth for database structure
+
+---
+
+## Project Architecture
+
+## Project Structure
+
+```
+src/
+├── config/           # Configuration files
+│   ├── database.ts   # Database configuration
+│   ├── logger.ts     # Logger configuration
+│   └── env.ts        # Environment variables
+├── features/         # Feature-based modules
+│   ├── auth/         # Authentication feature
+│   │   ├── auth.controller.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.repository.ts
+│   │   ├── auth.types.ts
+│   │   └── auth.routes.ts
+│   └── users/        # User management feature
+│       ├── user.controller.ts
+│       ├── user.service.ts
+│       ├── user.repository.ts
+│       ├── user.model.ts      # ← COMPLETE USER MODEL GOES HERE
+│       ├── user.types.ts
+│       └── user.routes.ts
+├── shared/           # Shared utilities
+│   ├── middleware/   # Express middlewares
+│   ├── utils/        # Utility functions
+│   ├── errors/       # Error handling
+│   └── types/        # Global types only
+├── database/         # Database related
+│   ├── migrations/   # Database migrations
+│   ├── seeders/      # Database seeders
+│   └── models/       # Sequelize model exports
+├── app.ts           # Express app setup
+└── server.ts        # Server entry point
+
+docker/
+├── Dockerfile
+├── docker-compose.yml
+└── nginx/
+    └── default.conf
+
+scripts/
+├── migrate.ts       # Database migration script
+├── migrations.sql   # ← READ THIS FIRST FOR MODEL STRUCTURE
+├── seed.ts          # Database seeding script
+├── dev.ts           # Development server
+└── build.ts         # Production build
+
+.github/
+└── workflows/
+    └── deploy.yml   # GitHub Actions CI/CD
+
+logs/                # Daily log files
+├── app-YYYY-MM-DD.log
+└── error-YYYY-MM-DD.log
+```
+
+### File Organization
+
+- Use feature-based directory structure
+- Keep related files close together: `feature.{type}.ts` pattern
+- Feature-specific types belong within the feature directory
+- Only global types go in `/shared/types`
+- Use path aliases from tsconfig for imports
+- **Models must match migration schema exactly**
+
+### Coding Standards
+
+#### TypeScript
+
+- Use strict TypeScript configuration
+- No `any` types allowed
+- Explicit return types for all functions
+- Use interfaces for object shapes
+- Use enums for constants
+- Prefer `const` assertions where appropriate
+
+#### OOP Principles
+
+- Use classes for services, repositories, and controllers
+- Implement dependency injection through constructors
+- Use private/protected/public access modifiers appropriately
+- Follow single responsibility principle
+- Use composition over inheritance where possible
+
+#### Service Repository Pattern
+
+- **Controllers**: Handle HTTP requests/responses only
+- **Services**: Contain business logic
+- **Repositories**: Handle data access layer
+- **Models**: Sequelize ORM models (match migration schema)
+- **Types**: Feature-specific type definitions
+
+#### Error Handling
+
+- Use try-catch blocks in all async operations
+- Throw custom AppError instances
+- Let the centralized error handler manage error responses
+- Log errors with appropriate context
+
+#### Code Style
+
+- Multi-line implementations preferred over one-liners
+- Use descriptive variable and function names
+- Add comments for complex business logic
+- Use proper indentation and formatting
+- Group imports logically (external, internal, types)
+
+### Database
+
+- Use Sequelize with PostgreSQL
+- Define models with proper associations
+- Use migrations for schema changes
+- Implement proper validation at model level
+- Use transactions for complex operations
+- **ALWAYS check migrations.sql before creating models**
+
+### Logging
+
+- Use Pino for structured logging
+- Log important events and errors
+- Include request context in logs
+- Use appropriate log levels (info, warn, error, debug)
+- Daily log file rotation
+
+### Testing
+
+- Write unit tests for services and repositories
+- Mock external dependencies
+- Test error scenarios
+- Maintain good test coverage
+
+### Security
+
+- Validate all inputs with Zod
+- Use helmet for security headers
+- Implement proper authentication with JWT
+- Hash passwords with bcrypt
+- Use CORS appropriately
+- Rate limiting for API endpoints
+
+### Naming Conventions
+
+- Files: kebab-case (`user-service.ts`)
+- Classes: PascalCase (`UserService`)
+- Functions/Variables: camelCase (`getUserById`)
+- Constants: SCREAMING_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`)
+- Database tables: snake_case (`user_profiles`)
+
+### Git Workflow
+
+- Use conventional commits
+- Feature branches for development
+- Pull requests for code review
+- Meaningful commit messages
+- Keep commits atomic and focused
+
+### Environment
+
+- Use environment variables for configuration
+- Provide `.env.example` with all required variables
+- Never commit sensitive information
+- Use different configs for dev/staging/production

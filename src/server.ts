@@ -5,7 +5,7 @@ import { Server as HttpServer } from "http";
 
 class Server {
   private readonly app: App;
-  private readonly logger = Logger.getInstance();
+  private readonly logger = new Logger(Server.name);
   private readonly port = process.env.PORT || 3000;
   private httpServer: HttpServer | null = null;
   private isShuttingDown = false;
@@ -112,32 +112,34 @@ class Server {
 
 const server = new Server();
 
+const processLogger = new Logger("Process");
+
 process.on("SIGTERM", async () => {
-  Logger.getInstance().info("📨 SIGTERM received");
+  processLogger.info("📨 SIGTERM received");
   await server.stop();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
-  Logger.getInstance().info("📨 SIGINT received");
+  processLogger.info("📨 SIGINT received");
   await server.stop();
   process.exit(0);
 });
 
 process.on("unhandledRejection", (reason: unknown) => {
-  Logger.getInstance().error("🚨 Unhandled Promise Rejection:", reason);
+  processLogger.error("🚨 Unhandled Promise Rejection:", reason);
   console.log("Unhandled Promise Rejection", "6", reason);
   process.exit(1);
 });
 
 process.on("uncaughtException", (error: Error) => {
-  Logger.getInstance().error("🚨 Uncaught Exception:", error);
+  processLogger.error("🚨 Uncaught Exception:", error);
   console.log("Uncaught Exception", "7", error);
   process.exit(1);
 });
 
 process.on("SIGHUP", async () => {
-  Logger.getInstance().info("📨 SIGHUP received");
+  processLogger.info("📨 SIGHUP received");
   console.log("SIGHUP", "8");
   await server.stop();
   process.exit(0);
