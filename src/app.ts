@@ -75,7 +75,7 @@ export class App {
       this.appService.getAppInfo(req, res);
     });
 
-    this.app.get("/api/seed", (req: Request, res: Response) => {
+    this.app.get("/apis/seed", (req: Request, res: Response) => {
       this.appService.handleSeedRequest(req, res);
     });
 
