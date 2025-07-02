@@ -20,7 +20,7 @@ export class AuthMiddleware {
    */
   public static authenticate = (
     req: Request,
-    res: Response,
+    _: Response,
     next: NextFunction
   ): void => {
     try {
@@ -29,14 +29,11 @@ export class AuthMiddleware {
         method: req.method,
       });
 
-      // Extract token from Authorization header
       const authHeader = req.headers.authorization;
       const token = JwtHelper.extractTokenFromHeader(authHeader);
 
-      // Verify the token
       const decoded = JwtHelper.verifyAccessToken(token);
 
-      // Attach user info to request
       req.user = decoded;
 
       this.logger.debug("Authentication successful", {
@@ -48,7 +45,7 @@ export class AuthMiddleware {
       next();
     } catch (error) {
       this.logger.debug("Authentication failed", { error });
-      next(error); // Pass error to error handler
+      next(error);
     }
   };
 
@@ -64,7 +61,6 @@ export class AuthMiddleware {
       const authHeader = req.headers.authorization;
 
       if (!authHeader) {
-        // No token provided, continue without user
         next();
         return;
       }
@@ -81,7 +77,6 @@ export class AuthMiddleware {
 
       next();
     } catch (error) {
-      // For optional auth, we don't fail if token is invalid
       this.logger.debug("Optional authentication failed, continuing", {
         error,
       });

@@ -192,19 +192,19 @@ export class JwtHelper {
    */
   public static extractTokenFromHeader(authHeader: string | undefined): string {
     if (!authHeader) {
-      throw new UnauthorizedError("Authorization header is required");
+      throw new UnauthorizedError("Access token is required");
     }
 
     if (!authHeader.startsWith("Bearer ")) {
       throw new UnauthorizedError(
-        "Authorization header must start with 'Bearer '"
+        "Type of access token should be a Bearer token"
       );
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    const token = authHeader.substring(7);
 
     if (!token) {
-      throw new UnauthorizedError("Token is required");
+      throw new UnauthorizedError("Access token is required");
     }
 
     return token;
