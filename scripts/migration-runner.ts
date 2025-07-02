@@ -188,6 +188,143 @@ class MigrationRunner {
       await this.disconnect();
     }
   }
+
+  /**
+   * Synchronize database schema with current models
+   * This will create tables that don't exist and update existing ones
+   */
+  public async sync(): Promise<void> {
+    try {
+      logger.info("Starting database synchronization...");
+
+      // Import Sequelize and models for sync
+      const { Sequelize } = require("sequelize");
+      const { DatabaseConnection } = require("../src/config/database");
+
+      // Get database connection
+      const dbConnection = DatabaseConnection.getInstance();
+      await dbConnection.connect();
+      const sequelize = dbConnection.getSequelize();
+
+      // Import all models to ensure they are registered
+      require("../src/features/users/user.model");
+      require("../src/features/blog/blog.model");
+      require("../src/features/products/product.model");
+      require("../src/features/movies/movie.model");
+      require("../src/features/rentals/rental.model");
+      require("../src/features/rooms/room.model");
+      require("../src/features/news/news.model");
+      require("../src/features/careers/career.model");
+      require("../src/features/restaurants/restaurant.model");
+
+      // Sync all models with database
+      await sequelize.sync({ alter: true });
+
+      logger.info("Database synchronization completed successfully");
+    } catch (error) {
+      logger.error("Database synchronization failed", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Force sync database schema (drops and recreates all tables)
+   * WARNING: This will destroy all data!
+   */
+  public async forceSync(): Promise<void> {
+    try {
+      logger.warn(
+        "Starting FORCE database synchronization (WILL DESTROY ALL DATA)"
+      );
+
+      // Import Sequelize and models for sync
+      const { Sequelize } = require("sequelize");
+      const { DatabaseConnection } = require("../src/config/database");
+
+      // Get database connection
+      const dbConnection = DatabaseConnection.getInstance();
+      await dbConnection.connect();
+      const sequelize = dbConnection.getSequelize();
+
+      // Import all models to ensure they are registered
+      require("../src/features/users/user.model");
+      require("../src/features/blog/blog.model");
+      require("../src/features/products/product.model");
+      require("../src/features/movies/movie.model");
+      require("../src/features/rentals/rental.model");
+      require("../src/features/rooms/room.model");
+      require("../src/features/news/news.model");
+      require("../src/features/careers/career.model");
+      require("../src/features/restaurants/restaurant.model");
+
+      // Force sync all models with database (drops and recreates)
+      await sequelize.sync({ force: true });
+
+      logger.info("FORCE database synchronization completed successfully");
+    } catch (error) {
+      logger.error("FORCE database synchronization failed", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Get database schema information
+   */
+  public async getSchemaInfo(): Promise<any> {
+    try {
+      await this.connect();
+
+      // Get all tables
+      const tablesResult = await this.client.query(`
+        SELECT 
+          table_name,
+          table_type
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+      `);
+
+      // Get table details
+      const tableDetails: Array<{
+        table: string;
+        type: string;
+        columns: any[];
+      }> = [];
+
+      for (const table of tablesResult.rows) {
+        const columnsResult = await this.client.query(
+          `
+          SELECT 
+            column_name,
+            data_type,
+            is_nullable,
+            column_default
+          FROM information_schema.columns 
+          WHERE table_name = $1
+          ORDER BY ordinal_position
+        `,
+          [table.table_name]
+        );
+
+        tableDetails.push({
+          table: table.table_name,
+          type: table.table_type,
+          columns: columnsResult.rows,
+        });
+      }
+
+      logger.info("Schema information retrieved successfully", {
+        tableCount: tableDetails.length,
+      });
+
+      return tableDetails;
+    } catch (error) {
+      logger.error("Failed to get schema information", { error });
+      throw error;
+    } finally {
+      await this.disconnect();
+    }
+  }
 }
 
 /**
@@ -235,12 +372,18 @@ Commands:
   migrate    - Run database migrations
   rollback   - Rollback database migrations
   reset      - Rollback then migrate (complete reset)
+  sync       - Synchronize database schema with current models
+  force-sync - Force sync (drops and recreates all tables - DESTROYS DATA!)
+  schema     - Get database schema information
   check      - Test database connection
 
 Examples:
   npx ts-node scripts/migration-runner.ts migrate
   npx ts-node scripts/migration-runner.ts rollback
   npx ts-node scripts/migration-runner.ts reset
+  npx ts-node scripts/migration-runner.ts sync
+  npx ts-node scripts/migration-runner.ts force-sync
+  npx ts-node scripts/migration-runner.ts schema
   npx ts-node scripts/migration-runner.ts check
     `);
     process.exit(1);
@@ -261,6 +404,19 @@ Examples:
 
       case "reset":
         await runner.reset();
+        break;
+
+      case "sync":
+        await runner.sync();
+        break;
+
+      case "force-sync":
+        await runner.forceSync();
+        break;
+
+      case "schema":
+        const schemaInfo = await runner.getSchemaInfo();
+        console.log(JSON.stringify(schemaInfo, null, 2));
         break;
 
       case "check":
