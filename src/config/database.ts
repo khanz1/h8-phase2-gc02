@@ -60,7 +60,7 @@ export class DatabaseConnection {
 
       // Sync models in development
       if (process.env.NODE_ENV === "development") {
-        await this.sequelize.sync({ alter: true, force: true });
+        await this.sequelize.sync({ alter: true });
         this.logger.info("✅ Database models force synced");
       } else {
         await this.sequelize.sync({ alter: true });
