@@ -89,15 +89,15 @@ export interface BlogPostResponse {
   authorId: number;
   createdAt: Date;
   updatedAt: Date;
-  category?: {
+  category: {
     id: number;
     name: string;
-  };
-  author?: {
+  } | null;
+  author: {
     id: number;
     username: string;
     email: string;
-  };
+  } | null;
 }
 
 export interface PaginatedBlogPostsResponse {
@@ -117,7 +117,7 @@ export interface PaginatedBlogCategoriesResponse {
 }
 
 // Repository interfaces
-export interface BlogCategoryRepository {
+export interface IBlogCategoryRepository {
   findAll(): Promise<BlogCategoryResponse[]>;
   findById(id: number): Promise<BlogCategoryResponse | null>;
   create(data: CreateBlogCategoryDto): Promise<BlogCategoryResponse>;
@@ -128,7 +128,7 @@ export interface BlogCategoryRepository {
   delete(id: number): Promise<boolean>;
 }
 
-export interface BlogPostRepository {
+export interface IBlogPostRepository {
   findAll(): Promise<BlogPostResponse[]>;
   findAllPublic(
     query: BlogQueryDto
@@ -142,7 +142,7 @@ export interface BlogPostRepository {
 }
 
 // Service interfaces
-export interface BlogCategoryService {
+export interface IBlogCategoryService {
   getAllCategories(): Promise<BlogCategoryResponse[]>;
   getCategoryById(id: number): Promise<BlogCategoryResponse>;
   createCategory(data: CreateBlogCategoryDto): Promise<BlogCategoryResponse>;
@@ -153,7 +153,7 @@ export interface BlogCategoryService {
   deleteCategory(id: number): Promise<void>;
 }
 
-export interface BlogPostService {
+export interface IBlogPostService {
   getAllPosts(): Promise<BlogPostResponse[]>;
   getAllPostsPublic(query: BlogQueryDto): Promise<PaginatedBlogPostsResponse>;
   getPostById(id: number): Promise<BlogPostResponse>;

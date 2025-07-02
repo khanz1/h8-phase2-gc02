@@ -10,92 +10,72 @@ import {
   CreateCareerJobDto,
   UpdateCareerJobDto,
   CareerQueryDto,
-  CareerCompanyRepository as ICareerCompanyRepository,
-  CareerJobRepository as ICareerJobRepository,
+  ICareerCompanyRepository,
+  ICareerJobRepository,
 } from "./career.types";
 
-export class CareerCompanyRepositoryImpl implements ICareerCompanyRepository {
+export class CareerCompanyRepository implements ICareerCompanyRepository {
   public async findAll(): Promise<CareerCompanyResponse[]> {
-    try {
-      const companies = await CareerCompany.findAll({
-        order: [["createdAt", "DESC"]],
-      });
+    const companies = await CareerCompany.findAll({
+      order: [["createdAt", "DESC"]],
+    });
 
-      return companies.map((company) => this.mapCompanyToResponse(company));
-    } catch (error) {
-      throw error;
-    }
+    return companies.map((company) => this.mapCompanyToResponse(company));
   }
 
   public async findById(id: number): Promise<CareerCompanyResponse | null> {
-    try {
-      const company = await CareerCompany.findByPk(id, {
-        include: [
-          {
-            model: CareerJob,
-            as: "jobs",
-            include: [
-              {
-                model: User,
-                as: "author",
-                attributes: ["id", "username", "email"],
-              },
-            ],
-          },
-        ],
-      });
+    const company = await CareerCompany.findByPk(id, {
+      include: [
+        {
+          model: CareerJob,
+          as: "jobs",
+          include: [
+            {
+              model: User,
+              as: "author",
+              attributes: ["id", "username", "email"],
+            },
+          ],
+        },
+      ],
+    });
 
-      if (!company) {
-        return null;
-      }
-
-      return this.mapCompanyToResponseWithJobs(company);
-    } catch (error) {
-      throw error;
+    if (!company) {
+      return null;
     }
+
+    return this.mapCompanyToResponseWithJobs(company);
   }
 
   public async create(
     data: CreateCareerCompanyDto
   ): Promise<CareerCompanyResponse> {
-    try {
-      const company = await CareerCompany.create(data as any);
-      return this.mapCompanyToResponse(company);
-    } catch (error) {
-      throw error;
-    }
+    const company = await CareerCompany.create(data as any);
+    return this.mapCompanyToResponse(company);
   }
 
   public async update(
     id: number,
     data: UpdateCareerCompanyDto
   ): Promise<CareerCompanyResponse | null> {
-    try {
-      const [updatedCount] = await CareerCompany.update(data, {
-        where: { id },
-      });
+    const [updatedCount] = await CareerCompany.update(data, {
+      where: { id },
+    });
 
-      if (updatedCount === 0) {
-        return null;
-      }
-
-      const updatedCompany = await CareerCompany.findByPk(id);
-      return updatedCompany ? this.mapCompanyToResponse(updatedCompany) : null;
-    } catch (error) {
-      throw error;
+    if (updatedCount === 0) {
+      return null;
     }
+
+    const updatedCompany = await CareerCompany.findByPk(id);
+    return updatedCompany ? this.mapCompanyToResponse(updatedCompany) : null;
   }
 
   public async delete(id: number): Promise<boolean> {
-    try {
-      const deletedCount = await CareerCompany.destroy({
-        where: { id },
-      });
+    const deletedCount = await CareerCompany.destroy({
+      where: { id },
+    });
 
-      return deletedCount > 0;
-    } catch (error) {
-      throw error;
-    }
+    return deletedCount > 0;
   }
 
   private mapCompanyToResponse(company: CareerCompany): CareerCompanyResponse {
@@ -133,7 +113,15 @@ export class CareerCompanyRepositoryImpl implements ICareerCompanyRepository {
               username: job.author.username,
               email: job.author.email,
             }
-          : undefined,
+          : null,
+        company: job.company
+          ? {
+              id: job.company.id,
+              name: job.company.name,
+              location: job.company.location,
+              companyLogo: job.company.companyLogo,
+            }
+          : null,
       }));
     }
 
@@ -141,116 +129,104 @@ export class CareerCompanyRepositoryImpl implements ICareerCompanyRepository {
   }
 }
 
-export class CareerJobRepositoryImpl implements ICareerJobRepository {
+export class CareerJobRepository implements ICareerJobRepository {
   public async findAll(): Promise<CareerJobResponse[]> {
-    try {
-      const jobs = await CareerJob.findAll({
-        include: [
-          {
-            model: CareerCompany,
-            as: "company",
-            attributes: ["id", "name", "location", "companyLogo"],
-          },
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "email"],
-          },
-        ],
-        order: [["createdAt", "DESC"]],
-      });
+    const jobs = await CareerJob.findAll({
+      include: [
+        {
+          model: CareerCompany,
+          as: "company",
+          attributes: ["id", "name", "location", "companyLogo"],
+        },
+        {
+          model: User,
+          as: "author",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
 
-      return jobs.map((job) => this.mapJobToResponse(job));
-    } catch (error) {
-      throw error;
-    }
+    return jobs.map((job) => this.mapJobToResponse(job));
   }
 
   public async findAllPublic(
     query: CareerQueryDto
   ): Promise<{ jobs: CareerJobResponse[]; total: number }> {
-    try {
-      const { q, i, l, limit, page, sort } = query;
-      const offset = (page - 1) * limit;
+    const { q, i, l, limit, page, sort } = query;
+    const offset = (page - 1) * limit;
 
-      const whereConditions: any = {};
-      const companyWhereConditions: any = {};
+    const whereConditions: any = {};
+    const companyWhereConditions: any = {};
 
-      if (q) {
-        whereConditions.title = {
-          [Op.iLike]: `%${q}%`,
-        };
-      }
-
-      if (i) {
-        const jobTypes = i.split(",").map((type) => type.trim());
-        whereConditions.jobType = {
-          [Op.in]: jobTypes,
-        };
-      }
-
-      if (l) {
-        const locations = l.split(",").map((location) => location.trim());
-        companyWhereConditions.location = {
-          [Op.iLike]: { [Op.any]: locations.map((loc) => `%${loc}%`) },
-        };
-      }
-
-      const findOptions: any = {
-        where: whereConditions,
-        include: [
-          {
-            model: CareerCompany,
-            as: "company",
-            attributes: ["id", "name", "location", "companyLogo"],
-            where:
-              Object.keys(companyWhereConditions).length > 0
-                ? companyWhereConditions
-                : undefined,
-          },
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "email"],
-          },
-        ],
-        order: [["createdAt", sort]],
-        limit,
-        offset,
+    if (q) {
+      whereConditions.title = {
+        [Op.iLike]: `%${q}%`,
       };
-
-      const { count, rows } = await CareerJob.findAndCountAll(findOptions);
-
-      return {
-        jobs: rows.map((job) => this.mapJobToResponse(job)),
-        total: count,
-      };
-    } catch (error) {
-      throw error;
     }
+
+    if (i) {
+      const jobTypes = i.split(",").map((type) => type.trim());
+      whereConditions.jobType = {
+        [Op.in]: jobTypes,
+      };
+    }
+
+    if (l) {
+      const locations = l.split(",").map((location) => location.trim());
+      companyWhereConditions.location = {
+        [Op.iLike]: { [Op.any]: locations.map((loc) => `%${loc}%`) },
+      };
+    }
+
+    const findOptions: any = {
+      where: whereConditions,
+      include: [
+        {
+          model: CareerCompany,
+          as: "company",
+          attributes: ["id", "name", "location", "companyLogo"],
+          where:
+            Object.keys(companyWhereConditions).length > 0
+              ? companyWhereConditions
+              : undefined,
+        },
+        {
+          model: User,
+          as: "author",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+      order: [["createdAt", sort]],
+      limit,
+      offset,
+    };
+
+    const { count, rows } = await CareerJob.findAndCountAll(findOptions);
+
+    return {
+      jobs: rows.map((job) => this.mapJobToResponse(job)),
+      total: count,
+    };
   }
 
   public async findById(id: number): Promise<CareerJobResponse | null> {
-    try {
-      const job = await CareerJob.findByPk(id, {
-        include: [
-          {
-            model: CareerCompany,
-            as: "company",
-            attributes: ["id", "name", "location", "companyLogo"],
-          },
-          {
-            model: User,
-            as: "author",
-            attributes: ["id", "username", "email"],
-          },
-        ],
-      });
+    const job = await CareerJob.findByPk(id, {
+      include: [
+        {
+          model: CareerCompany,
+          as: "company",
+          attributes: ["id", "name", "location", "companyLogo"],
+        },
+        {
+          model: User,
+          as: "author",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+    });
 
-      return job ? this.mapJobToResponse(job) : null;
-    } catch (error) {
-      throw error;
-    }
+    return job ? this.mapJobToResponse(job) : null;
   }
 
   public async findByIdPublic(id: number): Promise<CareerJobResponse | null> {
@@ -261,72 +237,56 @@ export class CareerJobRepositoryImpl implements ICareerJobRepository {
     data: CreateCareerJobDto,
     authorId: number
   ): Promise<CareerJobResponse> {
-    try {
-      const job = await CareerJob.create({
-        ...data,
-        authorId,
-      });
+    const job = await CareerJob.create({
+      ...data,
+      authorId,
+    });
 
-      const createdJob = await this.findById(job.id);
-      if (!createdJob) {
-        throw new NotFoundError("Created job not found");
-      }
-
-      return createdJob;
-    } catch (error) {
-      throw error;
+    const createdJob = await this.findById(job.id);
+    if (!createdJob) {
+      throw new NotFoundError("Created job not found");
     }
+
+    return createdJob;
   }
 
   public async update(
     id: number,
     data: UpdateCareerJobDto
   ): Promise<CareerJobResponse | null> {
-    try {
-      const [updatedCount] = await CareerJob.update(data, {
-        where: { id },
-      });
+    const [updatedCount] = await CareerJob.update(data, {
+      where: { id },
+    });
 
-      if (updatedCount === 0) {
-        return null;
-      }
-
-      return this.findById(id);
-    } catch (error) {
-      throw error;
+    if (updatedCount === 0) {
+      return null;
     }
+
+    return this.findById(id);
   }
 
   public async updateImage(
     id: number,
     imgUrl: string
   ): Promise<CareerJobResponse | null> {
-    try {
-      const [updatedCount] = await CareerJob.update(
-        { imgUrl },
-        { where: { id } }
-      );
+    const [updatedCount] = await CareerJob.update(
+      { imgUrl },
+      { where: { id } }
+    );
 
-      if (updatedCount === 0) {
-        return null;
-      }
-
-      return this.findById(id);
-    } catch (error) {
-      throw error;
+    if (updatedCount === 0) {
+      return null;
     }
+
+    return this.findById(id);
   }
 
   public async delete(id: number): Promise<boolean> {
-    try {
-      const deletedCount = await CareerJob.destroy({
-        where: { id },
-      });
+    const deletedCount = await CareerJob.destroy({
+      where: { id },
+    });
 
-      return deletedCount > 0;
-    } catch (error) {
-      throw error;
-    }
+    return deletedCount > 0;
   }
 
   private mapJobToResponse(job: CareerJob): CareerJobResponse {
@@ -347,14 +307,14 @@ export class CareerJobRepositoryImpl implements ICareerJobRepository {
             location: job.company.location,
             companyLogo: job.company.companyLogo,
           }
-        : undefined,
+        : null,
       author: job.author
         ? {
             id: job.author.id,
             username: job.author.username,
             email: job.author.email,
           }
-        : undefined,
+        : null,
     };
   }
 }

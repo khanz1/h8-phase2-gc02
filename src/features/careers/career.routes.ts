@@ -8,8 +8,8 @@ import {
   CareerPublicController,
 } from "./career.controller";
 import {
-  CareerCompanyRepositoryImpl,
-  CareerJobRepositoryImpl,
+  CareerCompanyRepository,
+  CareerJobRepository,
 } from "./career.repository";
 import { CareerCompanyService, CareerJobService } from "./career.service";
 import { Logger } from "@/config/logger";
@@ -28,8 +28,8 @@ export class CareerRoutes {
     this.router = Router();
     this.publicRouter = Router();
 
-    const companyRepository = new CareerCompanyRepositoryImpl();
-    const jobRepository = new CareerJobRepositoryImpl();
+    const companyRepository = new CareerCompanyRepository();
+    const jobRepository = new CareerJobRepository();
 
     const companyService = new CareerCompanyService(companyRepository);
     const jobService = new CareerJobService(jobRepository, companyRepository);

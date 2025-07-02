@@ -1,8 +1,5 @@
 import { NotFoundError, ConflictError } from "@/shared/errors";
-import {
-  BlogCategoryRepositoryImpl,
-  BlogPostRepositoryImpl,
-} from "./blog.repository";
+import { BlogCategoryRepository, BlogPostRepository } from "./blog.repository";
 import {
   BlogCategoryResponse,
   BlogPostResponse,
@@ -12,35 +9,25 @@ import {
   CreateBlogPostDto,
   UpdateBlogPostDto,
   BlogQueryDto,
-  BlogCategoryService as IBlogCategoryService,
-  BlogPostService as IBlogPostService,
+  IBlogCategoryService,
+  IBlogPostService,
 } from "./blog.types";
 
 export class BlogCategoryService implements IBlogCategoryService {
-  constructor(
-    private readonly categoryRepository: BlogCategoryRepositoryImpl
-  ) {}
+  constructor(private readonly categoryRepository: BlogCategoryRepository) {}
 
   public async getAllCategories(): Promise<BlogCategoryResponse[]> {
-    try {
-      return await this.categoryRepository.findAll();
-    } catch (error) {
-      throw error;
-    }
+    return await this.categoryRepository.findAll();
   }
 
   public async getCategoryById(id: number): Promise<BlogCategoryResponse> {
-    try {
-      const category = await this.categoryRepository.findById(id);
+    const category = await this.categoryRepository.findById(id);
 
-      if (!category) {
-        throw new NotFoundError(`Blog category with ID ${id} not found`);
-      }
-
-      return category;
-    } catch (error) {
-      throw error;
+    if (!category) {
+      throw new NotFoundError(`Blog category with ID ${id} not found`);
     }
+
+    return category;
   }
 
   public async createCategory(
@@ -109,139 +96,107 @@ export class BlogCategoryService implements IBlogCategoryService {
 
 export class BlogPostService implements IBlogPostService {
   constructor(
-    private readonly postRepository: BlogPostRepositoryImpl,
-    private readonly categoryRepository: BlogCategoryRepositoryImpl
+    private readonly postRepository: BlogPostRepository,
+    private readonly categoryRepository: BlogCategoryRepository
   ) {}
 
   public async getAllPosts(): Promise<BlogPostResponse[]> {
-    try {
-      return await this.postRepository.findAll();
-    } catch (error) {
-      throw error;
-    }
+    return await this.postRepository.findAll();
   }
 
   public async getAllPostsPublic(
     query: BlogQueryDto
   ): Promise<PaginatedBlogPostsResponse> {
-    try {
-      const { posts, total } = await this.postRepository.findAllPublic(query);
-      const totalPages = Math.ceil(total / query.limit);
+    const { posts, total } = await this.postRepository.findAllPublic(query);
+    const totalPages = Math.ceil(total / query.limit);
 
-      return {
-        data: posts,
-        pagination: {
-          page: query.page,
-          limit: query.limit,
-          total,
-          totalPages,
-          hasNext: query.page < totalPages,
-          hasPrev: query.page > 1,
-        },
-      };
-    } catch (error) {
-      throw error;
-    }
+    return {
+      data: posts,
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages,
+        hasNext: query.page < totalPages,
+        hasPrev: query.page > 1,
+      },
+    };
   }
 
   public async getPostById(id: number): Promise<BlogPostResponse> {
-    try {
-      const post = await this.postRepository.findById(id);
+    const post = await this.postRepository.findById(id);
 
-      if (!post) {
-        throw new NotFoundError(`Blog post with ID ${id} not found`);
-      }
-
-      return post;
-    } catch (error) {
-      throw error;
+    if (!post) {
+      throw new NotFoundError(`Blog post with ID ${id} not found`);
     }
+
+    return post;
   }
 
   public async getPostByIdPublic(id: number): Promise<BlogPostResponse> {
-    try {
-      const post = await this.postRepository.findByIdPublic(id);
+    const post = await this.postRepository.findByIdPublic(id);
 
-      if (!post) {
-        throw new NotFoundError(`Blog post with ID ${id} not found`);
-      }
-
-      return post;
-    } catch (error) {
-      throw error;
+    if (!post) {
+      throw new NotFoundError(`Blog post with ID ${id} not found`);
     }
+
+    return post;
   }
 
   public async createPost(
     data: CreateBlogPostDto,
     authorId: number
   ): Promise<BlogPostResponse> {
-    try {
-      // Verify category exists
-      const category = await this.categoryRepository.findById(data.categoryId);
-      if (!category) {
-        throw new NotFoundError(
-          `Blog category with ID ${data.categoryId} not found`
-        );
-      }
-
-      return await this.postRepository.create(data, authorId);
-    } catch (error) {
-      throw error;
+    // Verify category exists
+    const category = await this.categoryRepository.findById(data.categoryId);
+    if (!category) {
+      throw new NotFoundError(
+        `Blog category with ID ${data.categoryId} not found`
+      );
     }
+
+    return await this.postRepository.create(data, authorId);
   }
 
   public async updatePost(
     id: number,
     data: UpdateBlogPostDto
   ): Promise<BlogPostResponse> {
-    try {
-      // Verify category exists
-      const category = await this.categoryRepository.findById(data.categoryId);
-      if (!category) {
-        throw new NotFoundError(
-          `Blog category with ID ${data.categoryId} not found`
-        );
-      }
-
-      const updatedPost = await this.postRepository.update(id, data);
-
-      if (!updatedPost) {
-        throw new NotFoundError(`Blog post with ID ${id} not found`);
-      }
-
-      return updatedPost;
-    } catch (error) {
-      throw error;
+    // Verify category exists
+    const category = await this.categoryRepository.findById(data.categoryId);
+    if (!category) {
+      throw new NotFoundError(
+        `Blog category with ID ${data.categoryId} not found`
+      );
     }
+
+    const updatedPost = await this.postRepository.update(id, data);
+
+    if (!updatedPost) {
+      throw new NotFoundError(`Blog post with ID ${id} not found`);
+    }
+
+    return updatedPost;
   }
 
   public async updatePostImage(
     id: number,
     imgUrl: string
   ): Promise<BlogPostResponse> {
-    try {
-      const updatedPost = await this.postRepository.updateImage(id, imgUrl);
+    const updatedPost = await this.postRepository.updateImage(id, imgUrl);
 
-      if (!updatedPost) {
-        throw new NotFoundError(`Blog post with ID ${id} not found`);
-      }
-
-      return updatedPost;
-    } catch (error) {
-      throw error;
+    if (!updatedPost) {
+      throw new NotFoundError(`Blog post with ID ${id} not found`);
     }
+
+    return updatedPost;
   }
 
   public async deletePost(id: number): Promise<void> {
-    try {
-      const deleted = await this.postRepository.delete(id);
+    const deleted = await this.postRepository.delete(id);
 
-      if (!deleted) {
-        throw new NotFoundError(`Blog post with ID ${id} not found`);
-      }
-    } catch (error) {
-      throw error;
+    if (!deleted) {
+      throw new NotFoundError(`Blog post with ID ${id} not found`);
     }
   }
 }

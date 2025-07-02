@@ -128,17 +128,17 @@ export interface CareerJobResponse {
   authorId: number;
   createdAt: Date;
   updatedAt: Date;
-  company?: {
+  company: {
     id: number;
     name: string;
     location: string;
     companyLogo: string;
-  };
+  } | null;
   author?: {
     id: number;
     username: string;
     email: string;
-  };
+  } | null;
 }
 
 export interface PaginatedCareerJobsResponse {
@@ -158,7 +158,7 @@ export interface PaginatedCareerCompaniesResponse {
 }
 
 // Repository interfaces
-export interface CareerCompanyRepository {
+export interface ICareerCompanyRepository {
   findAll(): Promise<CareerCompanyResponse[]>;
   findById(id: number): Promise<CareerCompanyResponse | null>;
   create(data: CreateCareerCompanyDto): Promise<CareerCompanyResponse>;
@@ -169,7 +169,7 @@ export interface CareerCompanyRepository {
   delete(id: number): Promise<boolean>;
 }
 
-export interface CareerJobRepository {
+export interface ICareerJobRepository {
   findAll(): Promise<CareerJobResponse[]>;
   findAllPublic(
     query: CareerQueryDto
@@ -189,7 +189,7 @@ export interface CareerJobRepository {
 }
 
 // Service interfaces
-export interface CareerCompanyService {
+export interface ICareerCompanyService {
   getAllCompanies(): Promise<CareerCompanyResponse[]>;
   getCompanyById(id: number): Promise<CareerCompanyResponse>;
   createCompany(data: CreateCareerCompanyDto): Promise<CareerCompanyResponse>;
@@ -200,7 +200,7 @@ export interface CareerCompanyService {
   deleteCompany(id: number): Promise<void>;
 }
 
-export interface CareerJobService {
+export interface ICareerJobService {
   getAllJobs(): Promise<CareerJobResponse[]>;
   getAllJobsPublic(query: CareerQueryDto): Promise<PaginatedCareerJobsResponse>;
   getJobById(id: number): Promise<CareerJobResponse>;

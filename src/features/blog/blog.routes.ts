@@ -7,10 +7,7 @@ import {
   BlogPostController,
   BlogPublicController,
 } from "./blog.controller";
-import {
-  BlogCategoryRepositoryImpl,
-  BlogPostRepositoryImpl,
-} from "./blog.repository";
+import { BlogCategoryRepository, BlogPostRepository } from "./blog.repository";
 import { BlogCategoryService, BlogPostService } from "./blog.service";
 import { Logger } from "@/config/logger";
 import { BlogPost } from "./blog.model";
@@ -28,8 +25,8 @@ export class BlogRoutes {
     this.router = Router();
     this.publicRouter = Router();
 
-    const categoryRepository = new BlogCategoryRepositoryImpl();
-    const postRepository = new BlogPostRepositoryImpl();
+    const categoryRepository = new BlogCategoryRepository();
+    const postRepository = new BlogPostRepository();
 
     const categoryService = new BlogCategoryService(categoryRepository);
     const postService = new BlogPostService(postRepository, categoryRepository);
