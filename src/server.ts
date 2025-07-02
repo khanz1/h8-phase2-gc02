@@ -18,6 +18,9 @@ class Server {
     try {
       await this.app.initialize();
 
+      // Map all routes before starting the server
+      this.app.mapRoutes();
+
       this.httpServer = this.app.getExpressApp().listen(this.port, () => {
         this.logger.info(`🚀 Server is running on port ${this.port}`);
         this.logger.info(

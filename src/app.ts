@@ -7,6 +7,7 @@ import { DatabaseConnection } from "@/config/database";
 import { ErrorHandler } from "@/shared/middleware/errorHandler";
 import { AuthRoutes } from "@/features/auth/auth.routes";
 import { BlogRoutes } from "@/features/blog/blog.routes";
+import { RouteMapper } from "@/shared/utils/route-mapper";
 
 export class App {
   private readonly app: Application;
@@ -90,7 +91,7 @@ export class App {
 
     // Authentication routes
     const authRoutes = new AuthRoutes();
-    this.app.use("/api/auth", authRoutes.getRouter());
+    this.app.use("/apis/auth", authRoutes.getRouter());
 
     // Blog routes
     const blogRoutes = new BlogRoutes();
@@ -139,6 +140,11 @@ export class App {
       this.logger.error("❌ Error during application shutdown:", error);
       throw error;
     }
+  }
+
+  public mapRoutes(): void {
+    const routeMapper = new RouteMapper();
+    routeMapper.mapRoutes(this.app);
   }
 
   public getExpressApp(): Application {
