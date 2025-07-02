@@ -3,9 +3,9 @@ services:
     image: postgres:15-alpine
     container_name: h8-phase2-gc02-postgres-dev
     environment:
-      POSTGRES_DB: h8_phase2_gc02
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME:-h8_phase2_gc02}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
       - "5001:5432"
     volumes:
@@ -14,7 +14,11 @@ services:
       - h8-phase2-gc02-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-h8_phase2_gc02}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,31 +29,22 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: h8-phase2-gc02-app-dev
+    env_file:
+      - .env
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-8002}
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: h8_phase2_gc02
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-dev}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-dev}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
-      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
-      LOG_FILE: ${LOG_FILE:-true}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8002}
-      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
-      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-your-cloudinary-cloud-name}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-your-cloudinary-api-key}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-your-cloudinary-api-secret}
+      # Database setup control variables
+      RUN_DB_SETUP: ${RUN_DB_SETUP:-true} # Set to false to skip automatic setup
+      RUN_DB_MIGRATE: ${RUN_DB_MIGRATE:-false} # Set to true for migrations only
     ports:
       - "${PORT:-8002}:${PORT:-8002}"
     volumes:
       - ./src:/app/src:ro
       - ./scripts:/app/scripts:ro
+      - ./data:/app/data:ro
       - ./logs:/app/logs
     depends_on:
       postgres:
@@ -57,6 +52,28 @@ services:
     networks:
       - h8-phase2-gc02-network
     restart: unless-stopped
+
+  # Migration service for manual database operations in development
+  migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migration
+    container_name: h8-phase2-gc02-migration-dev
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - h8-phase2-gc02-network
+    profiles:
+      - tools # Only start when explicitly requested
 
 networks:
   h8-phase2-gc02-network:
