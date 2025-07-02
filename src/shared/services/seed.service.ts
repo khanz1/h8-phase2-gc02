@@ -1,60 +1,52 @@
-// @ts-nocheck
 import "dotenv/config";
-import { DatabaseConnection } from "../src/config/database";
-import { Logger } from "../src/config/logger";
-import { BcryptHelper } from "../src/shared/utils/bcrypt.helper";
+import { Logger } from "@/config/logger";
+import { DatabaseConnection } from "@/config/database";
+import { BcryptHelper } from "@/shared/utils/bcrypt.helper";
 import * as fs from "fs";
 import * as path from "path";
 
-// Create logger instance
-const logger = Logger.getInstance();
+// Import all models
+import { User } from "@/features/users/user.model";
+import { BlogCategory, BlogPost } from "@/features/blog/blog.model";
+import {
+  BrandedCategory,
+  BrandedProduct,
+} from "@/features/products/product.model";
+import { MovieGenre, Movie } from "@/features/movies/movie.model";
+import {
+  RentalType,
+  RentalTransportation,
+} from "@/features/rentals/rental.model";
+import { RoomType, RoomLodging } from "@/features/rooms/room.model";
+import { NewsCategory, NewsArticle } from "@/features/news/news.model";
+import { CareerCompany, CareerJob } from "@/features/careers/career.model";
+import {
+  RestaurantCategory,
+  RestaurantCuisine,
+} from "@/features/restaurants/restaurant.model";
 
 // Interface for seed data structure
 interface SeedData {
   [key: string]: any[];
 }
 
-class SeedRunner {
+export interface SeedOptions {
+  restartIdentity?: boolean;
+  truncate?: boolean;
+  cascade?: boolean;
+}
+
+export class SeedService {
+  private readonly logger = new Logger(SeedService.name);
   private readonly dataDirectory: string;
   private models: any = {};
 
   constructor() {
-    this.dataDirectory = path.join(__dirname, "..", "data");
+    this.dataDirectory = path.join(__dirname, "..", "..", "data");
   }
 
   private async initializeModels(): Promise<void> {
-    // Import models dynamically after database connection
-    const { User } = require("../src/features/users/user.model");
-    const {
-      BlogCategory,
-      BlogPost,
-    } = require("../src/features/blog/blog.model");
-    const {
-      BrandedCategory,
-      BrandedProduct,
-    } = require("../src/features/products/product.model");
-    const { MovieGenre, Movie } = require("../src/features/movies/movie.model");
-    const {
-      RentalType,
-      RentalTransportation,
-    } = require("../src/features/rentals/rental.model");
-    const {
-      RoomType,
-      RoomLodging,
-    } = require("../src/features/rooms/room.model");
-    const {
-      NewsCategory,
-      NewsArticle,
-    } = require("../src/features/news/news.model");
-    const {
-      CareerCompany,
-      CareerJob,
-    } = require("../src/features/careers/career.model");
-    const {
-      RestaurantCategory,
-      RestaurantCuisine,
-    } = require("../src/features/restaurants/restaurant.model");
-
+    // Initialize models object with imported models
     this.models = {
       User,
       BlogCategory,
@@ -82,20 +74,20 @@ class SeedRunner {
   private readJsonFile(filePath: string): any[] {
     try {
       if (!fs.existsSync(filePath)) {
-        logger.warn(`JSON file not found: ${filePath}`);
+        this.logger.warn(`JSON file not found: ${filePath}`);
         return [];
       }
 
       const content = fs.readFileSync(filePath, "utf8");
 
       if (!content.trim()) {
-        logger.warn(`JSON file is empty: ${filePath}`);
+        this.logger.warn(`JSON file is empty: ${filePath}`);
         return [];
       }
 
       return JSON.parse(content);
     } catch (error) {
-      logger.error(`Failed to read JSON file: ${filePath}`, { error });
+      this.logger.error(`Failed to read JSON file: ${filePath}`, { error });
       throw error;
     }
   }
@@ -173,7 +165,7 @@ class SeedRunner {
 
       return seedData;
     } catch (error) {
-      logger.error("Failed to load seed data", { error });
+      this.logger.error("Failed to load seed data", { error });
       throw error;
     }
   }
@@ -278,21 +270,17 @@ class SeedRunner {
    */
   private async seedUsers(transaction: any): Promise<void> {
     try {
-      logger.info("Seeding users...");
+      this.logger.info("Seeding users...");
 
-      // console.log(
-      //   "ANGGA_DEBUG",
-      //   await this.models.User.findAll({ transaction })
-      // );
       const users = await this.createDefaultUsers();
       await this.models.User.bulkCreate(users, {
         transaction,
         individualHooks: false, // Skip model hooks since we already hashed passwords
       });
 
-      logger.info(`Successfully seeded ${users.length} users`);
+      this.logger.info(`Successfully seeded ${users.length} users`);
     } catch (error) {
-      logger.error("Failed to seed users", { error });
+      this.logger.error("Failed to seed users", { error });
       throw error;
     }
   }
@@ -305,14 +293,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding blog data...");
+      this.logger.info("Seeding blog data...");
 
       // Seed blog categories
       if (seedData.blogCategories.length > 0) {
         await this.models.BlogCategory.bulkCreate(seedData.blogCategories, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.blogCategories.length} blog categories`
         );
       }
@@ -322,18 +310,12 @@ class SeedRunner {
         await this.models.BlogPost.bulkCreate(seedData.blogPosts, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.blogPosts.length} blog posts`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed blog data", { error });
-      // @ts-ignore
-      console.log(error.name, error.message, error.stack);
-      // fs.writeFileSync(
-      //   path.join(__dirname, "posts.json"),
-      //   error
-      // );
+      this.logger.error("Failed to seed blog data", { error });
       throw error;
     }
   }
@@ -346,7 +328,7 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding branded products data...");
+      this.logger.info("Seeding branded products data...");
 
       // Seed branded categories
       if (seedData.brandedCategories.length > 0) {
@@ -356,7 +338,7 @@ class SeedRunner {
             transaction,
           }
         );
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.brandedCategories.length} branded categories`
         );
       }
@@ -366,12 +348,12 @@ class SeedRunner {
         await this.models.BrandedProduct.bulkCreate(seedData.brandedProducts, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.brandedProducts.length} branded products`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed branded products data", { error });
+      this.logger.error("Failed to seed branded products data", { error });
       throw error;
     }
   }
@@ -384,14 +366,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding movies data...");
+      this.logger.info("Seeding movies data...");
 
       // Seed movie genres
       if (seedData.movieGenres.length > 0) {
         await this.models.MovieGenre.bulkCreate(seedData.movieGenres, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.movieGenres.length} movie genres`
         );
       }
@@ -399,10 +381,12 @@ class SeedRunner {
       // Seed movies
       if (seedData.movies.length > 0) {
         await this.models.Movie.bulkCreate(seedData.movies, { transaction });
-        logger.info(`Successfully seeded ${seedData.movies.length} movies`);
+        this.logger.info(
+          `Successfully seeded ${seedData.movies.length} movies`
+        );
       }
     } catch (error) {
-      logger.error("Failed to seed movies data", { error });
+      this.logger.error("Failed to seed movies data", { error });
       throw error;
     }
   }
@@ -415,14 +399,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding rental data...");
+      this.logger.info("Seeding rental data...");
 
       // Seed rental types
       if (seedData.rentalTypes.length > 0) {
         await this.models.RentalType.bulkCreate(seedData.rentalTypes, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.rentalTypes.length} rental types`
         );
       }
@@ -435,12 +419,12 @@ class SeedRunner {
             transaction,
           }
         );
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.rentalTransportations.length} rental transportations`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed rental data", { error });
+      this.logger.error("Failed to seed rental data", { error });
       throw error;
     }
   }
@@ -453,14 +437,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding room data...");
+      this.logger.info("Seeding room data...");
 
       // Seed room types
       if (seedData.roomTypes.length > 0) {
         await this.models.RoomType.bulkCreate(seedData.roomTypes, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.roomTypes.length} room types`
         );
       }
@@ -470,12 +454,12 @@ class SeedRunner {
         await this.models.RoomLodging.bulkCreate(seedData.roomLodgings, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.roomLodgings.length} room lodgings`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed room data", { error });
+      this.logger.error("Failed to seed room data", { error });
       throw error;
     }
   }
@@ -488,14 +472,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding news data...");
+      this.logger.info("Seeding news data...");
 
       // Seed news categories
       if (seedData.newsCategories.length > 0) {
         await this.models.NewsCategory.bulkCreate(seedData.newsCategories, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.newsCategories.length} news categories`
         );
       }
@@ -505,12 +489,12 @@ class SeedRunner {
         await this.models.NewsArticle.bulkCreate(seedData.newsArticles, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.newsArticles.length} news articles`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed news data", { error });
+      this.logger.error("Failed to seed news data", { error });
       throw error;
     }
   }
@@ -523,14 +507,14 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding career data...");
+      this.logger.info("Seeding career data...");
 
       // Seed career companies
       if (seedData.careerCompanies.length > 0) {
         await this.models.CareerCompany.bulkCreate(seedData.careerCompanies, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.careerCompanies.length} career companies`
         );
       }
@@ -540,12 +524,12 @@ class SeedRunner {
         await this.models.CareerJob.bulkCreate(seedData.careerJobs, {
           transaction,
         });
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.careerJobs.length} career jobs`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed career data", { error });
+      this.logger.error("Failed to seed career data", { error });
       throw error;
     }
   }
@@ -558,7 +542,7 @@ class SeedRunner {
     transaction: any
   ): Promise<void> {
     try {
-      logger.info("Seeding restaurant data...");
+      this.logger.info("Seeding restaurant data...");
 
       // Seed restaurant categories
       if (seedData.restaurantCategories.length > 0) {
@@ -568,7 +552,7 @@ class SeedRunner {
             transaction,
           }
         );
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.restaurantCategories.length} restaurant categories`
         );
       }
@@ -581,12 +565,12 @@ class SeedRunner {
             transaction,
           }
         );
-        logger.info(
+        this.logger.info(
           `Successfully seeded ${seedData.restaurantCuisines.length} restaurant cuisines`
         );
       }
     } catch (error) {
-      logger.error("Failed to seed restaurant data", { error });
+      this.logger.error("Failed to seed restaurant data", { error });
       throw error;
     }
   }
@@ -596,7 +580,7 @@ class SeedRunner {
    */
   private async clearDatabase(transaction: any): Promise<void> {
     try {
-      logger.info("Clearing existing database data...");
+      this.logger.info("Clearing existing database data...");
 
       // Clear in reverse dependency order
       await this.models.RestaurantCuisine.destroy({
@@ -734,9 +718,9 @@ class SeedRunner {
         cascade: true,
       });
 
-      logger.info("Database cleared successfully");
+      this.logger.info("Database cleared successfully");
     } catch (error) {
-      logger.error("Failed to clear database", { error });
+      this.logger.error("Failed to clear database", { error });
       throw error;
     }
   }
@@ -744,13 +728,7 @@ class SeedRunner {
   /**
    * Advanced undo functionality with options for truncate, restart identity, and cascade
    */
-  public async undoSeeds(
-    options: {
-      restartIdentity?: boolean;
-      truncate?: boolean;
-      cascade?: boolean;
-    } = {}
-  ): Promise<void> {
+  public async undoSeeds(options: SeedOptions = {}): Promise<void> {
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
     await this.initializeModels();
@@ -759,7 +737,7 @@ class SeedRunner {
     const startTime = Date.now();
 
     try {
-      logger.info("Starting database undo process...", { options });
+      this.logger.info("Starting database undo process...", { options });
 
       if (options.truncate) {
         await this.truncateAllTables(transaction, options);
@@ -771,14 +749,14 @@ class SeedRunner {
       await transaction.commit();
 
       const duration = Date.now() - startTime;
-      logger.info("Database undo completed successfully", {
+      this.logger.info("Database undo completed successfully", {
         duration: `${duration}ms`,
         options,
       });
     } catch (error) {
       await transaction.rollback();
       const duration = Date.now() - startTime;
-      logger.error("Database undo failed", {
+      this.logger.error("Database undo failed", {
         error: error instanceof Error ? error.message : error,
         duration: `${duration}ms`,
         options,
@@ -798,7 +776,7 @@ class SeedRunner {
     }
   ): Promise<void> {
     try {
-      logger.info("Truncating all tables...", { options });
+      this.logger.info("Truncating all tables...", { options });
 
       // Get sequelize instance
       const dbConnection = DatabaseConnection.getInstance();
@@ -842,11 +820,11 @@ class SeedRunner {
         for (const tableName of tableOrder) {
           try {
             const sql = `TRUNCATE TABLE ${tableName}${optionsString};`;
-            logger.info(`Truncating table: ${tableName}`);
+            this.logger.info(`Truncating table: ${tableName}`);
             await sequelize.query(sql, { transaction });
-            logger.info(`Successfully truncated: ${tableName}`);
+            this.logger.info(`Successfully truncated: ${tableName}`);
           } catch (error) {
-            logger.warn(`Failed to truncate ${tableName}:`, {
+            this.logger.warn(`Failed to truncate ${tableName}:`, {
               error: error instanceof Error ? error.message : error,
             });
             // Continue with other tables
@@ -857,11 +835,11 @@ class SeedRunner {
         try {
           const allTables = tableOrder.join(", ");
           const sql = `TRUNCATE TABLE ${allTables}${optionsString};`;
-          logger.info("Truncating all tables with CASCADE");
+          this.logger.info("Truncating all tables with CASCADE");
           await sequelize.query(sql, { transaction });
-          logger.info("Successfully truncated all tables");
+          this.logger.info("Successfully truncated all tables");
         } catch (error) {
-          logger.warn(
+          this.logger.warn(
             "CASCADE truncation failed, falling back to individual truncation"
           );
           // Fallback to individual truncation
@@ -869,9 +847,9 @@ class SeedRunner {
             try {
               const sql = `TRUNCATE TABLE ${tableName}${optionsString};`;
               await sequelize.query(sql, { transaction });
-              logger.info(`Fallback truncated: ${tableName}`);
+              this.logger.info(`Fallback truncated: ${tableName}`);
             } catch (innerError) {
-              logger.warn(`Fallback truncation failed for ${tableName}:`, {
+              this.logger.warn(`Fallback truncation failed for ${tableName}:`, {
                 error:
                   innerError instanceof Error ? innerError.message : innerError,
               });
@@ -880,9 +858,9 @@ class SeedRunner {
         }
       }
 
-      logger.info("Table truncation completed");
+      this.logger.info("Table truncation completed");
     } catch (error) {
-      logger.error("Failed to truncate tables", { error });
+      this.logger.error("Failed to truncate tables", { error });
       throw error;
     }
   }
@@ -890,12 +868,7 @@ class SeedRunner {
   /**
    * Quick truncate method using Sequelize's built-in truncate
    */
-  public async quickTruncate(
-    options: {
-      restartIdentity?: boolean;
-      cascade?: boolean;
-    } = {}
-  ): Promise<void> {
+  public async quickTruncate(options: SeedOptions = {}): Promise<void> {
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
     await this.initializeModels();
@@ -904,7 +877,7 @@ class SeedRunner {
     const startTime = Date.now();
 
     try {
-      logger.info("Starting quick truncate process...", { options });
+      this.logger.info("Starting quick truncate process...", { options });
 
       // Truncate using Sequelize's built-in method
       const modelOrder = [
@@ -934,9 +907,9 @@ class SeedRunner {
             restartIdentity: options.restartIdentity ?? false,
             cascade: options.cascade ?? false,
           });
-          logger.info(`Quick truncated: ${model.name}`);
+          this.logger.info(`Quick truncated: ${model.name}`);
         } catch (error) {
-          logger.warn(`Quick truncate failed for ${model.name}:`, {
+          this.logger.warn(`Quick truncate failed for ${model.name}:`, {
             error: error instanceof Error ? error.message : error,
           });
         }
@@ -945,14 +918,14 @@ class SeedRunner {
       await transaction.commit();
 
       const duration = Date.now() - startTime;
-      logger.info("Quick truncate completed successfully", {
+      this.logger.info("Quick truncate completed successfully", {
         duration: `${duration}ms`,
         options,
       });
     } catch (error) {
       await transaction.rollback();
       const duration = Date.now() - startTime;
-      logger.error("Quick truncate failed", {
+      this.logger.error("Quick truncate failed", {
         error: error instanceof Error ? error.message : error,
         duration: `${duration}ms`,
         options,
@@ -962,9 +935,10 @@ class SeedRunner {
   }
 
   /**
-   * Run the seeding process
+   * Seed the database with data
+   * @param clearFirst - Whether to clear existing data first
    */
-  public async seed(clearFirst: boolean = true): Promise<void> {
+  public async seed(clearFirst: boolean = false): Promise<void> {
     const dbConnection = DatabaseConnection.getInstance();
     await dbConnection.connect();
     await this.initializeModels();
@@ -973,11 +947,11 @@ class SeedRunner {
     const startTime = Date.now();
 
     try {
-      logger.info("Starting database seeding process...");
+      this.logger.info("Starting database seeding process...");
 
       // Clear database if requested
       if (clearFirst) {
-        logger.info("Clearing database...");
+        this.logger.info("Clearing database...");
         await this.clearDatabase(transaction);
       }
 
@@ -1001,13 +975,13 @@ class SeedRunner {
       await transaction.commit();
 
       const duration = Date.now() - startTime;
-      logger.info("Database seeding completed successfully", {
+      this.logger.info("Database seeding completed successfully", {
         duration: `${duration}ms`,
       });
     } catch (error) {
       await transaction.rollback();
       const duration = Date.now() - startTime;
-      logger.error("Database seeding failed", {
+      this.logger.error("Database seeding failed", {
         error: error instanceof Error ? error.message : error,
         duration: `${duration}ms`,
       });
@@ -1024,112 +998,12 @@ class SeedRunner {
       await dbConnection.connect();
       const result = await dbConnection.testConnection();
       if (result) {
-        logger.info("Database connection test successful");
+        this.logger.info("Database connection test successful");
       }
       return result;
     } catch (error) {
-      logger.error("Database connection test failed", { error });
+      this.logger.error("Database connection test failed", { error });
       return false;
     }
   }
-}
-
-/**
- * Main function to handle command line arguments
- */
-async function main(): Promise<void> {
-  const args = process.argv.slice(2);
-  const command = args[0];
-  const clearFirst = args.includes("--clear") || args.includes("-c");
-
-  // Parse undo options
-  const restartIdentity =
-    args.includes("--restart-identity") || args.includes("-r");
-  const truncate = args.includes("--truncate") || args.includes("-t");
-  const cascade = args.includes("--cascade") || args.includes("--force");
-
-  if (!command) {
-    console.log(`
-Usage: npx ts-node scripts/seeder.ts <command> [options]
-
-Commands:
-  seed       - Run database seeding
-  clear      - Clear all data and seed fresh
-  undo       - Undo seeds with advanced options
-  truncate   - Quick truncate using Sequelize
-  test       - Test database connection
-
-Options:
-  --clear, -c           - Clear existing data before seeding
-  --restart-identity, -r - Restart identity sequences when truncating
-  --truncate, -t        - Use TRUNCATE instead of DELETE for undo
-  --cascade, --force    - Use CASCADE to handle foreign key constraints
-  
-Examples:
-  npx ts-node scripts/seeder.ts seed
-  npx ts-node scripts/seeder.ts seed --clear
-  npx ts-node scripts/seeder.ts clear
-  npx ts-node scripts/seeder.ts undo
-  npx ts-node scripts/seeder.ts undo --truncate
-  npx ts-node scripts/seeder.ts undo --truncate --restart-identity
-  npx ts-node scripts/seeder.ts undo --truncate --restart-identity --cascade
-  npx ts-node scripts/seeder.ts truncate --restart-identity
-  npx ts-node scripts/seeder.ts test
-    `);
-    process.exit(1);
-  }
-
-  try {
-    const seeder = new SeedRunner();
-
-    switch (command) {
-      case "seed":
-        await seeder.seed(clearFirst);
-        break;
-
-      case "clear":
-        await seeder.seed(true);
-        break;
-
-      case "undo":
-        await seeder.undoSeeds({
-          restartIdentity,
-          truncate,
-          cascade,
-        });
-        break;
-
-      case "truncate":
-        await seeder.quickTruncate({
-          restartIdentity,
-          cascade,
-        });
-        break;
-
-      case "test":
-        const isConnected = await seeder.testConnection();
-        process.exit(isConnected ? 0 : 1);
-        break;
-
-      default:
-        logger.error(`Unknown command: ${command}`);
-        process.exit(1);
-    }
-
-    logger.info(`Command '${command}' completed successfully`);
-    process.exit(0);
-  } catch (error) {
-    logger.error(`Command '${command}' failed`, {
-      error: error instanceof Error ? error.message : error,
-    });
-    process.exit(1);
-  }
-}
-
-// Export the SeedRunner class for programmatic use
-export { SeedRunner };
-
-// Run main function if this file is executed directly
-if (require.main === module) {
-  main();
 }

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Logger } from "@/config/logger";
 import { AppError } from "@/shared/errors";
+import { ResponseDTO } from "../utils/response.dto";
 
 export class ErrorHandler {
   private static readonly logger = Logger.getInstance();
@@ -38,13 +39,13 @@ export class ErrorHandler {
   }
 
   private static handleAppError(error: AppError, res: Response): void {
-    res.status(error.statusCode).json({
-      error: {
+    res.status(error.statusCode).json(
+      ResponseDTO.failed(error.message, {
         message: error.message,
         code: error.code,
         ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
-      },
-    });
+      })
+    );
   }
 
   private static handleZodError(error: any, res: Response): void {
@@ -55,24 +56,24 @@ export class ErrorHandler {
         code: issue.code,
       })) || [];
 
-    res.status(400).json({
-      error: {
+    res.status(400).json(
+      ResponseDTO.failed(error.issues?.[0]?.message || "Validation failed", {
         message: error.issues?.[0]?.message || "Validation failed",
         code: "VALIDATION_ERROR",
         details: formattedErrors,
         ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
-      },
-    });
+      })
+    );
   }
 
   private static handleValidationError(error: Error, res: Response): void {
-    res.status(400).json({
-      error: {
+    res.status(400).json(
+      ResponseDTO.failed("Validation failed", {
         message: "Validation failed",
         details: error.message,
         ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
-      },
-    });
+      })
+    );
   }
 
   private static handleSequelizeError(error: Error, res: Response): void {
@@ -91,15 +92,15 @@ export class ErrorHandler {
       message = "Foreign key constraint violation";
     }
 
-    res.status(statusCode).json({
-      error: {
+    res.status(statusCode).json(
+      ResponseDTO.failed(message, {
         message,
         ...(process.env.NODE_ENV === "development" && {
           details: error.message,
           stack: error.stack,
         }),
-      },
-    });
+      })
+    );
   }
 
   private static handleJWTError(error: Error, res: Response): void {
@@ -111,12 +112,12 @@ export class ErrorHandler {
       message = "Invalid token provided";
     }
 
-    res.status(401).json({
-      error: {
+    res.status(401).json(
+      ResponseDTO.failed(message, {
         message,
         code: "AUTHENTICATION_ERROR",
-      },
-    });
+      })
+    );
   }
 
   private static handleGenericError(error: Error, res: Response): void {
@@ -126,13 +127,13 @@ export class ErrorHandler {
         ? "Internal server error"
         : error.message;
 
-    res.status(statusCode).json({
-      error: {
+    res.status(statusCode).json(
+      ResponseDTO.failed(message, {
         message,
         ...(process.env.NODE_ENV === "development" && {
           stack: error.stack,
         }),
-      },
-    });
+      })
+    );
   }
 }

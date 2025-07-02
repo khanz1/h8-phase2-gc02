@@ -8,14 +8,17 @@ import { ErrorHandler } from "@/shared/middleware/errorHandler";
 import { AuthRoutes } from "@/features/auth/auth.routes";
 import { BlogRoutes } from "@/features/blog/blog.routes";
 import { RouteMapper } from "@/shared/utils/route-mapper";
+import { AppService } from "@/app.service";
 
 export class App {
   private readonly app: Application;
   private readonly logger = Logger.getInstance();
   private readonly database = DatabaseConnection.getInstance();
+  private readonly appService: AppService;
 
   constructor() {
     this.app = express();
+    this.appService = new AppService();
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
@@ -72,21 +75,17 @@ export class App {
   private setupRoutes(): void {
     // Health check endpoint
     this.app.get("/health", (req: Request, res: Response) => {
-      res.status(200).json({
-        status: "healthy",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || "development",
-      });
+      this.appService.getHealthStatus(req, res);
     });
 
     // API routes will be added here
     this.app.get("/", (req: Request, res: Response) => {
-      res.status(200).json({
-        message: "Phase2 Graded Challenge API",
-        version: "1.0.0",
-        documentation: "/api/docs",
-      });
+      this.appService.getAppInfo(req, res);
+    });
+
+    // Seed API endpoint
+    this.app.get("/api/seed", (req: Request, res: Response) => {
+      this.appService.handleSeedRequest(req, res);
     });
 
     // Authentication routes
