@@ -69,6 +69,8 @@ jobs:
           script: |
             # Create app directory structure and environment file
             mkdir -p ~/app/logs
+            # Set proper permissions for logs directory (nodejs user UID 1001)
+            sudo chown -R 1001:1001 ~/app/logs
             cat << 'EOF' > ~/app/.env
             ${{ secrets.PROD_ENV_FILE }}
             EOF
