@@ -17,46 +17,62 @@ export class Logger {
       mkdirSync(logsDir, { recursive: true });
     }
 
-    if (isProduction && enableFileLogging) {
-      // Production: Log to both files and console
-      const today = new Date().toISOString().split("T")[0];
-      const appLogFile = join(logsDir, `app-${today}.log`);
-      const errorLogFile = join(logsDir, `error-${today}.log`);
+    if (isProduction) {
+      if (enableFileLogging) {
+        // Production with file logging: Log to both files and console
+        const today = new Date().toISOString().split("T")[0];
+        const appLogFile = join(logsDir, `app-${today}.log`);
+        const errorLogFile = join(logsDir, `error-${today}.log`);
 
-      this.logger = pino({
-        level: logLevel,
-        timestamp: pino.stdTimeFunctions.isoTime,
-        transport: {
-          targets: [
-            // Console output with pretty formatting
-            {
-              target: "pino-pretty",
-              level: logLevel,
-              options: {
-                colorize: true,
-                ignore: "pid,hostname",
-                translateTime: "SYS:yyyy-mm-dd HH:MM:ss",
-              },
+        this.logger = pino({
+          level: logLevel,
+          timestamp: pino.stdTimeFunctions.isoTime,
+          formatters: {
+            level: (label: string) => {
+              return { level: label.toUpperCase() };
             },
-            // File output for all logs
-            {
-              target: "pino/file",
-              level: logLevel,
-              options: {
-                destination: appLogFile,
+          },
+          transport: {
+            targets: [
+              // Console output with simple formatting (no pino-pretty)
+              {
+                target: "pino/file",
+                level: logLevel,
+                options: {
+                  destination: 1, // stdout
+                },
               },
-            },
-            // Separate error file
-            {
-              target: "pino/file",
-              level: "error",
-              options: {
-                destination: errorLogFile,
+              // File output for all logs
+              {
+                target: "pino/file",
+                level: logLevel,
+                options: {
+                  destination: appLogFile,
+                },
               },
+              // Separate error file
+              {
+                target: "pino/file",
+                level: "error",
+                options: {
+                  destination: errorLogFile,
+                },
+              },
+            ],
+          },
+        });
+      } else {
+        // Production without file logging: Simple console output
+        this.logger = pino({
+          level: logLevel,
+          timestamp: pino.stdTimeFunctions.isoTime,
+          formatters: {
+            level: (label: string) => {
+              return { level: label.toUpperCase() };
             },
-          ],
-        },
-      });
+          },
+        });
+      }
     } else {
       // Development: Pretty print to console with custom formatters
       this.logger = pino({

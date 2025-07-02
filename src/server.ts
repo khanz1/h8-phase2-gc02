@@ -34,21 +34,39 @@ class Server {
         };
 
         this.logger.info("💾 Memory Usage Information:");
-        this.logger.info(`  RSS (Resident Set Size): ${formatBytes(memoryUsage.rss)} - Total memory allocated`);
-        this.logger.info(`  Heap Used: ${formatBytes(memoryUsage.heapUsed)} - V8 heap memory currently used`);
-        this.logger.info(`  Heap Total: ${formatBytes(memoryUsage.heapTotal)} - V8 heap memory allocated`);
-        this.logger.info(`  External: ${formatBytes(memoryUsage.external)} - Memory used by C++ objects bound to JS`);
-        this.logger.info(`  Array Buffers: ${formatBytes(memoryUsage.arrayBuffers)} - Memory allocated for ArrayBuffers`);
+        this.logger.info(
+          `  RSS (Resident Set Size): ${formatBytes(
+            memoryUsage.rss
+          )} - Total memory allocated`
+        );
+        this.logger.info(
+          `  Heap Used: ${formatBytes(
+            memoryUsage.heapUsed
+          )} - V8 heap memory currently used`
+        );
+        this.logger.info(
+          `  Heap Total: ${formatBytes(
+            memoryUsage.heapTotal
+          )} - V8 heap memory allocated`
+        );
+        this.logger.info(
+          `  External: ${formatBytes(
+            memoryUsage.external
+          )} - Memory used by C++ objects bound to JS`
+        );
+        this.logger.info(
+          `  Array Buffers: ${formatBytes(
+            memoryUsage.arrayBuffers
+          )} - Memory allocated for ArrayBuffers`
+        );
       });
 
       this.httpServer.on("error", (error: Error) => {
         this.logger.error("❌ Server error:", error);
-        console.log(error, '1');
         process.exit(1);
       });
     } catch (error) {
       this.logger.error("❌ Failed to start server:", error);
-      console.log(error, '2');
       process.exit(1);
     }
   }
@@ -84,7 +102,6 @@ class Server {
       this.logger.info("🛑 Server stopped gracefully");
     } catch (error) {
       this.logger.error("❌ Error during server shutdown:", error);
-      console.log(error, '3');
       process.exit(1);
     }
   }
@@ -94,33 +111,31 @@ const server = new Server();
 
 process.on("SIGTERM", async () => {
   Logger.getInstance().info("📨 SIGTERM received");
-  console.log('SIGTERM', '4');
   await server.stop();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
   Logger.getInstance().info("📨 SIGINT received");
-  console.log('SIGINT', '5');
   await server.stop();
   process.exit(0);
 });
 
 process.on("unhandledRejection", (reason: unknown) => {
   Logger.getInstance().error("🚨 Unhandled Promise Rejection:", reason);
-  console.log('Unhandled Promise Rejection', '6');
+  console.log("Unhandled Promise Rejection", "6", reason);
   process.exit(1);
 });
 
 process.on("uncaughtException", (error: Error) => {
   Logger.getInstance().error("🚨 Uncaught Exception:", error);
-  console.log('Uncaught Exception', '7');
+  console.log("Uncaught Exception", "7", error);
   process.exit(1);
 });
 
 process.on("SIGHUP", async () => {
   Logger.getInstance().info("📨 SIGHUP received");
-  console.log('SIGHUP', '8');
+  console.log("SIGHUP", "8");
   await server.stop();
   process.exit(0);
 });
