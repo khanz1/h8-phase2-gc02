@@ -14,6 +14,9 @@ RUN npm ci && npm cache clean --force
 COPY src/ ./src/
 COPY scripts/ ./scripts/
 
+RUN tsc ./scripts/migration-runner.ts
+RUN tsc ./scripts/seeder.ts
+
 # Build the application
 RUN npm run build
 
