@@ -36,9 +36,8 @@ services:
       PORT: ${PORT:-8002}
       DB_HOST: postgres
       DB_PORT: 5432
-      # Database setup control variables
-      RUN_DB_SETUP: ${RUN_DB_SETUP:-true} # Set to false to skip automatic setup
-      RUN_DB_MIGRATE: ${RUN_DB_MIGRATE:-false} # Set to true for migrations only
+      RUN_DB_SETUP: ${RUN_DB_SETUP:-true}
+      RUN_DB_MIGRATE: ${RUN_DB_MIGRATE:-false}
     ports:
       - "${PORT:-8002}:${PORT:-8002}"
     volumes:
@@ -53,7 +52,6 @@ services:
       - h8-phase2-gc02-network
     restart: unless-stopped
 
-  # Migration service for manual database operations in development
   migration:
     build:
       context: .
@@ -73,7 +71,7 @@ services:
     networks:
       - h8-phase2-gc02-network
     profiles:
-      - tools # Only start when explicitly requested
+      - tools
 
 networks:
   h8-phase2-gc02-network:

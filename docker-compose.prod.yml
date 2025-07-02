@@ -6,7 +6,6 @@ services:
       POSTGRES_DB: ${DB_NAME:-h8_phase2_gc02}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    # No port exposure in production for security
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -36,18 +35,16 @@ services:
       - "${PORT:-8002}:${PORT:-8002}"
     volumes:
       - ~/app/logs:/app/logs
-    # Remove depends_on since we'll start services manually in the correct order
     networks:
       - default
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8002}/health"]
-      interval: 30s
+      interval: 10s
       timeout: 3s
-      start_period: 40s
+      start_period: 10s
       retries: 3
 
-# Use default network name for easier integration with migration containers
 networks:
   default:
     name: app_default
