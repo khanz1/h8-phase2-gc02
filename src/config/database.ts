@@ -63,7 +63,7 @@ export class DatabaseConnection {
         await this.sequelize.sync({ alter: true, force: true });
         this.logger.info("✅ Database models force synced");
       } else {
-        await this.sequelize.sync({ alter: true, force: true });
+        await this.sequelize.sync({ alter: true });
         this.logger.info("✅ Database models synced");
       }
     } catch (error) {
