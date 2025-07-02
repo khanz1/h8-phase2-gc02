@@ -37,8 +37,23 @@ export class App {
     this.app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
     // Request logging with Morgan
+    // Define custom token for real IP (from X-Real-IP header)
+    morgan.token("real-ip", (req: Request) => {
+      return (
+        (req.headers["x-real-ip"] as string) ||
+        (req.headers["x-forwarded-for"] as string) ||
+        req.socket.remoteAddress ||
+        req.ip ||
+        "unknown"
+      );
+    });
+
+    // Custom format for production with real IP
+    const productionFormat =
+      ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+
     const morganFormat =
-      process.env.NODE_ENV === "production" ? "combined" : "dev";
+      process.env.NODE_ENV === "production" ? productionFormat : "dev";
 
     this.app.use(
       morgan(morganFormat, {

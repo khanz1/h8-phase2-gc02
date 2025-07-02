@@ -1,13 +1,12 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: h8-phase2-gc02-postgres-dev
+    container_name: h8-phase2-gc02-postgres-prod
     environment:
       POSTGRES_DB: h8_phase2_gc02
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "${DB_PORT:-5432}:5432"
+    # No port exposure in production for security
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -20,24 +19,21 @@ services:
       retries: 5
 
   app:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      target: development
-    container_name: h8-phase2-gc02-app-dev
+    image: ${DOCKER_IMAGE:-app:latest}
+    container_name: h8-phase2-gc02-app-prod
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      NODE_ENV: production
       PORT: ${PORT:-8002}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: h8_phase2_gc02
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-dev}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-dev}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-production}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
       LOG_FILE: ${LOG_FILE:-true}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8002}
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
@@ -48,9 +44,7 @@ services:
     ports:
       - "${PORT:-8002}:${PORT:-8002}"
     volumes:
-      - ../src:/app/src:ro
-      - ../scripts:/app/scripts:ro
-      - ../logs:/app/logs
+      - ~/app/logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy

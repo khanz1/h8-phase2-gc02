@@ -1,18 +1,18 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: h8-phase2-gc02-postgres-prod
+    container_name: h8-phase2-gc02-postgres-dev
     environment:
       POSTGRES_DB: h8_phase2_gc02
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5001:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - h8-phase2-gc02-network
-    restart: no
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -20,25 +20,24 @@ services:
       retries: 5
 
   app:
-    image: ${DOCKER_IMAGE:-app:latest}
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
-      target: production
-    container_name: h8-phase2-gc02-app-prod
+      target: development
+    container_name: h8-phase2-gc02-app-dev
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-development}
       PORT: ${PORT:-8002}
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: h8_phase2_gc02
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-production}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-production}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-here-dev}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-jwt-refresh-key-here-dev}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
       LOG_FILE: ${LOG_FILE:-true}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8002}
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
@@ -49,13 +48,15 @@ services:
     ports:
       - "${PORT:-8002}:${PORT:-8002}"
     volumes:
-      - ../logs:/app/logs
+      - ./src:/app/src:ro
+      - ./scripts:/app/scripts:ro
+      - ./logs:/app/logs
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - h8-phase2-gc02-network
-    restart: no
+    restart: unless-stopped
 
 networks:
   h8-phase2-gc02-network:
