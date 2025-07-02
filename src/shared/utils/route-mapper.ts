@@ -161,6 +161,18 @@ export class RouteMapper {
     if (regexSource.includes("\\/apis\\/pub\\/news")) {
       return basePath + "/apis/pub/news";
     }
+    if (regexSource.includes("\\/apis\\/products")) {
+      return basePath + "/apis/products";
+    }
+    if (regexSource.includes("\\/apis\\/pub\\/products")) {
+      return basePath + "/apis/pub/products";
+    }
+    if (regexSource.includes("\\/apis\\/rentals")) {
+      return basePath + "/apis/rentals";
+    }
+    if (regexSource.includes("\\/apis\\/pub\\/rentals")) {
+      return basePath + "/apis/pub/rentals";
+    }
 
     // Try to extract path from regex for other patterns
     const pathMatch = regexSource.match(/\\?\/([\w\-\\\/]+)/);
@@ -205,6 +217,18 @@ export class RouteMapper {
       !regexSource.includes("\\/pub\\/")
     ) {
       // Private news routes require authentication
+      middlewares.push("authenticate");
+    } else if (
+      regexSource.includes("\\/apis\\/products") &&
+      !regexSource.includes("\\/pub\\/")
+    ) {
+      // Private product routes require authentication
+      middlewares.push("authenticate");
+    } else if (
+      regexSource.includes("\\/apis\\/rentals") &&
+      !regexSource.includes("\\/pub\\/")
+    ) {
+      // Private rental routes require authentication
       middlewares.push("authenticate");
     }
 

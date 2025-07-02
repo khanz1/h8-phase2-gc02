@@ -2187,6 +2187,974 @@
         }
       ],
       "description": "Protected news content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "Product Management",
+      "item": [
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "categories"]
+                },
+                "description": "Retrieve all product categories available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific category including associated products."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Electronics",
+                      "description": "Category name (2-100 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "categories"]
+                },
+                "description": "Create a new product category. Requires Admin role. Category names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Consumer Electronics",
+                      "description": "Updated category name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing product category. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a product category. Requires Admin role. Cannot delete categories that have associated products."
+              },
+              "response": []
+            }
+          ],
+          "description": "Product category management operations"
+        },
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "Get All Products",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products"]
+                },
+                "description": "Retrieve all products with category and author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Product by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Product ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific product including category and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"iPhone 15 Pro Max\",\\n    \"description\": \"The most advanced iPhone ever featuring the powerful A17 Pro chip with a pro-class GPU that delivers console-quality mobile gaming. Crafted from aerospace-grade titanium for an incredibly strong yet lightweight design.\\\\n\\\\nKey Features:\\\\n• 6.7-inch Super Retina XDR display with ProMotion technology\\\\n• A17 Pro chip with 6-core GPU for exceptional performance\\\\n• Professional camera system with 48MP main, ultra-wide, and telephoto lenses\\\\n• Action Button for quick access to your favorite features\\\\n• USB-C connectivity with support for USB 3 speeds\\\\n• All-day battery life with fast charging capabilities\\\\n• Durable titanium design with Ceramic Shield front\\\\n• iOS 17 with advanced privacy and security features\\\\n\\\\nAvailable in four stunning finishes: Natural Titanium, Blue Titanium, White Titanium, and Black Titanium. Perfect for professionals, creatives, and anyone who demands the best mobile technology.\",\\n    \"price\": 1199,\\n    \"stock\": 50,\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800\",\\n    \"categoryId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products"]
+                },
+                "description": "Create a new product. Requires Staff or Admin role. The product will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"iPhone 15 Pro Max - 256GB\",\\n    \"description\": \"The most advanced iPhone ever featuring the powerful A17 Pro chip with a pro-class GPU that delivers console-quality mobile gaming. Crafted from aerospace-grade titanium for an incredibly strong yet lightweight design.\\\\n\\\\nUpdated Features:\\\\n• 6.7-inch Super Retina XDR display with ProMotion technology and Always-On display\\\\n• A17 Pro chip with 6-core GPU for exceptional performance and efficiency\\\\n• Professional camera system with 48MP main, ultra-wide, and telephoto lenses with 5x optical zoom\\\\n• Action Button for quick access to your favorite features and shortcuts\\\\n• USB-C connectivity with support for USB 3 speeds and DisplayPort\\\\n• All-day battery life with fast charging, wireless charging, and MagSafe\\\\n• Durable titanium design with Ceramic Shield front and IP68 water resistance\\\\n• iOS 17 with advanced privacy, security features, and new interactive widgets\\\\n\\\\nNow available with 256GB storage for enhanced capacity. Available in four stunning finishes: Natural Titanium, Blue Titanium, White Titanium, and Black Titanium. Perfect for professionals, creatives, and anyone who demands the best mobile technology.\",\\n    \"price\": 1299,\\n    \"stock\": 75,\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=1200\",\\n    \"categoryId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Product ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing product. Requires Staff/Admin role and ownership of the product (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Product Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Product ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the product image. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/products/products/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "products", "products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Product ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a product. Requires Staff/Admin role and ownership of the product (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Product management operations"
+        },
+        {
+          "name": "Public Product API",
+          "item": [
+            {
+              "name": "Get Public Products (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/products/products?q=iPhone&i=electronics,gadgets&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "products", "products"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "iPhone",
+                      "description": "Search in product names (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "electronics,gadgets",
+                      "description": "Filter by category names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Products per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated products for public consumption. Supports search by name, category filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Product by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/products/products/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "products", "products", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Product ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific product including category and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/products/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "products", "categories"]
+                },
+                "description": "Retrieve all available product categories for public use. Useful for building category filters and exploring different product types. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for product content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected product content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "Rental Management",
+      "item": [
+        {
+          "name": "Types",
+          "item": [
+            {
+              "name": "Get All Types",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "types"]
+                },
+                "description": "Retrieve all rental types available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Type by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific type including associated transportations."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Luxury Cars",
+                      "description": "Type name (2-50 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "types"]
+                },
+                "description": "Create a new rental type. Requires Admin role. Type names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Premium Luxury Cars",
+                      "description": "Updated type name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing rental type. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a rental type. Requires Admin role. Cannot delete types that have associated transportations."
+              },
+              "response": []
+            }
+          ],
+          "description": "Rental type management operations"
+        },
+        {
+          "name": "Transportations",
+          "item": [
+            {
+              "name": "Get All Transportations",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations"]
+                },
+                "description": "Retrieve all rental transportations with type and author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Transportation by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Transportation ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific transportation including type and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Transportation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"Tesla Model S Plaid\",\\n    \"description\": \"Experience the future of luxury transportation with the Tesla Model S Plaid - the fastest production sedan ever created. This all-electric powerhouse combines breathtaking performance with cutting-edge technology and uncompromising luxury.\\\\n\\\\nPerformance Highlights:\\\\n• 0-60 mph in just 1.99 seconds with Plaid powertrain\\\\n• 1,020 horsepower with three electric motors\\\\n• 390+ mile range on a single charge\\\\n• Top speed of 200 mph\\\\n• Advanced air suspension for optimal ride comfort\\\\n\\\\nLuxury Features:\\\\n• 17-inch cinematic display with gaming capabilities\\\\n• Premium sound system with 22 speakers\\\\n• Heated and ventilated seats with massage function\\\\n• Autopilot and Full Self-Driving capability\\\\n• Over-the-air software updates\\\\n• Bioweapon Defense Mode air filtration\\\\n\\\\nPerfect for executive travel, special occasions, or experiencing the pinnacle of electric vehicle technology. Available for daily, weekly, or monthly rentals with premium white-glove service included.\",\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800\",\\n    \"location\": \"Beverly Hills, CA\",\\n    \"price\": 499,\\n    \"typeId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations"]
+                },
+                "description": "Create a new transportation rental. Requires Staff or Admin role. The transportation will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Transportation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"Tesla Model S Plaid - Track Package\",\\n    \"description\": \"Experience the future of luxury transportation with the Tesla Model S Plaid Track Package - the fastest production sedan ever created with enhanced track-focused features. This all-electric powerhouse combines breathtaking performance with cutting-edge technology and uncompromising luxury.\\\\n\\\\nTrack Package Enhancements:\\\\n• Carbon fiber spoiler and diffuser for increased downforce\\\\n• Track-tuned suspension with adaptive dampers\\\\n• High-performance brake pads and rotors\\\\n• Michelin Pilot Sport Cup 2 tires\\\\n• Track Mode with advanced stability control\\\\n\\\\nPerformance Highlights:\\\\n• 0-60 mph in just 1.99 seconds with Plaid powertrain\\\\n• 1,020 horsepower with three electric motors\\\\n• 390+ mile range on a single charge\\\\n• Top speed of 200 mph\\\\n• Advanced air suspension for optimal ride comfort\\\\n\\\\nLuxury Features:\\\\n• 17-inch cinematic display with gaming capabilities\\\\n• Premium sound system with 22 speakers\\\\n• Heated and ventilated seats with massage function\\\\n• Autopilot and Full Self-Driving capability\\\\n• Over-the-air software updates\\\\n• Bioweapon Defense Mode air filtration\\\\n\\\\nPerfect for track days, executive travel, special occasions, or experiencing the pinnacle of electric vehicle technology. Available for daily, weekly, or monthly rentals with premium white-glove service and track instruction included.\",\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1617788138017-80ad40651399?w=1200\",\\n    \"location\": \"Beverly Hills, CA\",\\n    \"price\": 699,\\n    \"typeId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Transportation ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing transportation. Requires Staff/Admin role and ownership of the transportation (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Transportation Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Transportation ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the transportation image. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Transportation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rentals/transportations/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rentals", "transportations", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Transportation ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a transportation. Requires Staff/Admin role and ownership of the transportation (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Transportation management operations"
+        },
+        {
+          "name": "Public Rental API",
+          "item": [
+            {
+              "name": "Get Public Transportations (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rentals/transportations?q=Tesla&i=luxury,economy&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rentals", "transportations"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Tesla",
+                      "description": "Search in transportation names (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "luxury,economy",
+                      "description": "Filter by type names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Transportations per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated rental transportations for public consumption. Supports search by name, type filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Transportation by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rentals/transportations/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rentals", "transportations", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Transportation ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific transportation including type and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rentals/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rentals", "types"]
+                },
+                "description": "Retrieve all available rental types for public use. Useful for building type filters and exploring different transportation categories. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for rental content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected rental content management endpoints. Requires authentication and appropriate permissions."
     }
   ],
   "auth": {

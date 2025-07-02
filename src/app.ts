@@ -11,6 +11,8 @@ import { BlogRoutes } from "@/features/blog/blog.routes";
 import { CareerRoutes } from "@/features/careers/career.routes";
 import { MovieRoutes } from "@/features/movies/movie.routes";
 import { NewsRoutes } from "@/features/news/news.routes";
+import { ProductRoutes } from "@/features/products/product.routes";
+import { RentalRoutes } from "@/features/rentals/rental.routes";
 import { RouteMapper } from "@/shared/utils/route-mapper";
 import { AppService } from "@/app.service";
 
@@ -104,6 +106,14 @@ export class App {
     const newsRoutes = new NewsRoutes();
     this.app.use("/apis/news", newsRoutes.getRouter());
     this.app.use("/apis/pub/news", newsRoutes.getPublicRouter());
+
+    const productRoutes = new ProductRoutes();
+    this.app.use("/apis/products", productRoutes.getRouter());
+    this.app.use("/apis/pub/products", productRoutes.getPublicRouter());
+
+    const rentalRoutes = new RentalRoutes();
+    this.app.use("/apis/rentals", rentalRoutes.getRouter());
+    this.app.use("/apis/pub/rentals", rentalRoutes.getPublicRouter());
 
     this.app.use("*", (req: Request, res: Response) => {
       res.status(404).json({

@@ -184,6 +184,10 @@ export class AppService {
           publicMovies: "/apis/pub/movies",
           news: "/apis/news",
           publicNews: "/apis/pub/news",
+          products: "/apis/products",
+          publicProducts: "/apis/pub/products",
+          rentals: "/apis/rentals",
+          publicRentals: "/apis/pub/rentals",
           seed: "/apis/seed",
         },
       };
