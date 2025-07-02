@@ -1703,6 +1703,490 @@
         }
       ],
       "description": "Protected movie content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "News Management",
+      "item": [
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "categories"]
+                },
+                "description": "Retrieve all news categories available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific category including associated articles."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Technology",
+                      "description": "Category name (2-100 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "categories"]
+                },
+                "description": "Create a new news category. Requires Admin role. Category names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Technology & Innovation",
+                      "description": "Updated category name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing news category. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a news category. Requires Admin role. Cannot delete categories that have associated articles."
+              },
+              "response": []
+            }
+          ],
+          "description": "News category management operations"
+        },
+        {
+          "name": "Articles",
+          "item": [
+            {
+              "name": "Get All Articles",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles"]
+                },
+                "description": "Retrieve all news articles with category and author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Article by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Article ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific news article including category and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Article",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"AI Revolution: OpenAI Announces GPT-5 with Unprecedented Capabilities\",\n    \"content\": \"In a groundbreaking announcement today, OpenAI revealed GPT-5, the latest iteration of their revolutionary language model series. This new model represents a quantum leap in artificial intelligence capabilities, promising to transform how we interact with technology across industries.\\n\\nGPT-5 introduces several game-changing features that set it apart from its predecessors. The model demonstrates unprecedented reasoning abilities, capable of handling complex multi-step problems with remarkable accuracy. Advanced multimodal capabilities allow it to seamlessly process and generate text, images, audio, and video content within a single conversation.\\n\\nThe new architecture incorporates breakthrough improvements in factual accuracy and reduced hallucinations, addressing one of the most significant challenges in previous AI models. GPT-5 can now maintain context across much longer conversations, remembering details from thousands of exchanges while adapting its communication style to individual users.\\n\\nIndustry applications are already showing tremendous promise. Healthcare professionals are using GPT-5 for advanced diagnostic assistance and treatment planning. Educational institutions are implementing it for personalized tutoring that adapts to each student's learning style and pace. Creative industries are leveraging its enhanced artistic capabilities for content generation and collaborative brainstorming.\\n\\nSafety and ethical considerations have been central to GPT-5's development. OpenAI has implemented robust safeguards and alignment techniques to ensure responsible AI behavior. The model undergoes continuous monitoring and includes built-in mechanisms to refuse harmful requests while providing helpful alternatives.\\n\\nThe release timeline indicates a gradual rollout starting with select partners and researchers, followed by broader availability through API access. OpenAI emphasizes their commitment to responsible deployment, ensuring thorough testing and feedback integration before widespread public access.\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800\",\n    \"categoryId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles"]
+                },
+                "description": "Create a new news article. Requires Staff or Admin role. The article will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Article",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"AI Revolution: OpenAI Announces GPT-5 with Unprecedented Capabilities (Updated)\",\n    \"content\": \"In a groundbreaking announcement today, OpenAI revealed GPT-5, the latest iteration of their revolutionary language model series. This new model represents a quantum leap in artificial intelligence capabilities, promising to transform how we interact with technology across industries.\\n\\nGPT-5 introduces several game-changing features that set it apart from its predecessors. The model demonstrates unprecedented reasoning abilities, capable of handling complex multi-step problems with remarkable accuracy. Advanced multimodal capabilities allow it to seamlessly process and generate text, images, audio, and video content within a single conversation.\\n\\nThe new architecture incorporates breakthrough improvements in factual accuracy and reduced hallucinations, addressing one of the most significant challenges in previous AI models. GPT-5 can now maintain context across much longer conversations, remembering details from thousands of exchanges while adapting its communication style to individual users.\\n\\nUpdate: Early beta testing results show even more impressive performance metrics than initially reported. The model's ability to understand nuanced context and provide relevant responses has exceeded expectations across all evaluation criteria.\\n\\nIndustry applications are already showing tremendous promise. Healthcare professionals are using GPT-5 for advanced diagnostic assistance and treatment planning. Educational institutions are implementing it for personalized tutoring that adapts to each student's learning style and pace. Creative industries are leveraging its enhanced artistic capabilities for content generation and collaborative brainstorming.\\n\\nSafety and ethical considerations have been central to GPT-5's development. OpenAI has implemented robust safeguards and alignment techniques to ensure responsible AI behavior. The model undergoes continuous monitoring and includes built-in mechanisms to refuse harmful requests while providing helpful alternatives.\\n\\nThe release timeline indicates a gradual rollout starting with select partners and researchers, followed by broader availability through API access. OpenAI emphasizes their commitment to responsible deployment, ensuring thorough testing and feedback integration before widespread public access.\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200\",\n    \"categoryId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Article ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing news article. Requires Staff/Admin role and ownership of the article (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Article Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Article ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the featured image for a news article. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Article",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/news/articles/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "news", "articles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Article ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a news article. Requires Staff/Admin role and ownership of the article (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "News article management operations"
+        },
+        {
+          "name": "Public News API",
+          "item": [
+            {
+              "name": "Get Public Articles (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/news/articles?q=AI&i=technology,politics&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "news", "articles"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "AI",
+                      "description": "Search in article titles (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "technology,politics",
+                      "description": "Filter by category names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Articles per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated news articles for public consumption. Supports search by title, category name filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Article by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/news/articles/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "news", "articles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Article ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific news article including category and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/news/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "news", "categories"]
+                },
+                "description": "Retrieve all available news categories for public use. Useful for building category filters and exploring different news topics. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for news content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected news content management endpoints. Requires authentication and appropriate permissions."
     }
   ],
   "auth": {

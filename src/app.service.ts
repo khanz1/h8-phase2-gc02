@@ -182,6 +182,8 @@ export class AppService {
           publicCareers: "/apis/pub/careers",
           movies: "/apis/movies",
           publicMovies: "/apis/pub/movies",
+          news: "/apis/news",
+          publicNews: "/apis/pub/news",
           seed: "/apis/seed",
         },
       };
