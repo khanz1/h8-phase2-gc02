@@ -25,10 +25,8 @@ export class App {
   }
 
   private setupMiddleware(): void {
-    // Security middleware
     this.app.use(helmet());
 
-    // CORS configuration
     this.app.use(
       cors({
         origin: process.env.CORS_ORIGIN || "http://localhost:3000",
@@ -36,12 +34,9 @@ export class App {
       })
     );
 
-    // Body parsing middleware
     this.app.use(express.json({ limit: "10mb" }));
     this.app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-    // Request logging with Morgan
-    // Define custom token for real IP (from X-Real-IP header)
     morgan.token("real-ip", (req: Request) => {
       return (
         (req.headers["x-real-ip"] as string) ||
@@ -52,7 +47,6 @@ export class App {
       );
     });
 
-    // Custom format for production with real IP
     const productionFormat =
       ':real-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
 
@@ -73,31 +67,25 @@ export class App {
   }
 
   private setupRoutes(): void {
-    // Health check endpoint
     this.app.get("/health", (req: Request, res: Response) => {
       this.appService.getHealthStatus(req, res);
     });
 
-    // API routes will be added here
     this.app.get("/", (req: Request, res: Response) => {
       this.appService.getAppInfo(req, res);
     });
 
-    // Seed API endpoint
     this.app.get("/api/seed", (req: Request, res: Response) => {
       this.appService.handleSeedRequest(req, res);
     });
 
-    // Authentication routes
     const authRoutes = new AuthRoutes();
     this.app.use("/apis/auth", authRoutes.getRouter());
 
-    // Blog routes
     const blogRoutes = new BlogRoutes();
     this.app.use("/apis/blog", blogRoutes.getRouter());
     this.app.use("/apis/pub/blog", blogRoutes.getPublicRouter());
 
-    // 404 handler for undefined routes
     this.app.use("*", (req: Request, res: Response) => {
       res.status(404).json({
         error: "Route not found",
@@ -110,19 +98,13 @@ export class App {
   }
 
   private setupErrorHandling(): void {
-    // Global error handler
-    this.app.use(
-      (error: Error, req: Request, res: Response, next: NextFunction) => {
-        ErrorHandler.handle(error, req, res, next);
-      }
-    );
+    this.app.use(ErrorHandler.handle);
 
     this.logger.info("✅ Error handling setup completed");
   }
 
   public async initialize(): Promise<void> {
     try {
-      // Initialize database connection
       await this.database.connect();
       this.logger.info("✅ Application initialized successfully");
     } catch (error) {
