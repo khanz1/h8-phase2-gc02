@@ -20,6 +20,7 @@ export class Logger {
     if (isProduction) {
       if (enableFileLogging) {
         // Production with file logging: Log to both files and console
+        // Note: Cannot use custom formatters with transport.targets
         const today = new Date().toISOString().split("T")[0];
         const appLogFile = join(logsDir, `app-${today}.log`);
         const errorLogFile = join(logsDir, `error-${today}.log`);
@@ -27,11 +28,6 @@ export class Logger {
         this.logger = pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
-          formatters: {
-            level: (label: string) => {
-              return { level: label.toUpperCase() };
-            },
-          },
           transport: {
             targets: [
               // Console output with simple formatting (no pino-pretty)
@@ -62,7 +58,7 @@ export class Logger {
           },
         });
       } else {
-        // Production without file logging: Simple console output
+        // Production without file logging: Simple console output with formatters
         this.logger = pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
