@@ -1219,6 +1219,490 @@
         }
       ],
       "description": "Protected career content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "Movie Management",
+      "item": [
+        {
+          "name": "Genres",
+          "item": [
+            {
+              "name": "Get All Genres",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/genres",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "genres"]
+                },
+                "description": "Retrieve all movie genres available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Genre by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/genres/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "genres", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Genre ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific genre including associated movies."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Genre",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Sci-Fi",
+                      "description": "Genre name (2-50 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/genres",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "genres"]
+                },
+                "description": "Create a new movie genre. Requires Admin role. Genre names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Genre",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Science Fiction",
+                      "description": "Updated genre name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/genres/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "genres", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Genre ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing movie genre. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Genre",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/genres/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "genres", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Genre ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a movie genre. Requires Admin role. Cannot delete genres that have associated movies."
+              },
+              "response": []
+            }
+          ],
+          "description": "Movie genre management operations"
+        },
+        {
+          "name": "Movies",
+          "item": [
+            {
+              "name": "Get All Movies",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies"]
+                },
+                "description": "Retrieve all movies with genre and author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Movie by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Movie ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific movie including genre and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Movie",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"Blade Runner 2049\",\n    \"synopsis\": \"Thirty years after the events of the first film, a new blade runner, LAPD Officer K, unearths a long-buried secret that has the potential to plunge what's left of society into chaos. K's discovery leads him on a quest to find Rick Deckard, a former LAPD blade runner who has been missing for 30 years.\\n\\nDirected by Denis Villeneuve and starring Ryan Gosling and Harrison Ford, this visually stunning sequel explores themes of identity, memory, and what it means to be human in a world where artificial beings are indistinguishable from real ones.\\n\\nThe film masterfully combines practical effects with cutting-edge CGI to create a believable dystopian future. Roger Deakins' cinematography creates a haunting atmosphere that perfectly complements the philosophical depth of the narrative. The score by Hans Zimmer and Benjamin Wallfisch builds upon Vangelis' iconic original soundtrack while adding modern sensibilities.\\n\\nBlade Runner 2049 successfully expands the universe while respecting the legacy of Ridley Scott's original masterpiece, delivering both spectacular action sequences and profound philosophical questions about consciousness and humanity.\",\n    \"trailerUrl\": \"https://www.youtube.com/watch?v=gCcx85zbxz4\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1489599735792-96064dc0a8e4?w=800\",\n    \"rating\": 8,\n    \"genreId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies"]
+                },
+                "description": "Create a new movie entry. Requires Staff or Admin role. The movie will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Movie",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"title\": \"Blade Runner 2049: Director's Cut\",\n    \"synopsis\": \"Thirty years after the events of the first film, a new blade runner, LAPD Officer K, unearths a long-buried secret that has the potential to plunge what's left of society into chaos. K's discovery leads him on a quest to find Rick Deckard, a former LAPD blade runner who has been missing for 30 years.\\n\\nDirected by Denis Villeneuve and starring Ryan Gosling and Harrison Ford, this visually stunning sequel explores themes of identity, memory, and what it means to be human in a world where artificial beings are indistinguishable from real ones.\\n\\nThis Director's Cut features additional scenes that delve deeper into K's internal struggle and includes extended sequences that further explore the relationship between humans and replicants. The film masterfully combines practical effects with cutting-edge CGI to create a believable dystopian future.\\n\\nRoger Deakins' award-winning cinematography creates a haunting atmosphere that perfectly complements the philosophical depth of the narrative. The score by Hans Zimmer and Benjamin Wallfisch builds upon Vangelis' iconic original soundtrack while adding modern sensibilities.\\n\\nBlade Runner 2049 successfully expands the universe while respecting the legacy of Ridley Scott's original masterpiece, delivering both spectacular action sequences and profound philosophical questions about consciousness and humanity.\",\n    \"trailerUrl\": \"https://www.youtube.com/watch?v=gCcx85zbxz4\",\n    \"imgUrl\": \"https://images.unsplash.com/photo-1489599735792-96064dc0a8e4?w=1200\",\n    \"rating\": 9,\n    \"genreId\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Movie ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing movie entry. Requires Staff/Admin role and ownership of the movie (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Movie Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Movie ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the poster image for a movie. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Movie",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/movies/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "movies", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Movie ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a movie entry. Requires Staff/Admin role and ownership of the movie (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Movie management operations"
+        },
+        {
+          "name": "Public Movie API",
+          "item": [
+            {
+              "name": "Get Public Movies (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/movies/movies?q=blade&i=action,sci-fi&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "movies", "movies"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "shaw",
+                      "description": "Search in movie titles (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "action,sci-fi",
+                      "description": "Filter by genre names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Movies per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated movies for public consumption. Supports search by title, genre name filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Movie by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/movies/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "movies", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Movie ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific movie including genre and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Genres",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/movies/genres",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "movies", "genres"]
+                },
+                "description": "Retrieve all available movie genres for public use. Useful for building genre filters and exploring movie categories. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for movie content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected movie content management endpoints. Requires authentication and appropriate permissions."
     }
   ],
   "auth": {
@@ -1255,12 +1739,12 @@
     },
     {
       "key": "EMAIL_ADMIN",
-      "value": "admin@techblog.com",
+      "value": "admin@mail.com",
       "type": "string"
     },
     {
       "key": "EMAIL_STAFF",
-      "value": "staff@techblog.com",
+      "value": "staff@mail.com",
       "type": "string"
     },
     {
