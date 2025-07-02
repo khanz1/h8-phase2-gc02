@@ -1144,7 +1144,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs?q=developer&i=Full-time,Remote&l=San Francisco,New York&limit=8&page=1&sort=DESC",
+                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs?q=developer&i=TechCorp,Microsoft&limit=8&page=1&sort=DESC",
                   "host": ["{{BASE_URL}}"],
                   "path": ["apis", "pub", "careers", "jobs"],
                   "query": [
@@ -1155,13 +1155,8 @@
                     },
                     {
                       "key": "i",
-                      "value": "Full-time,Remote",
-                      "description": "Filter by job types (comma-separated, optional)"
-                    },
-                    {
-                      "key": "l",
-                      "value": "San Francisco,New York",
-                      "description": "Filter by company locations (comma-separated, optional)"
+                      "value": "TechCorp,Microsoft",
+                      "description": "Filter by company names (comma-separated, optional)"
                     },
                     {
                       "key": "limit",
@@ -1180,7 +1175,7 @@
                     }
                   ]
                 },
-                "description": "Retrieve paginated job postings for public consumption. Supports search by title, job type filtering, location filtering, and customizable pagination. No authentication required."
+                "description": "Retrieve paginated job postings for public consumption. Supports search by title, company name filtering, and customizable pagination. No authentication required."
               },
               "response": []
             },

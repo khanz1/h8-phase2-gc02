@@ -51,8 +51,7 @@ export const updateCareerJobSchema = createCareerJobSchema;
 
 export const careerQuerySchema = z.object({
   q: z.string().optional().describe("Search query for job title"),
-  i: z.string().optional().describe("Search query for job type"),
-  l: z.string().optional().describe("Search query for location"),
+  i: z.string().optional().describe("Search query for company name"),
   limit: z.coerce
     .number()
     .int()
@@ -99,7 +98,6 @@ export interface UpdateCareerJobDto {
 export interface CareerQueryDto {
   q?: string;
   i?: string;
-  l?: string;
   limit: number;
   page: number;
   sort: "ASC" | "DESC";

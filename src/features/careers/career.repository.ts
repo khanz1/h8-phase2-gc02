@@ -153,7 +153,7 @@ export class CareerJobRepository implements ICareerJobRepository {
   public async findAllPublic(
     query: CareerQueryDto
   ): Promise<{ jobs: CareerJobResponse[]; total: number }> {
-    const { q, i, l, limit, page, sort } = query;
+    const { q, i, limit, page, sort } = query;
     const offset = (page - 1) * limit;
 
     const whereConditions: any = {};
@@ -166,16 +166,9 @@ export class CareerJobRepository implements ICareerJobRepository {
     }
 
     if (i) {
-      const jobTypes = i.split(",").map((type) => type.trim());
-      whereConditions.jobType = {
-        [Op.in]: jobTypes,
-      };
-    }
-
-    if (l) {
-      const locations = l.split(",").map((location) => location.trim());
-      companyWhereConditions.location = {
-        [Op.iLike]: { [Op.any]: locations.map((loc) => `%${loc}%`) },
+      const companyNames = i.split(",").map((name) => name.trim());
+      companyWhereConditions.name = {
+        [Op.iLike]: { [Op.any]: companyNames.map((name) => `%${name}%`) },
       };
     }
 
