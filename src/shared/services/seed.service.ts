@@ -183,84 +183,90 @@ export class SeedService {
   private async createDefaultUsers(): Promise<any[]> {
     const users = [
       {
-        username: "admin1",
-        email: "admin@mail.com",
+        username: "andi_prasetyo",
+        email: "andi.prasetyo@gmail.com",
         password: "123456",
         role: "Admin",
-        phoneNumber: "+1234567890",
-        address: "123 Admin Street, Admin City",
+        phoneNumber: "+6281234567890",
+        address:
+          "Jl. Sudirman No. 45, Menteng, Jakarta Pusat, DKI Jakarta 10310",
       },
       {
-        username: "staff1",
-        email: "staff1@mail.com",
+        username: "sari_wijaya",
+        email: "sari.wijaya@yahoo.co.id",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567891",
-        address: "124 Staff Street, Staff City",
+        phoneNumber: "+6282345678901",
+        address: "Jl. Malioboro No. 123, Gedongtengen, Yogyakarta, DIY 55271",
       },
       {
-        username: "staff2",
-        email: "staff2@example.com",
+        username: "budi_santoso",
+        email: "budi.santoso@outlook.co.id",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567892",
-        address: "125 Staff Street, Staff City",
+        phoneNumber: "+6283456789012",
+        address: "Jl. Braga No. 78, Sumur Bandung, Bandung, Jawa Barat 40111",
       },
       {
-        username: "user1",
-        email: "user1@example.com",
+        username: "dewi_lestari",
+        email: "dewi.lestari@gmail.com",
         password: "123456",
         role: "User",
-        phoneNumber: "+1234567893",
-        address: "126 User Street, User City",
+        phoneNumber: "+6284567890123",
+        address: "Jl. Diponegoro No. 156, Citarum, Semarang, Jawa Tengah 50241",
       },
       {
-        username: "user2",
-        email: "user2@example.com",
+        username: "rudi_hermawan",
+        email: "rudi.hermawan@yahoo.co.id",
         password: "123456",
         role: "User",
-        phoneNumber: "+1234567894",
-        address: "127 User Street, User City",
+        phoneNumber: "+6285678901234",
+        address: "Jl. Veteran No. 89, Ketabang, Surabaya, Jawa Timur 60272",
       },
       {
-        username: "editor1",
-        email: "editor1@example.com",
+        username: "maya_sari",
+        email: "maya.sari@gmail.com",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567895",
-        address: "128 Editor Street, Editor City",
+        phoneNumber: "+6286789012345",
+        address:
+          "Jl. Asia Afrika No. 234, Sumur Bandung, Bandung, Jawa Barat 40112",
       },
       {
-        username: "editor2",
-        email: "editor2@example.com",
+        username: "agus_wibowo",
+        email: "agus.wibowo@outlook.co.id",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567896",
-        address: "129 Editor Street, Editor City",
+        phoneNumber: "+6287890123456",
+        address:
+          "Jl. Gajah Mada No. 67, Krukut, Jakarta Barat, DKI Jakarta 11140",
       },
       {
-        username: "manager1",
-        email: "manager1@example.com",
+        username: "indira_putri",
+        email: "indira.putri@gmail.com",
         password: "123456",
         role: "Admin",
-        phoneNumber: "+1234567897",
-        address: "130 Manager Street, Manager City",
+        phoneNumber: "+6288901234567",
+        address:
+          "Jl. Imam Bonjol No. 198, Menteng, Jakarta Pusat, DKI Jakarta 10310",
       },
       {
-        username: "moderator1",
-        email: "moderator1@example.com",
+        username: "farhan_alatas",
+        email: "farhan.alatas@yahoo.co.id",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567898",
-        address: "131 Moderator Street, Moderator City",
+        phoneNumber: "+6289012345678",
+        address:
+          "Jl. Pemuda No. 45, Semarang Tengah, Semarang, Jawa Tengah 50132",
       },
       {
-        username: "content_creator",
-        email: "creator@example.com",
+        username: "ratna_kusuma",
+        email: "ratna.kusuma@gmail.com",
         password: "123456",
         role: "Staff",
-        phoneNumber: "+1234567899",
-        address: "132 Creator Street, Creator City",
+        phoneNumber: "+6281123456789",
+        address:
+          "Jl. Raya Darmo No. 112, Wonokromo, Surabaya, Jawa Timur 60241",
       },
     ];
 
@@ -554,7 +560,9 @@ export class SeedService {
       // Seed anime
       if (seedData.animes.length > 0) {
         await this.models.Anime.bulkCreate(seedData.animes, { transaction });
-        this.logger.info(`Successfully seeded ${seedData.animes.length} animes`);
+        this.logger.info(
+          `Successfully seeded ${seedData.animes.length} animes`
+        );
       }
     } catch (error) {
       this.logger.error("Failed to seed anime data", { error });
