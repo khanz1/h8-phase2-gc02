@@ -41,7 +41,7 @@ export class AnimeService implements IAnimeService {
     const anime = await this.animeRepository.findById(id);
 
     if (!anime) {
-      throw new NotFoundError("Anime not found");
+      throw new NotFoundError(`Anime with ID ${id} not found`);
     }
 
     return anime;
@@ -51,7 +51,7 @@ export class AnimeService implements IAnimeService {
     const anime = await this.animeRepository.findByIdPublic(id);
 
     if (!anime) {
-      throw new NotFoundError("Anime not found");
+      throw new NotFoundError(`Anime with ID ${id} not found`);
     }
 
     return anime;
@@ -68,37 +68,33 @@ export class AnimeService implements IAnimeService {
     id: number,
     data: UpdateAnimeDto
   ): Promise<AnimeResponse> {
-    const anime = await this.animeRepository.findById(id);
+    const updatedAnime = await this.animeRepository.update(id, data);
 
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
+    if (!updatedAnime) {
+      throw new NotFoundError(`Anime with ID ${id} not found`);
     }
 
-    const updatedAnime = await this.animeRepository.update(id, data);
-    return updatedAnime!;
+    return updatedAnime;
   }
 
   public async updateAnimeImage(
     id: number,
     coverUrl: string
   ): Promise<AnimeResponse> {
-    const anime = await this.animeRepository.findById(id);
+    const updatedAnime = await this.animeRepository.updateImage(id, coverUrl);
 
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
+    if (!updatedAnime) {
+      throw new NotFoundError(`Anime with ID ${id} not found`);
     }
 
-    const updatedAnime = await this.animeRepository.updateImage(id, coverUrl);
-    return updatedAnime!;
+    return updatedAnime;
   }
 
   public async deleteAnime(id: number): Promise<void> {
-    const anime = await this.animeRepository.findById(id);
+    const deleted = await this.animeRepository.delete(id);
 
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
+    if (!deleted) {
+      throw new NotFoundError(`Anime with ID ${id} not found`);
     }
-
-    await this.animeRepository.delete(id);
   }
 }

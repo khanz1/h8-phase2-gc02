@@ -1,5 +1,4 @@
 import { Op } from "sequelize";
-import { NotFoundError } from "@/shared/errors";
 import { Anime } from "./lecture.model";
 import { User } from "@/features/users/user.model";
 import {
@@ -109,61 +108,36 @@ export class AnimeRepository implements IAnimeRepository {
     id: number,
     data: UpdateAnimeDto
   ): Promise<AnimeResponse | null> {
-    const anime = await Anime.findByPk(id);
-
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
-    }
-
-    await anime.update(data);
-
-    const updatedAnime = await Anime.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: "author",
-          attributes: ["id", "username", "email"],
-        },
-      ],
+    const [updatedCount] = await Anime.update(data, {
+      where: { id },
     });
 
-    return this.mapAnimeToResponse(updatedAnime!);
+    if (updatedCount === 0) {
+      return null;
+    }
+
+    return this.findById(id);
   }
 
   public async updateImage(
     id: number,
     coverUrl: string
   ): Promise<AnimeResponse | null> {
-    const anime = await Anime.findByPk(id);
+    const [updatedCount] = await Anime.update({ coverUrl }, { where: { id } });
 
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
+    if (updatedCount === 0) {
+      return null;
     }
 
-    await anime.update({ coverUrl });
-
-    const updatedAnime = await Anime.findByPk(id, {
-      include: [
-        {
-          model: User,
-          as: "author",
-          attributes: ["id", "username", "email"],
-        },
-      ],
-    });
-
-    return this.mapAnimeToResponse(updatedAnime!);
+    return this.findById(id);
   }
 
   public async delete(id: number): Promise<boolean> {
-    const anime = await Anime.findByPk(id);
+    const deletedCount = await Anime.destroy({
+      where: { id },
+    });
 
-    if (!anime) {
-      throw new NotFoundError("Anime not found");
-    }
-
-    await anime.destroy();
-    return true;
+    return deletedCount > 0;
   }
 
   private mapAnimeToResponse(anime: Anime): AnimeResponse {
@@ -181,7 +155,7 @@ export class AnimeRepository implements IAnimeRepository {
             username: anime.author.username,
             email: anime.author.email,
           }
-        : undefined,
+        : null,
     };
   }
 }

@@ -296,6 +296,25 @@ CREATE TABLE IF NOT EXISTS "Restaurant_Cuisines" (
 );
 
 -- =============================================================================
+-- Lecture Module (Animes)
+-- =============================================================================
+
+-- Animes table for lecture feature
+CREATE TABLE IF NOT EXISTS "Animes" (
+    "id" SERIAL NOT NULL,
+    "title" VARCHAR(200) NOT NULL,
+    "synopsis" TEXT NOT NULL,
+    "cover_url" TEXT,
+    "author_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Animes_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "Animes_title_length_check" CHECK (LENGTH("title") >= 1 AND LENGTH("title") <= 200),
+    CONSTRAINT "Animes_synopsis_length_check" CHECK (LENGTH("synopsis") >= 10 AND LENGTH("synopsis") <= 5000)
+);
+
+-- =============================================================================
 -- Performance Indexes
 -- =============================================================================
 
@@ -355,6 +374,11 @@ CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_category_id" ON "Restaurant_
 CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_author_id" ON "Restaurant_Cuisines"("author_id");
 CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_price" ON "Restaurant_Cuisines"("price");
 CREATE INDEX IF NOT EXISTS "idx_restaurant_cuisines_name" ON "Restaurant_Cuisines"("name");
+
+-- Lecture module indexes
+CREATE INDEX IF NOT EXISTS "idx_animes_author_id" ON "Animes"("author_id");
+CREATE INDEX IF NOT EXISTS "idx_animes_title" ON "Animes"("title");
+CREATE INDEX IF NOT EXISTS "idx_animes_created_at" ON "Animes"("created_at");
 
 -- =============================================================================
 -- Foreign Key Constraints
@@ -432,6 +456,11 @@ ALTER TABLE "Restaurant_Cuisines" ADD CONSTRAINT "fk_restaurant_cuisines_author"
     FOREIGN KEY ("author_id") REFERENCES "Users"("id") 
     ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- Lecture module foreign keys
+ALTER TABLE "Animes" ADD CONSTRAINT "fk_animes_author" 
+    FOREIGN KEY ("author_id") REFERENCES "Users"("id") 
+    ON DELETE CASCADE ON UPDATE CASCADE;
+
 -- =============================================================================
 -- Triggers for automatic updated_at timestamp updates
 -- =============================================================================
@@ -495,4 +524,7 @@ CREATE TRIGGER update_restaurant_categories_updated_at BEFORE UPDATE ON "Restaur
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_restaurant_cuisines_updated_at BEFORE UPDATE ON "Restaurant_Cuisines" 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_animes_updated_at BEFORE UPDATE ON "Animes" 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

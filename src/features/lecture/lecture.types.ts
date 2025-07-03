@@ -74,11 +74,11 @@ export interface AnimeResponse {
   authorId: number;
   createdAt: Date;
   updatedAt: Date;
-  author?: {
+  author: {
     id: number;
     username: string;
     email: string;
-  };
+  } | null;
 }
 
 export interface PaginatedAnimesResponse {
