@@ -158,7 +158,6 @@ export class RestaurantCuisineService implements IRestaurantCuisineService {
     data: CreateRestaurantCuisineDto,
     authorId: number
   ): Promise<RestaurantCuisineResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(
@@ -173,7 +172,6 @@ export class RestaurantCuisineService implements IRestaurantCuisineService {
     id: number,
     data: UpdateRestaurantCuisineDto
   ): Promise<RestaurantCuisineResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(

@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-// =============================================================================
-// Validation Schemas
-// =============================================================================
-
 export const CreateAnimeSchema = z.object({
   title: z
     .string()
@@ -54,17 +50,9 @@ export const AnimeQuerySchema = z.object({
     .default("DESC"),
 });
 
-// =============================================================================
-// DTOs (Data Transfer Objects)
-// =============================================================================
-
 export type CreateAnimeDto = z.infer<typeof CreateAnimeSchema>;
 export type UpdateAnimeDto = z.infer<typeof UpdateAnimeSchema>;
 export type AnimeQueryDto = z.infer<typeof AnimeQuerySchema>;
-
-// =============================================================================
-// Response Types
-// =============================================================================
 
 export interface AnimeResponse {
   id: number;
@@ -93,10 +81,6 @@ export interface PaginatedAnimesResponse {
   };
 }
 
-// =============================================================================
-// Repository Interfaces
-// =============================================================================
-
 export interface IAnimeRepository {
   findAll(): Promise<AnimeResponse[]>;
   findAllPublic(
@@ -109,10 +93,6 @@ export interface IAnimeRepository {
   updateImage(id: number, coverUrl: string): Promise<AnimeResponse | null>;
   delete(id: number): Promise<boolean>;
 }
-
-// =============================================================================
-// Service Interfaces
-// =============================================================================
 
 export interface IAnimeService {
   getAllAnimes(): Promise<AnimeResponse[]>;

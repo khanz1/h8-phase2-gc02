@@ -47,18 +47,15 @@ export class DatabaseConnection {
         },
       });
 
-      // Test the connection
       await this.sequelize.authenticate();
       this.logger.info(
         `✅ Database connected successfully to ${dbConfig.database}`
       );
 
-      // Initialize and associate models
       initializeModels(this.sequelize);
       associateModels();
       this.logger.info("✅ Database models initialized and associated");
 
-      // Sync models in development
       if (process.env.NODE_ENV === "development") {
         await this.sequelize.sync({ alter: true });
         this.logger.info("✅ Database models force synced");
@@ -77,7 +74,6 @@ export class DatabaseConnection {
       if (this.sequelize) {
         this.logger.info("🔌 Closing database connections...");
 
-        // Close all connections gracefully with timeout
         await Promise.race([
           this.sequelize.close(),
           new Promise((_, reject) =>
@@ -94,10 +90,8 @@ export class DatabaseConnection {
     } catch (error) {
       this.logger.error("❌ Database disconnection failed:", error);
 
-      // Force close if graceful shutdown fails
       if (this.sequelize) {
         try {
-          // Force close all connections
           await this.sequelize.connectionManager.close();
           this.sequelize = null;
           this.logger.info("✅ Database connections force closed");

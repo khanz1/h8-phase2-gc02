@@ -223,7 +223,6 @@ export class BlogPostRepository implements IBlogPostRepository {
     data: CreateBlogPostDto,
     authorId: number
   ): Promise<BlogPostResponse> {
-    console.log(data, "<<data");
     const post = await BlogPost.create({
       ...data,
       authorId,

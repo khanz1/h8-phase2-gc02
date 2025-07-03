@@ -8,7 +8,6 @@ export class BrandedCategory extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare products?: BrandedProduct[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -50,7 +49,6 @@ export class BrandedProduct extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare category?: BrandedCategory;
   declare author?: User;
 

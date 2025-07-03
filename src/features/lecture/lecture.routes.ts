@@ -20,15 +20,12 @@ export class LectureRoutes {
     this.router = Router();
     this.publicRouter = Router();
 
-    // Initialize dependencies
     const animeRepository = new AnimeRepository();
     const animeService = new AnimeService(animeRepository);
 
-    // Initialize controllers
     this.animeController = new AnimeController(animeService);
     this.publicController = new AnimePublicController(animeService);
 
-    // Setup routes
     this.setupAuthenticatedRoutes();
     this.setupPublicRoutes();
 
@@ -36,7 +33,6 @@ export class LectureRoutes {
   }
 
   private setupAuthenticatedRoutes(): void {
-    // Anime Management Routes (Authenticated)
     this.router.get(
       "/movies",
       AuthMiddleware.authenticate,
@@ -85,7 +81,6 @@ export class LectureRoutes {
   }
 
   private setupPublicRoutes(): void {
-    // Public Anime Routes
     this.publicRouter.get(
       "/movies",
       RouteWrapper.withErrorHandler(this.publicController.getAllAnimesPublic)

@@ -38,12 +38,10 @@ export class AppService {
     const { code, type = "seed" } = req.query as SeedQueryParams;
 
     try {
-      // Validate required parameters
       if (!code) {
         throw new BadRequestError("Code parameter is required");
       }
 
-      // Validate code against environment variable
       const expectedCode = process.env.SEED_CODE;
       if (!expectedCode) {
         this.logger.error("SEED_CODE environment variable is not configured");
@@ -58,7 +56,6 @@ export class AppService {
         throw new UnauthorizedError("Invalid seed code");
       }
 
-      // Validate type parameter
       if (!["seed", "re-seed", "empty"].includes(type)) {
         throw new BadRequestError(
           "Invalid type parameter. Must be one of: seed, re-seed, empty"
@@ -67,18 +64,17 @@ export class AppService {
 
       this.logger.info("Starting seed operation", { type, ip: req.ip });
 
-      // Execute based on type
       let message: string;
       let recordsAffected: number | undefined;
 
       switch (type) {
         case "seed":
-          await this.seedService.seed(false); // Don't clear first
+          await this.seedService.seed(false);
           message = "Database seeded successfully";
           break;
 
         case "re-seed":
-          await this.seedService.seed(true); // Clear first
+          await this.seedService.seed(true);
           message = "Database re-seeded successfully (cleared and seeded)";
           break;
 

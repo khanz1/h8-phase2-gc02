@@ -147,7 +147,6 @@ export class MovieService implements IMovieService {
     data: CreateMovieDto,
     authorId: number
   ): Promise<MovieResponse> {
-    // Verify genre exists
     const genre = await this.genreRepository.findById(data.genreId);
     if (!genre) {
       throw new NotFoundError(`Movie genre with ID ${data.genreId} not found`);
@@ -160,7 +159,6 @@ export class MovieService implements IMovieService {
     id: number,
     data: UpdateMovieDto
   ): Promise<MovieResponse> {
-    // Verify genre exists
     const genre = await this.genreRepository.findById(data.genreId);
     if (!genre) {
       throw new NotFoundError(`Movie genre with ID ${data.genreId} not found`);

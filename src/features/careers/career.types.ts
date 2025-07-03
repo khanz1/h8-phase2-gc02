@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas for companies
 export const createCareerCompanySchema = z.object({
   name: z
     .string()
@@ -22,7 +21,6 @@ export const createCareerCompanySchema = z.object({
 
 export const updateCareerCompanySchema = createCareerCompanySchema;
 
-// Validation schemas for jobs
 export const createCareerJobSchema = z.object({
   title: z
     .string()
@@ -62,7 +60,6 @@ export const careerQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateCareerCompanyDto {
   name: string;
   companyLogo: string;
@@ -103,7 +100,6 @@ export interface CareerQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface CareerCompanyResponse {
   id: number;
   name: string;
@@ -155,7 +151,6 @@ export interface PaginatedCareerCompaniesResponse {
   data: CareerCompanyResponse[];
 }
 
-// Repository interfaces
 export interface ICareerCompanyRepository {
   findAll(): Promise<CareerCompanyResponse[]>;
   findById(id: number): Promise<CareerCompanyResponse | null>;
@@ -186,7 +181,6 @@ export interface ICareerJobRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface ICareerCompanyService {
   getAllCompanies(): Promise<CareerCompanyResponse[]>;
   getCompanyById(id: number): Promise<CareerCompanyResponse>;
@@ -211,4 +205,3 @@ export interface ICareerJobService {
   updateJobImage(id: number, imgUrl: string): Promise<CareerJobResponse>;
   deleteJob(id: number): Promise<void>;
 }
- 

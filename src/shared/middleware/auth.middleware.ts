@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { JwtHelper, JwtPayload } from "@/shared/utils/jwt.helper";
-import { UnauthorizedError } from "@/shared/errors";
 import { Logger } from "@/config/logger";
 
-// Extend Express Request interface to include user
 declare global {
   namespace Express {
     interface Request {
@@ -54,7 +52,7 @@ export class AuthMiddleware {
    */
   public static optionalAuthenticate = (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
   ): void => {
     try {

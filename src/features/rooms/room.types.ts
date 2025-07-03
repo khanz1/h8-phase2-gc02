@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createRoomTypeSchema = z.object({
   name: z
     .string()
@@ -52,7 +51,6 @@ export const lodgingQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateRoomTypeDto {
   name: string;
 }
@@ -87,7 +85,6 @@ export interface LodgingQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface RoomTypeResponse {
   id: number;
   name: string;
@@ -134,7 +131,6 @@ export interface PaginatedRoomTypesResponse {
   data: RoomTypeResponse[];
 }
 
-// Repository interfaces
 export interface IRoomTypeRepository {
   findAll(): Promise<RoomTypeResponse[]>;
   findById(id: number): Promise<RoomTypeResponse | null>;
@@ -145,9 +141,10 @@ export interface IRoomTypeRepository {
 
 export interface IRoomLodgingRepository {
   findAll(): Promise<RoomLodgingResponse[]>;
-  findAllPublic(
-    query: LodgingQueryDto
-  ): Promise<{ lodgings: RoomLodgingResponse[]; total: number }>;
+  findAllPublic(query: LodgingQueryDto): Promise<{
+    lodgings: RoomLodgingResponse[];
+    total: number;
+  }>;
   findById(id: number): Promise<RoomLodgingResponse | null>;
   findByIdPublic(id: number): Promise<RoomLodgingResponse | null>;
   create(
@@ -162,7 +159,6 @@ export interface IRoomLodgingRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IRoomTypeService {
   getAllTypes(): Promise<RoomTypeResponse[]>;
   getTypeById(id: number): Promise<RoomTypeResponse>;

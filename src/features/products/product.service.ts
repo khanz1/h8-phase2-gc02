@@ -154,7 +154,6 @@ export class BrandedProductService implements IBrandedProductService {
     data: CreateBrandedProductDto,
     authorId: number
   ): Promise<BrandedProductResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(
@@ -169,7 +168,6 @@ export class BrandedProductService implements IBrandedProductService {
     id: number,
     data: UpdateBrandedProductDto
   ): Promise<BrandedProductResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(

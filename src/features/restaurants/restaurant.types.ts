@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createRestaurantCategorySchema = z.object({
   name: z
     .string()
@@ -47,7 +46,6 @@ export const cuisineQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateRestaurantCategoryDto {
   name: string;
 }
@@ -80,7 +78,6 @@ export interface CuisineQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface RestaurantCategoryResponse {
   id: number;
   name: string;
@@ -126,7 +123,6 @@ export interface PaginatedRestaurantCategoriesResponse {
   data: RestaurantCategoryResponse[];
 }
 
-// Repository interfaces
 export interface IRestaurantCategoryRepository {
   findAll(): Promise<RestaurantCategoryResponse[]>;
   findById(id: number): Promise<RestaurantCategoryResponse | null>;
@@ -142,9 +138,10 @@ export interface IRestaurantCategoryRepository {
 
 export interface IRestaurantCuisineRepository {
   findAll(): Promise<RestaurantCuisineResponse[]>;
-  findAllPublic(
-    query: CuisineQueryDto
-  ): Promise<{ cuisines: RestaurantCuisineResponse[]; total: number }>;
+  findAllPublic(query: CuisineQueryDto): Promise<{
+    cuisines: RestaurantCuisineResponse[];
+    total: number;
+  }>;
   findById(id: number): Promise<RestaurantCuisineResponse | null>;
   findByIdPublic(id: number): Promise<RestaurantCuisineResponse | null>;
   create(
@@ -162,7 +159,6 @@ export interface IRestaurantCuisineRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IRestaurantCategoryService {
   getAllCategories(): Promise<RestaurantCategoryResponse[]>;
   getCategoryById(id: number): Promise<RestaurantCategoryResponse>;

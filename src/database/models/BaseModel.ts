@@ -17,8 +17,8 @@ export abstract class BaseModel extends Model {
    * Initialize the base model with common attributes
    */
   protected static initializeBase(
-    sequelize: Sequelize,
-    tableName: string,
+    _sequelize: Sequelize,
+    _tableName: string,
     additionalAttributes: Record<string, any> = {}
   ): Record<string, any> {
     const baseAttributes = {

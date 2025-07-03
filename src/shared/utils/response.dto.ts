@@ -1,6 +1,5 @@
 import { Response } from "express";
 
-// Rate limit information interface
 interface RateLimitInfo {
   limit: number;
   remaining: number;
@@ -8,27 +7,23 @@ interface RateLimitInfo {
   retryAfter?: number;
 }
 
-// Base response interface
 interface BaseResponse {
   success: boolean;
   message: string;
   data?: any;
 }
 
-// Success response interface
 interface SuccessResponse extends BaseResponse {
   success: true;
   data: any;
 }
 
-// Failed response interface (for error handler)
 interface FailedResponse extends BaseResponse {
   success: false;
   data?: any;
   rateLimitInfo?: RateLimitInfo;
 }
 
-// Paginated response interface
 interface PaginatedResponse extends BaseResponse {
   success: true;
   data: any;
@@ -42,7 +37,6 @@ interface PaginatedResponse extends BaseResponse {
   };
 }
 
-// Created response interface
 interface CreatedResponse extends BaseResponse {
   success: true;
   data: any;
@@ -144,7 +138,6 @@ export class ResponseDTO {
   }
 }
 
-// Export types for external use
 export type {
   RateLimitInfo,
   BaseResponse,

@@ -143,7 +143,6 @@ export class RoomLodgingService implements IRoomLodgingService {
     data: CreateRoomLodgingDto,
     authorId: number
   ): Promise<RoomLodgingResponse> {
-    // Verify type exists
     const type = await this.typeRepository.findById(data.typeId);
     if (!type) {
       throw new NotFoundError(`Room type with ID ${data.typeId} not found`);
@@ -156,7 +155,6 @@ export class RoomLodgingService implements IRoomLodgingService {
     id: number,
     data: UpdateRoomLodgingDto
   ): Promise<RoomLodgingResponse> {
-    // Verify type exists
     const type = await this.typeRepository.findById(data.typeId);
     if (!type) {
       throw new NotFoundError(`Room type with ID ${data.typeId} not found`);

@@ -1,7 +1,5 @@
-// Base error class
 export { AppError } from "./AppError";
 
-// Specific error classes
 export { BadRequestError } from "./BadRequestError";
 export { UnauthorizedError } from "./UnauthorizedError";
 export { ForbiddenError } from "./ForbiddenError";

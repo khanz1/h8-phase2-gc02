@@ -15,7 +15,6 @@ export class AppError extends Error {
     this.code = code;
     this.isOperational = isOperational;
 
-    // Maintains proper stack trace for where our error was thrown
     Error.captureStackTrace(this, this.constructor);
   }
 }

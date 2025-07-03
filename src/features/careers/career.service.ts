@@ -150,7 +150,6 @@ export class CareerJobService implements ICareerJobService {
     data: CreateCareerJobDto,
     authorId: number
   ): Promise<CareerJobResponse> {
-    // Verify company exists
     const company = await this.companyRepository.findById(data.companyId);
     if (!company) {
       throw new NotFoundError(
@@ -165,7 +164,6 @@ export class CareerJobService implements ICareerJobService {
     id: number,
     data: UpdateCareerJobDto
   ): Promise<CareerJobResponse> {
-    // Verify company exists
     const company = await this.companyRepository.findById(data.companyId);
     if (!company) {
       throw new NotFoundError(

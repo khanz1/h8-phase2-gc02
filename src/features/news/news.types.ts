@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createNewsCategorySchema = z.object({
   name: z
     .string()
@@ -40,7 +39,6 @@ export const newsQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateNewsCategoryDto {
   name: string;
 }
@@ -71,7 +69,6 @@ export interface NewsQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface NewsCategoryResponse {
   id: number;
   name: string;
@@ -116,7 +113,6 @@ export interface PaginatedNewsCategoriesResponse {
   data: NewsCategoryResponse[];
 }
 
-// Repository interfaces
 export interface INewsCategoryRepository {
   findAll(): Promise<NewsCategoryResponse[]>;
   findById(id: number): Promise<NewsCategoryResponse | null>;
@@ -147,7 +143,6 @@ export interface INewsArticleRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface INewsCategoryService {
   getAllCategories(): Promise<NewsCategoryResponse[]>;
   getCategoryById(id: number): Promise<NewsCategoryResponse>;

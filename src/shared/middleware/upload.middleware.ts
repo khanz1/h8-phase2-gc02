@@ -5,7 +5,7 @@ import { Logger } from "@/config/logger";
 
 export class UploadMiddleware {
   private static readonly logger = Logger.getInstance();
-  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
   private static readonly ALLOWED_MIME_TYPES = [
     "image/jpeg",
     "image/jpg",
@@ -20,11 +20,10 @@ export class UploadMiddleware {
    * File filter for images only
    */
   private static fileFilter = (
-    req: Request,
+    _req: Request,
     file: Express.Multer.File,
     cb: FileFilterCallback
   ): void => {
-    // Check if file is an image
     if (!file.mimetype.startsWith("image/")) {
       this.logger.warn("File upload rejected - not an image", {
         mimetype: file.mimetype,
@@ -33,7 +32,6 @@ export class UploadMiddleware {
       return cb(new BadRequestError("Only image files are allowed"));
     }
 
-    // Check allowed MIME types
     if (!this.ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       this.logger.warn("File upload rejected - invalid MIME type", {
         mimetype: file.mimetype,
@@ -65,7 +63,7 @@ export class UploadMiddleware {
     storage: multer.memoryStorage(),
     limits: {
       fileSize: this.MAX_FILE_SIZE,
-      files: 1, // Only allow single file upload
+      files: 1,
     },
     fileFilter: this.fileFilter,
   });
@@ -115,7 +113,6 @@ export class UploadMiddleware {
           return next(new BadRequestError("File upload failed"));
         }
 
-        // Check if file was uploaded
         if (!req.file) {
           this.logger.warn("No file uploaded", {
             fieldName,
@@ -181,7 +178,6 @@ export class UploadMiddleware {
           return next(new BadRequestError("File upload failed"));
         }
 
-        // File is optional, so continue even if no file
         if (req.file) {
           this.logger.info("Optional file uploaded successfully", {
             filename: req.file.originalname,

@@ -20,12 +20,10 @@ export class AuthorizationMiddleware {
   public static requireRole = (allowedRoles: string[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {
       try {
-        // Check if user is authenticated
         if (!req.user) {
           throw new UnauthorizedError("Authentication required");
         }
 
-        // Check if user has required role
         if (!allowedRoles.includes(req.user.role)) {
           this.logger.warn("Authorization failed - insufficient role", {
             userId: req.user.userId,
@@ -73,7 +71,7 @@ export class AuthorizationMiddleware {
   public static requireOwnership = (model: ModelStatic<OwnableModel>) => {
     return async (
       req: Request,
-      res: Response,
+      _res: Response,
       next: NextFunction
     ): Promise<void> => {
       try {

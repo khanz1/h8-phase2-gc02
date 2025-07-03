@@ -22,12 +22,15 @@ export interface UploadOptions {
     quality?: string;
   };
   allowedFormats?: string[];
-  maxFileSize?: number; // in bytes
+  /**
+   * Maximum file size in bytes
+   */
+  maxFileSize?: number;
 }
 
 export class CloudinaryHelper {
   private static readonly logger = Logger.getInstance();
-  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB default
+  private static readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
   private static readonly ALLOWED_IMAGE_FORMATS = [
     "jpg",
     "jpeg",
@@ -39,14 +42,12 @@ export class CloudinaryHelper {
   ];
 
   static {
-    // Configure Cloudinary
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    // Warn if environment variables are missing
     if (!process.env.CLOUDINARY_CLOUD_NAME) {
       this.logger.warn(
         "CLOUDINARY_CLOUD_NAME not found in environment variables"
@@ -70,7 +71,6 @@ export class CloudinaryHelper {
     options: UploadOptions = {}
   ): Promise<CloudinaryUploadResult> {
     try {
-      // Validate file
       this.validateImageFile(file, options);
 
       const {
@@ -86,12 +86,10 @@ export class CloudinaryHelper {
         folder,
       });
 
-      // Convert buffer to base64 data URL for Cloudinary
       const base64Data = `data:${file.mimetype};base64,${file.buffer.toString(
         "base64"
       )}`;
 
-      // Upload to Cloudinary
       const result = await cloudinary.uploader.upload(base64Data, {
         folder,
         resource_type: "image",
@@ -145,7 +143,6 @@ export class CloudinaryHelper {
     options: UploadOptions = {}
   ): Promise<CloudinaryUploadResult> {
     try {
-      // Create a mock file object for validation
       const mockFile = {
         buffer,
         originalname: filename,
@@ -153,7 +150,6 @@ export class CloudinaryHelper {
         size: buffer.length,
       } as Express.Multer.File;
 
-      // Validate file
       this.validateImageFile(mockFile, options);
 
       const {
@@ -169,10 +165,8 @@ export class CloudinaryHelper {
         folder,
       });
 
-      // Convert buffer to base64
       const base64 = `data:${mimetype};base64,${buffer.toString("base64")}`;
 
-      // Upload to Cloudinary
       const result = await cloudinary.uploader.upload(base64, {
         folder,
         resource_type: "image",
@@ -287,12 +281,10 @@ export class CloudinaryHelper {
       allowedFormats = this.ALLOWED_IMAGE_FORMATS,
     } = options;
 
-    // Check if file exists
     if (!file) {
       throw new BadRequestError("No file provided");
     }
 
-    // Check file size
     if (file.size > maxFileSize) {
       throw new BadRequestError(
         `File size too large. Maximum allowed size is ${Math.round(
@@ -301,12 +293,10 @@ export class CloudinaryHelper {
       );
     }
 
-    // Check if it's an image
     if (!file.mimetype.startsWith("image/")) {
       throw new BadRequestError("File must be an image");
     }
 
-    // Check allowed formats
     const fileExtension = file.originalname.split(".").pop()?.toLowerCase();
     if (fileExtension && !allowedFormats.includes(fileExtension)) {
       throw new BadRequestError(
@@ -314,7 +304,6 @@ export class CloudinaryHelper {
       );
     }
 
-    // Additional MIME type validation
     const allowedMimeTypes = [
       "image/jpeg",
       "image/jpg",

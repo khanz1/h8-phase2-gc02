@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createBlogCategorySchema = z.object({
   name: z
     .string()
@@ -40,7 +39,6 @@ export const blogQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateBlogCategoryDto {
   name: string;
 }
@@ -71,7 +69,6 @@ export interface BlogQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface BlogCategoryResponse {
   id: number;
   name: string;
@@ -116,7 +113,6 @@ export interface PaginatedBlogCategoriesResponse {
   data: BlogCategoryResponse[];
 }
 
-// Repository interfaces
 export interface IBlogCategoryRepository {
   findAll(): Promise<BlogCategoryResponse[]>;
   findById(id: number): Promise<BlogCategoryResponse | null>;
@@ -141,7 +137,6 @@ export interface IBlogPostRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IBlogCategoryService {
   getAllCategories(): Promise<BlogCategoryResponse[]>;
   getCategoryById(id: number): Promise<BlogCategoryResponse>;

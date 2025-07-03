@@ -157,7 +157,6 @@ export class RentalTransportationService
     data: CreateRentalTransportationDto,
     authorId: number
   ): Promise<RentalTransportationResponse> {
-    // Verify type exists
     const type = await this.typeRepository.findById(data.typeId);
     if (!type) {
       throw new NotFoundError(`Rental type with ID ${data.typeId} not found`);
@@ -170,7 +169,6 @@ export class RentalTransportationService
     id: number,
     data: UpdateRentalTransportationDto
   ): Promise<RentalTransportationResponse> {
-    // Verify type exists
     const type = await this.typeRepository.findById(data.typeId);
     if (!type) {
       throw new NotFoundError(`Rental type with ID ${data.typeId} not found`);

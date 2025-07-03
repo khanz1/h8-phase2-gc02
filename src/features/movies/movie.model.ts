@@ -8,7 +8,6 @@ export class MovieGenre extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare movies?: Movie[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -50,7 +49,6 @@ export class Movie extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare genre?: MovieGenre;
   declare author?: User;
 

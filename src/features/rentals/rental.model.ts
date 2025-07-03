@@ -8,7 +8,6 @@ export class RentalType extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare transportations?: RentalTransportation[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -50,7 +49,6 @@ export class RentalTransportation extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare type?: RentalType;
   declare author?: User;
 

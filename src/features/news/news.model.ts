@@ -8,7 +8,6 @@ export class NewsCategory extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare articles?: NewsArticle[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -48,7 +47,6 @@ export class NewsArticle extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare category?: NewsCategory;
   declare author?: User;
 

@@ -35,12 +35,10 @@ export class RouteMapper {
   private extractRoutesFromApp(app: Application): RouteInfo[] {
     const routes: RouteInfo[] = [];
 
-    // Get the router stack from the Express app
     const stack = app._router?.stack || [];
 
     this.extractFromStack(stack, "", routes, []);
 
-    // Sort routes by path, then by method
     return routes.sort((a, b) => {
       if (a.path === b.path) {
         const methodOrder = ["GET", "POST", "PUT", "PATCH", "DELETE"];
@@ -58,10 +56,8 @@ export class RouteMapper {
   ): void {
     stack.forEach((layer) => {
       if (layer.route) {
-        // This is a direct route
         this.extractRoute(layer, basePath, routes, inheritedMiddlewares);
       } else if (layer.name === "router" && layer.handle?.stack) {
-        // This is a router middleware (like /api/auth, /apis/blog)
         const routerPath = this.extractRouterPath(layer, basePath);
         const routerMiddlewares = this.extractRouterMiddlewares(layer);
         const combinedMiddlewares = [
@@ -75,7 +71,6 @@ export class RouteMapper {
           combinedMiddlewares
         );
       } else if (layer.name === "app" && layer.handle?.stack) {
-        // This is a sub-application
         this.extractFromStack(
           layer.handle.stack,
           basePath,
@@ -83,15 +78,12 @@ export class RouteMapper {
           inheritedMiddlewares
         );
       } else {
-        // This might be a global middleware
         const middlewareName = this.identifyMiddleware(layer);
         if (middlewareName) {
-          // Continue processing with this middleware added to inherited middlewares
           const newInheritedMiddlewares = [
             ...inheritedMiddlewares,
             middlewareName,
           ];
-          // But we don't recursively call here since this is just a middleware, not a router
         }
       }
     });
@@ -106,13 +98,12 @@ export class RouteMapper {
     const route = layer.route;
     const fullPath = basePath + route.path;
 
-    // Extract all HTTP methods for this route
     Object.keys(route.methods).forEach((method) => {
       if (route.methods[method]) {
         const routeMiddlewares = this.extractMiddlewareNames(route.stack);
         const allMiddlewares = [
           ...new Set([...inheritedMiddlewares, ...routeMiddlewares]),
-        ]; // Remove duplicates
+        ];
         const access = this.determineAccessLevel(allMiddlewares, fullPath);
 
         routes.push({
@@ -133,7 +124,6 @@ export class RouteMapper {
   private extractRouterPath(layer: any, basePath: string): string {
     const regexSource = layer.regexp.source;
 
-    // Handle common router patterns
     if (regexSource.includes("\\/api\\/auth")) {
       return basePath + "/api/auth";
     }
@@ -174,7 +164,6 @@ export class RouteMapper {
       return basePath + "/apis/pub/rentals";
     }
 
-    // Try to extract path from regex for other patterns
     const pathMatch = regexSource.match(/\\?\/([\w\-\\\/]+)/);
     if (pathMatch) {
       const extractedPath =
@@ -188,47 +177,39 @@ export class RouteMapper {
   private extractRouterMiddlewares(layer: any): string[] {
     const middlewares: string[] = [];
 
-    // Check if this router has authentication or authorization patterns
     const regexSource = layer.regexp.source;
 
     if (regexSource.includes("\\/api\\/auth")) {
-      // Auth routes typically require authentication (except login)
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/blog") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private blog routes require authentication
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/careers") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private career routes require authentication
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/movies") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private movie routes require authentication
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/news") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private news routes require authentication
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/products") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private product routes require authentication
       middlewares.push("authenticate");
     } else if (
       regexSource.includes("\\/apis\\/rentals") &&
       !regexSource.includes("\\/pub\\/")
     ) {
-      // Private rental routes require authentication
       middlewares.push("authenticate");
     }
 
@@ -237,7 +218,6 @@ export class RouteMapper {
 
   private identifyMiddleware(layer: any): string | null {
     if (layer.name && layer.name !== "<anonymous>") {
-      // Check for common middleware names
       const name = layer.name.toLowerCase();
       if (name.includes("auth")) return "authenticate";
       if (name.includes("cors")) return "cors";
@@ -262,21 +242,17 @@ export class RouteMapper {
     const middlewares: string[] = [];
 
     stack.forEach((layer, index) => {
-      // Skip the last layer as it's usually the actual route handler
       if (index === stack.length - 1) return;
 
-      // Check for named functions
       if (layer.name && layer.name !== "<anonymous>" && layer.name !== "next") {
         middlewares.push(layer.name);
       } else if (layer.handle?.name && layer.handle.name !== "<anonymous>") {
         middlewares.push(layer.handle.name);
       }
 
-      // Enhanced pattern detection for common middleware
       if (layer.handle?.toString) {
         const handlerStr = layer.handle.toString();
 
-        // Authentication middleware patterns
         if (
           handlerStr.includes("authenticate") ||
           handlerStr.includes("AuthMiddleware")
@@ -284,7 +260,6 @@ export class RouteMapper {
           middlewares.push("authenticate");
         }
 
-        // Authorization middleware patterns
         if (
           handlerStr.includes("requireAdmin") ||
           handlerStr.includes("admin")
@@ -307,7 +282,6 @@ export class RouteMapper {
           middlewares.push("requireOwnership");
         }
 
-        // File upload middleware
         if (
           handlerStr.includes("multer") ||
           handlerStr.includes("upload") ||
@@ -316,7 +290,6 @@ export class RouteMapper {
           middlewares.push("fileUpload");
         }
 
-        // Other common middleware
         if (handlerStr.includes("cors")) {
           middlewares.push("cors");
         }
@@ -328,7 +301,6 @@ export class RouteMapper {
         }
       }
 
-      // Check constructor names for class-based middleware
       if (layer.handle?.constructor?.name) {
         const constructorName = layer.handle.constructor.name;
         if (constructorName.includes("AuthMiddleware")) {
@@ -343,7 +315,6 @@ export class RouteMapper {
       }
     });
 
-    // Remove duplicates and filter out common non-middleware names
     return [...new Set(middlewares)].filter(
       (name) =>
         ![
@@ -384,7 +355,6 @@ export class RouteMapper {
     path: string,
     middlewares: string[]
   ): string {
-    // Generate smart descriptions based on path patterns
     if (path === "/") {
       return "API root endpoint with basic information";
     }
@@ -444,7 +414,6 @@ export class RouteMapper {
       }
     }
 
-    // Default descriptions based on method and path structure
     const resource = this.extractResourceName(path);
     switch (method) {
       case "GET":
@@ -468,7 +437,6 @@ export class RouteMapper {
     const segments = path.split("/").filter(Boolean);
     const lastSegment = segments[segments.length - 1];
 
-    // Remove parameter indicators
     if (lastSegment?.startsWith(":")) {
       return segments[segments.length - 2] || "resource";
     }
@@ -491,7 +459,6 @@ export class RouteMapper {
   private groupRoutes(routes: RouteInfo[]): RouteGroup[] {
     const groups: { [key: string]: RouteInfo[] } = {};
 
-    // First pass: Group routes by their base path patterns
     routes.forEach((route) => {
       const groupInfo = this.determineRouteGroup(route.path);
 
@@ -501,7 +468,6 @@ export class RouteMapper {
       groups[groupInfo.key].push(route);
     });
 
-    // Convert to RouteGroup format and sort by priority
     const routeGroups = Object.entries(groups).map(([groupKey, routeList]) => {
       const groupInfo = this.getGroupInfo(groupKey, routeList);
       return {
@@ -511,7 +477,6 @@ export class RouteMapper {
       };
     });
 
-    // Sort groups by priority (system first, then alphabetically)
     return routeGroups.sort((a, b) => {
       const aPriority = this.getGroupPriority(a.prefix);
       const bPriority = this.getGroupPriority(b.prefix);
@@ -525,21 +490,17 @@ export class RouteMapper {
   }
 
   private determineRouteGroup(path: string): { key: string; basePath: string } {
-    // Handle root and health routes as system routes
     if (path === "/" || path === "/health") {
       return { key: "system", basePath: "" };
     }
 
-    // Extract the base path pattern
     const segments = path.split("/").filter(Boolean);
 
     if (segments.length === 0) {
       return { key: "system", basePath: "" };
     }
 
-    // Handle different API path patterns
     if (segments[0] === "api") {
-      // /api/auth, /api/users, etc.
       const secondSegment = segments[1] || "general";
       return {
         key: `api-${secondSegment}`,
@@ -547,14 +508,12 @@ export class RouteMapper {
       };
     } else if (segments[0] === "apis") {
       if (segments[1] === "pub") {
-        // /apis/pub/blog, /apis/pub/news, etc.
         const thirdSegment = segments[2] || "general";
         return {
           key: `public-${thirdSegment}`,
           basePath: `/apis/pub/${thirdSegment}`,
         };
       } else {
-        // /apis/blog, /apis/news, etc.
         const secondSegment = segments[1] || "general";
         return {
           key: `apis-${secondSegment}`,
@@ -562,7 +521,6 @@ export class RouteMapper {
         };
       }
     } else {
-      // Other patterns like /v1/users, /admin/dashboard, etc.
       const firstSegment = segments[0];
       return {
         key: `other-${firstSegment}`,
@@ -578,7 +536,6 @@ export class RouteMapper {
     const sampleRoute = routes[0];
     const basePath = this.determineRouteGroup(sampleRoute.path).basePath;
 
-    // Generate descriptive names based on group patterns
     switch (groupKey) {
       case "system":
         return {
@@ -601,7 +558,6 @@ export class RouteMapper {
           description: "Public blog content access",
         };
       default:
-        // Generate dynamic names for new route groups
         const displayName = this.generateDisplayName(groupKey, basePath);
         const description = this.generateGroupDescription(groupKey, routes);
         return {
@@ -679,7 +635,6 @@ export class RouteMapper {
   }
 
   private sortRoutesWithinGroup = (a: RouteInfo, b: RouteInfo): number => {
-    // Sort by path first, then by method
     if (a.path === b.path) {
       const methodOrder = ["GET", "POST", "PUT", "PATCH", "DELETE"];
       return methodOrder.indexOf(a.method) - methodOrder.indexOf(b.method);
@@ -690,8 +645,8 @@ export class RouteMapper {
   private getGroupPriority(prefix: string): number {
     if (prefix.includes("System")) return 1;
     if (prefix.includes("Authentication")) return 2;
-    if (prefix.includes("Public")) return 99; // Public routes last
-    return 50; // Everything else in the middle
+    if (prefix.includes("Public")) return 99;
+    return 50;
   }
 
   private displayRoutes(routeGroups: RouteGroup[]): void {
@@ -759,12 +714,12 @@ export class RouteMapper {
 
   private getMethodColor(method: string): string {
     const colors: { [key: string]: string } = {
-      GET: "🟢 GET",
-      POST: "🟡 POST",
-      PUT: "🟠 PUT",
-      PATCH: "🟤 PATCH",
-      DELETE: "🔴 DELETE",
+      GET: "GET",
+      POST: "POST",
+      PUT: "PUT",
+      PATCH: "PATCH",
+      DELETE: "DELETE",
     };
-    return colors[method] || `⚪ ${method}`;
+    return colors[method] || `${method}`;
   }
 }

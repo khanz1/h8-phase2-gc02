@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createMovieGenreSchema = z.object({
   name: z
     .string()
@@ -49,7 +48,6 @@ export const movieQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateMovieGenreDto {
   name: string;
 }
@@ -84,7 +82,6 @@ export interface MovieQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface MovieGenreResponse {
   id: number;
   name: string;
@@ -131,7 +128,6 @@ export interface PaginatedMovieGenresResponse {
   data: MovieGenreResponse[];
 }
 
-// Repository interfaces
 export interface IMovieGenreRepository {
   findAll(): Promise<MovieGenreResponse[]>;
   findById(id: number): Promise<MovieGenreResponse | null>;
@@ -156,7 +152,6 @@ export interface IMovieRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IMovieGenreService {
   getAllGenres(): Promise<MovieGenreResponse[]>;
   getGenreById(id: number): Promise<MovieGenreResponse>;

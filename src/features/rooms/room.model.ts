@@ -8,7 +8,6 @@ export class RoomType extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare lodgings?: RoomLodging[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -50,7 +49,6 @@ export class RoomLodging extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare type?: RoomType;
   declare author?: User;
 

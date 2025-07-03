@@ -147,7 +147,6 @@ export class BlogPostService implements IBlogPostService {
     data: CreateBlogPostDto,
     authorId: number
   ): Promise<BlogPostResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(
@@ -162,7 +161,6 @@ export class BlogPostService implements IBlogPostService {
     id: number,
     data: UpdateBlogPostDto
   ): Promise<BlogPostResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(

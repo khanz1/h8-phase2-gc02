@@ -8,7 +8,6 @@ export class RestaurantCategory extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare cuisines?: RestaurantCuisine[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -49,7 +48,6 @@ export class RestaurantCuisine extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare category?: RestaurantCategory;
   declare author?: User;
 

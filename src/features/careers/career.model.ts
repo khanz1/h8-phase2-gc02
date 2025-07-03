@@ -12,7 +12,6 @@ export class CareerCompany extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare jobs?: CareerJob[];
 
   public static initialize(sequelize: Sequelize): void {
@@ -91,7 +90,6 @@ export class CareerJob extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare company?: CareerCompany;
   declare author?: User;
 

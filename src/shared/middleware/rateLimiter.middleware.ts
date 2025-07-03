@@ -30,14 +30,12 @@ export class SlidingWindowRateLimiter {
     this.windowSizeMs = windowSizeMs;
     this.maxRequests = maxRequests;
 
-    // Clean up old entries every minute
     setInterval(() => {
       this.cleanupOldEntries();
     }, 60000);
   }
 
   private getClientIdentifier(req: Request): string {
-    // Use IP address as client identifier
     const ip =
       (req.headers["x-real-ip"] as string) ||
       (req.headers["x-forwarded-for"] as string) ||
@@ -78,7 +76,6 @@ export class SlidingWindowRateLimiter {
     const now = Date.now();
     const remaining = Math.max(0, this.maxRequests - logs.length);
 
-    // Find the oldest request in current window
     const oldestRequest =
       logs.length > 0 ? Math.min(...logs.map((log) => log.timestamp)) : now;
 
@@ -115,7 +112,6 @@ export class SlidingWindowRateLimiter {
       const currentWindow = this.getCurrentWindow(clientId);
       const now = Date.now();
 
-      // Check if limit exceeded
       if (currentWindow.length >= this.maxRequests) {
         const rateLimitInfo = this.calculateRateLimitInfo(currentWindow);
         const retryAfter = this.calculateRetryAfter(currentWindow);
@@ -136,7 +132,6 @@ export class SlidingWindowRateLimiter {
           } seconds)`,
         };
 
-        // Set rate limit headers
         res.set({
           "X-RateLimit-Limit": this.maxRequests.toString(),
           "X-RateLimit-Remaining": "0",
@@ -155,21 +150,17 @@ export class SlidingWindowRateLimiter {
         return;
       }
 
-      // Add current request to window
       currentWindow.push({ timestamp: now });
       this.requestLogs.set(clientId, currentWindow);
 
-      // Calculate updated rate limit info
       const rateLimitInfo = this.calculateRateLimitInfo(currentWindow);
 
-      // Set rate limit headers for successful request
       res.set({
         "X-RateLimit-Limit": this.maxRequests.toString(),
         "X-RateLimit-Remaining": rateLimitInfo.remaining.toString(),
         "X-RateLimit-Reset": rateLimitInfo.resetTime.toString(),
       });
 
-      // Add rate limit info to response locals for potential use in controllers
       res.locals.rateLimitInfo = rateLimitInfo;
 
       this.logger.debug(`Request allowed for client ${clientId}`, {

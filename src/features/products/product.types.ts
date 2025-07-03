@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createBrandedCategorySchema = z.object({
   name: z
     .string()
@@ -52,7 +51,6 @@ export const productQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateBrandedCategoryDto {
   name: string;
 }
@@ -87,7 +85,6 @@ export interface ProductQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface BrandedCategoryResponse {
   id: number;
   name: string;
@@ -134,7 +131,6 @@ export interface PaginatedBrandedCategoriesResponse {
   data: BrandedCategoryResponse[];
 }
 
-// Repository interfaces
 export interface IBrandedCategoryRepository {
   findAll(): Promise<BrandedCategoryResponse[]>;
   findById(id: number): Promise<BrandedCategoryResponse | null>;
@@ -168,7 +164,6 @@ export interface IBrandedProductRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IBrandedCategoryService {
   getAllCategories(): Promise<BrandedCategoryResponse[]>;
   getCategoryById(id: number): Promise<BrandedCategoryResponse>;

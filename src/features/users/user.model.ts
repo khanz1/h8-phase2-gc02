@@ -1,7 +1,6 @@
 import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { BcryptHelper } from "@/shared/utils/bcrypt.helper";
 
-// User attributes interface matching the migration schema
 interface UserAttributes {
   id: number;
   username: string;
@@ -14,7 +13,6 @@ interface UserAttributes {
   updatedAt: Date;
 }
 
-// Optional attributes for creation
 interface UserCreationAttributes
   extends Optional<
     UserAttributes,
@@ -32,13 +30,11 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 
-  // Instance method to compare password
   public async comparePassword(candidatePassword: string): Promise<boolean> {
     console.log(candidatePassword, this.get("password"), "<<< angga2");
     return BcryptHelper.comparePassword(candidatePassword, this.password);
   }
 
-  // Remove password from JSON output
   public toJSON(): Omit<UserAttributes, "password"> {
     const values = { ...this.get() } as any;
     delete values.password;
@@ -134,8 +130,5 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     );
   }
 
-  public static associate(): void {
-    // User associations will be added here as needed
-    // For example: User.hasMany(BlogPost, { foreignKey: 'authorId', as: 'posts' });
-  }
+  public static associate(): void {}
 }

@@ -18,7 +18,6 @@ class Server {
     try {
       await this.app.initialize();
 
-      // Map all routes before starting the server
       this.app.mapRoutes();
 
       this.httpServer = this.app.getExpressApp().listen(this.port, () => {
@@ -87,7 +86,7 @@ class Server {
         await new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
             reject(new Error("Server shutdown timeout"));
-          }, 10000); // 10 second timeout
+          }, 10000);
 
           this.httpServer!.close((error) => {
             clearTimeout(timeout);
@@ -115,32 +114,29 @@ const server = new Server();
 const processLogger = new Logger("Process");
 
 process.on("SIGTERM", async () => {
-  processLogger.info("📨 SIGTERM received");
+  processLogger.info("❌ SIGTERM received");
   await server.stop();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
-  processLogger.info("📨 SIGINT received");
+  processLogger.info("❌ SIGINT received");
   await server.stop();
   process.exit(0);
 });
 
 process.on("unhandledRejection", (reason: unknown) => {
-  processLogger.error("🚨 Unhandled Promise Rejection:", reason);
-  console.log("Unhandled Promise Rejection", "6", reason);
+  processLogger.error("❌ Unhandled Promise Rejection:", reason);
   process.exit(1);
 });
 
 process.on("uncaughtException", (error: Error) => {
-  processLogger.error("🚨 Uncaught Exception:", error);
-  console.log("Uncaught Exception", "7", error);
+  processLogger.error("❌ Uncaught Exception:", error);
   process.exit(1);
 });
 
 process.on("SIGHUP", async () => {
-  processLogger.info("📨 SIGHUP received");
-  console.log("SIGHUP", "8");
+  processLogger.info("❌ SIGHUP received");
   await server.stop();
   process.exit(0);
 });

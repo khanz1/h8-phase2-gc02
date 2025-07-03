@@ -10,9 +10,8 @@ export class ErrorHandler {
     error: Error,
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): void {
-    // Log the error
     ErrorHandler.logger.error("Error occurred:", {
       error: error.message,
       stack: error.stack,
@@ -22,7 +21,6 @@ export class ErrorHandler {
       userAgent: req.get("User-Agent"),
     });
 
-    // Handle different types of errors
     if (error instanceof AppError) {
       ErrorHandler.handleAppError(error, res);
     } else if (error.name === "ZodError") {
@@ -80,7 +78,6 @@ export class ErrorHandler {
     let statusCode = 500;
     let message = "Database error occurred";
 
-    // Handle specific Sequelize errors
     if (error.name === "SequelizeUniqueConstraintError") {
       statusCode = 409;
       message = "Resource already exists";

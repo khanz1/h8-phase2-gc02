@@ -11,7 +11,6 @@ export class Anime extends BaseModel {
   declare createdAt: Date;
   declare updatedAt: Date;
 
-  // Associations
   declare author?: User;
 
   public static associations: {
@@ -88,7 +87,6 @@ export class Anime extends BaseModel {
   }
 
   public static associate(): void {
-    // Associate with User (author)
     Anime.belongsTo(User, {
       foreignKey: "authorId",
       as: "author",

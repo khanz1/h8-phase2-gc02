@@ -5,7 +5,6 @@ import { BcryptHelper } from "@/shared/utils/bcrypt.helper";
 import * as fs from "fs";
 import * as path from "path";
 
-// Import all models
 import { User } from "@/features/users/user.model";
 import { BlogCategory, BlogPost } from "@/features/blog/blog.model";
 import {
@@ -26,7 +25,6 @@ import {
 } from "@/features/restaurants/restaurant.model";
 import { Anime } from "@/features/lecture/lecture.model";
 
-// Interface for seed data structure
 interface SeedData {
   [key: string]: any[];
 }
@@ -47,7 +45,6 @@ export class SeedService {
   }
 
   private async initializeModels(): Promise<void> {
-    // Initialize models object with imported models
     this.models = {
       User,
       BlogCategory,
@@ -101,7 +98,6 @@ export class SeedService {
     const seedData: SeedData = {};
 
     try {
-      // Blog data
       seedData.blogCategories = this.readJsonFile(
         path.join(this.dataDirectory, "blog", "categories.json")
       );
@@ -109,7 +105,6 @@ export class SeedService {
         path.join(this.dataDirectory, "blog", "posts.json")
       );
 
-      // Branded products data
       seedData.brandedCategories = this.readJsonFile(
         path.join(this.dataDirectory, "branded", "categories.json")
       );
@@ -117,7 +112,6 @@ export class SeedService {
         path.join(this.dataDirectory, "branded", "products.json")
       );
 
-      // Career data
       seedData.careerCompanies = this.readJsonFile(
         path.join(this.dataDirectory, "career", "companies.json")
       );
@@ -125,7 +119,6 @@ export class SeedService {
         path.join(this.dataDirectory, "career", "jobs.json")
       );
 
-      // Movies data
       seedData.movieGenres = this.readJsonFile(
         path.join(this.dataDirectory, "movies", "genres.json")
       );
@@ -133,7 +126,6 @@ export class SeedService {
         path.join(this.dataDirectory, "movies", "movies.json")
       );
 
-      // News data
       seedData.newsCategories = this.readJsonFile(
         path.join(this.dataDirectory, "news", "categories.json")
       );
@@ -141,7 +133,6 @@ export class SeedService {
         path.join(this.dataDirectory, "news", "articles.json")
       );
 
-      // Rental data
       seedData.rentalTypes = this.readJsonFile(
         path.join(this.dataDirectory, "rental", "types.json")
       );
@@ -149,7 +140,6 @@ export class SeedService {
         path.join(this.dataDirectory, "rental", "transportations.json")
       );
 
-      // Restaurant data
       seedData.restaurantCategories = this.readJsonFile(
         path.join(this.dataDirectory, "restaurant", "categories.json")
       );
@@ -157,7 +147,6 @@ export class SeedService {
         path.join(this.dataDirectory, "restaurant", "cuisines.json")
       );
 
-      // Room data
       seedData.roomTypes = this.readJsonFile(
         path.join(this.dataDirectory, "room", "types.json")
       );
@@ -165,7 +154,6 @@ export class SeedService {
         path.join(this.dataDirectory, "room", "lodgings.json")
       );
 
-      // Anime data
       seedData.animes = this.readJsonFile(
         path.join(this.dataDirectory, "lecture", "animes.json")
       );
@@ -270,7 +258,6 @@ export class SeedService {
       },
     ];
 
-    // Hash passwords for all users
     for (const user of users) {
       user.password = await BcryptHelper.hashPassword(user.password);
     }
@@ -288,7 +275,7 @@ export class SeedService {
       const users = await this.createDefaultUsers();
       await this.models.User.bulkCreate(users, {
         transaction,
-        individualHooks: false, // Skip model hooks since we already hashed passwords
+        individualHooks: false,
       });
 
       this.logger.info(`Successfully seeded ${users.length} users`);
@@ -308,7 +295,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding blog data...");
 
-      // Seed blog categories
       if (seedData.blogCategories.length > 0) {
         await this.models.BlogCategory.bulkCreate(seedData.blogCategories, {
           transaction,
@@ -318,7 +304,6 @@ export class SeedService {
         );
       }
 
-      // Seed blog posts
       if (seedData.blogPosts.length > 0) {
         await this.models.BlogPost.bulkCreate(seedData.blogPosts, {
           transaction,
@@ -343,7 +328,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding branded products data...");
 
-      // Seed branded categories
       if (seedData.brandedCategories.length > 0) {
         await this.models.BrandedCategory.bulkCreate(
           seedData.brandedCategories,
@@ -356,7 +340,6 @@ export class SeedService {
         );
       }
 
-      // Seed branded products
       if (seedData.brandedProducts.length > 0) {
         await this.models.BrandedProduct.bulkCreate(seedData.brandedProducts, {
           transaction,
@@ -381,7 +364,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding movies data...");
 
-      // Seed movie genres
       if (seedData.movieGenres.length > 0) {
         await this.models.MovieGenre.bulkCreate(seedData.movieGenres, {
           transaction,
@@ -391,7 +373,6 @@ export class SeedService {
         );
       }
 
-      // Seed movies
       if (seedData.movies.length > 0) {
         await this.models.Movie.bulkCreate(seedData.movies, { transaction });
         this.logger.info(
@@ -414,7 +395,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding rental data...");
 
-      // Seed rental types
       if (seedData.rentalTypes.length > 0) {
         await this.models.RentalType.bulkCreate(seedData.rentalTypes, {
           transaction,
@@ -424,7 +404,6 @@ export class SeedService {
         );
       }
 
-      // Seed rental transportations
       if (seedData.rentalTransportations.length > 0) {
         await this.models.RentalTransportation.bulkCreate(
           seedData.rentalTransportations,
@@ -452,7 +431,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding room data...");
 
-      // Seed room types
       if (seedData.roomTypes.length > 0) {
         await this.models.RoomType.bulkCreate(seedData.roomTypes, {
           transaction,
@@ -462,7 +440,6 @@ export class SeedService {
         );
       }
 
-      // Seed room lodgings
       if (seedData.roomLodgings.length > 0) {
         await this.models.RoomLodging.bulkCreate(seedData.roomLodgings, {
           transaction,
@@ -487,7 +464,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding news data...");
 
-      // Seed news categories
       if (seedData.newsCategories.length > 0) {
         await this.models.NewsCategory.bulkCreate(seedData.newsCategories, {
           transaction,
@@ -497,7 +473,6 @@ export class SeedService {
         );
       }
 
-      // Seed news articles
       if (seedData.newsArticles.length > 0) {
         await this.models.NewsArticle.bulkCreate(seedData.newsArticles, {
           transaction,
@@ -522,7 +497,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding career data...");
 
-      // Seed career companies
       if (seedData.careerCompanies.length > 0) {
         await this.models.CareerCompany.bulkCreate(seedData.careerCompanies, {
           transaction,
@@ -532,7 +506,6 @@ export class SeedService {
         );
       }
 
-      // Seed career jobs
       if (seedData.careerJobs.length > 0) {
         await this.models.CareerJob.bulkCreate(seedData.careerJobs, {
           transaction,
@@ -557,7 +530,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding anime data...");
 
-      // Seed anime
       if (seedData.animes.length > 0) {
         await this.models.Anime.bulkCreate(seedData.animes, { transaction });
         this.logger.info(
@@ -580,7 +552,6 @@ export class SeedService {
     try {
       this.logger.info("Seeding restaurant data...");
 
-      // Seed restaurant categories
       if (seedData.restaurantCategories.length > 0) {
         await this.models.RestaurantCategory.bulkCreate(
           seedData.restaurantCategories,
@@ -593,7 +564,6 @@ export class SeedService {
         );
       }
 
-      // Seed restaurant cuisines
       if (seedData.restaurantCuisines.length > 0) {
         await this.models.RestaurantCuisine.bulkCreate(
           seedData.restaurantCuisines,
@@ -618,7 +588,6 @@ export class SeedService {
     try {
       this.logger.info("Clearing existing database data...");
 
-      // Clear in reverse dependency order
       await this.models.RestaurantCuisine.destroy({
         where: {},
         transaction,
@@ -778,7 +747,6 @@ export class SeedService {
       if (options.truncate) {
         await this.truncateAllTables(transaction, options);
       } else {
-        // Use regular destroy method
         await this.clearDatabase(transaction);
       }
 
@@ -814,11 +782,9 @@ export class SeedService {
     try {
       this.logger.info("Truncating all tables...", { options });
 
-      // Get sequelize instance
       const dbConnection = DatabaseConnection.getInstance();
       const sequelize = dbConnection.getSequelize();
 
-      // Define table order for truncation (reverse dependency order)
       const tableOrder = [
         '"Restaurant_Cuisines"',
         '"Restaurant_Categories"',
@@ -839,7 +805,6 @@ export class SeedService {
         '"Users"',
       ];
 
-      // Build truncate options
       const truncateOptions: string[] = [];
       if (options.restartIdentity) {
         truncateOptions.push("RESTART IDENTITY");
@@ -851,7 +816,6 @@ export class SeedService {
       const optionsString =
         truncateOptions.length > 0 ? ` ${truncateOptions.join(" ")}` : "";
 
-      // Method 1: Individual table truncation (safer, more control)
       if (!options.cascade) {
         for (const tableName of tableOrder) {
           try {
@@ -863,11 +827,9 @@ export class SeedService {
             this.logger.warn(`Failed to truncate ${tableName}:`, {
               error: error instanceof Error ? error.message : error,
             });
-            // Continue with other tables
           }
         }
       } else {
-        // Method 2: Cascade truncation (all at once)
         try {
           const allTables = tableOrder.join(", ");
           const sql = `TRUNCATE TABLE ${allTables}${optionsString};`;
@@ -878,7 +840,6 @@ export class SeedService {
           this.logger.warn(
             "CASCADE truncation failed, falling back to individual truncation"
           );
-          // Fallback to individual truncation
           for (const tableName of tableOrder) {
             try {
               const sql = `TRUNCATE TABLE ${tableName}${optionsString};`;
@@ -915,7 +876,6 @@ export class SeedService {
     try {
       this.logger.info("Starting quick truncate process...", { options });
 
-      // Truncate using Sequelize's built-in method
       const modelOrder = [
         this.models.RestaurantCuisine,
         this.models.RestaurantCategory,
@@ -985,19 +945,15 @@ export class SeedService {
     try {
       this.logger.info("Starting database seeding process...");
 
-      // Clear database if requested
       if (clearFirst) {
         this.logger.info("Clearing database...");
         await this.clearDatabase(transaction);
       }
 
-      // Load all seed data
       const seedData = this.loadSeedData();
 
-      // Seed users first (required for foreign keys)
       await this.seedUsers(transaction);
 
-      // Seed all modules (categories/types first, then related items)
       await this.seedBlogData(seedData, transaction);
       await this.seedBrandedData(seedData, transaction);
       await this.seedMoviesData(seedData, transaction);
@@ -1008,7 +964,6 @@ export class SeedService {
       await this.seedRestaurantData(seedData, transaction);
       await this.seedAnimeData(seedData, transaction);
 
-      // Commit transaction
       await transaction.commit();
 
       const duration = Date.now() - startTime;

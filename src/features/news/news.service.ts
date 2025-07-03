@@ -152,7 +152,6 @@ export class NewsArticleService implements INewsArticleService {
     data: CreateNewsArticleDto,
     authorId: number
   ): Promise<NewsArticleResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(
@@ -167,7 +166,6 @@ export class NewsArticleService implements INewsArticleService {
     id: number,
     data: UpdateNewsArticleDto
   ): Promise<NewsArticleResponse> {
-    // Verify category exists
     const category = await this.categoryRepository.findById(data.categoryId);
     if (!category) {
       throw new NotFoundError(

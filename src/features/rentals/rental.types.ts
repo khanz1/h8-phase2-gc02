@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Validation schemas
 export const createRentalTypeSchema = z.object({
   name: z
     .string()
@@ -53,7 +52,6 @@ export const rentalQuerySchema = z.object({
   sort: z.enum(["ASC", "DESC"]).default("DESC"),
 });
 
-// DTOs
 export interface CreateRentalTypeDto {
   name: string;
 }
@@ -88,7 +86,6 @@ export interface RentalQueryDto {
   sort: "ASC" | "DESC";
 }
 
-// Response types
 export interface RentalTypeResponse {
   id: number;
   name: string;
@@ -135,7 +132,6 @@ export interface PaginatedRentalTypesResponse {
   data: RentalTypeResponse[];
 }
 
-// Repository interfaces
 export interface IRentalTypeRepository {
   findAll(): Promise<RentalTypeResponse[]>;
   findById(id: number): Promise<RentalTypeResponse | null>;
@@ -149,9 +145,7 @@ export interface IRentalTypeRepository {
 
 export interface IRentalTransportationRepository {
   findAll(): Promise<RentalTransportationResponse[]>;
-  findAllPublic(
-    query: RentalQueryDto
-  ): Promise<{
+  findAllPublic(query: RentalQueryDto): Promise<{
     transportations: RentalTransportationResponse[];
     total: number;
   }>;
@@ -172,7 +166,6 @@ export interface IRentalTransportationRepository {
   delete(id: number): Promise<boolean>;
 }
 
-// Service interfaces
 export interface IRentalTypeService {
   getAllTypes(): Promise<RentalTypeResponse[]>;
   getTypeById(id: number): Promise<RentalTypeResponse>;

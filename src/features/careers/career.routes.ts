@@ -46,7 +46,6 @@ export class CareerRoutes {
   }
 
   private setupAuthenticatedRoutes(): void {
-    // Company routes
     this.router.get(
       "/companies",
       AuthMiddleware.authenticate,
@@ -80,7 +79,6 @@ export class CareerRoutes {
       RouteWrapper.withErrorHandler(this.companyController.deleteCompany)
     );
 
-    // Job routes
     this.router.get(
       "/jobs",
       AuthMiddleware.authenticate,
@@ -155,4 +153,3 @@ export class CareerRoutes {
     return this.publicRouter;
   }
 }
- 
