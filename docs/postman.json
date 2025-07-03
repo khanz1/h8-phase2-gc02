@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "48f47dae-7186-4ccf-bd5c-f7610cc5949e",
-    "name": "Phase 2 GC02 - Blog Management API",
-    "description": "Comprehensive API collection for a blog management system with authentication, user management, and blog content operations. This API supports role-based access control (Admin, Staff, User) and provides both authenticated and public endpoints for blog content.",
+    "name": "Phase 2 GC02 - Multi-Platform Management API",
+    "description": "Comprehensive API collection for a multi-platform management system with authentication, user management, and content operations. This API supports role-based access control (Admin, Staff, User) and provides both authenticated and public endpoints for blog, career, movie, news, product, rental, and restaurant content management.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22247928",
     "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/H8-Phase2-GC02~617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-48f47dae-7186-4ccf-bd5c-f7610cc5949e?action=share&source=collection_link&creator=22247928"
@@ -3155,6 +3155,490 @@
         }
       ],
       "description": "Protected rental content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "Restaurant Management",
+      "item": [
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "categories"]
+                },
+                "description": "Retrieve all restaurant categories available in the system. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Category by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific category including associated cuisines."
+              },
+              "response": []
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Italian",
+                      "description": "Category name (2-100 characters, must be unique)",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "categories"]
+                },
+                "description": "Create a new restaurant category. Requires Admin role. Category names must be unique across the system."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/x-www-form-urlencoded"
+                  }
+                ],
+                "body": {
+                  "mode": "urlencoded",
+                  "urlencoded": [
+                    {
+                      "key": "name",
+                      "value": "Authentic Italian",
+                      "description": "Updated category name",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing restaurant category. Requires Admin role. Updated name must remain unique."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/categories/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "categories", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Category ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a restaurant category. Requires Admin role. Cannot delete categories that have associated cuisines."
+              },
+              "response": []
+            }
+          ],
+          "description": "Restaurant category management operations"
+        },
+        {
+          "name": "Cuisines",
+          "item": [
+            {
+              "name": "Get All Cuisines",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines"]
+                },
+                "description": "Retrieve all restaurant cuisines with category and author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Cuisine by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Cuisine ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific cuisine including category and author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Cuisine",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"Margherita Pizza\",\\n    \"description\": \"A classic Italian pizza featuring fresh mozzarella, ripe tomatoes, and aromatic basil leaves on a perfectly crispy thin crust. This timeless recipe originated in Naples and remains one of the most beloved pizzas worldwide.\\\\n\\\\nIngredients:\\\\n• Fresh pizza dough made with Italian 00 flour\\\\n• San Marzano tomato sauce with garlic and oregano\\\\n• Fresh mozzarella di bufala\\\\n• Fresh basil leaves\\\\n• Extra virgin olive oil\\\\n• Sea salt and cracked black pepper\\\\n\\\\nCooking Method:\\\\nHand-stretched and baked in our wood-fired oven at 900°F for 90 seconds, creating the perfect balance of crispy crust and melted cheese. The high heat creates characteristic leopard spots on the crust while keeping the center tender.\\\\n\\\\nServed immediately while hot with a drizzle of premium olive oil and fresh basil. A true celebration of simple, high-quality ingredients that showcase the essence of authentic Italian cuisine.\",\\n    \"price\": 18,\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800\",\\n    \"categoryId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines"]
+                },
+                "description": "Create a new cuisine dish. Requires Staff or Admin role. The cuisine will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cuisine",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"name\": \"Margherita Pizza - Chef's Special\",\\n    \"description\": \"A classic Italian pizza featuring fresh mozzarella, ripe tomatoes, and aromatic basil leaves on a perfectly crispy thin crust. This timeless recipe originated in Naples and remains one of the most beloved pizzas worldwide.\\\\n\\\\nChef's Special Enhancement:\\\\nNow featuring imported burrata cheese and heirloom tomatoes for an elevated dining experience. Our signature dough is aged 48 hours for enhanced flavor and digestibility.\\\\n\\\\nIngredients:\\\\n• Fresh pizza dough made with Italian 00 flour (48-hour cold fermentation)\\\\n• San Marzano DOP tomato sauce with garlic and oregano\\\\n• Fresh mozzarella di bufala and imported burrata\\\\n• Heirloom tomatoes and fresh basil leaves\\\\n• Extra virgin olive oil from Tuscany\\\\n• Sea salt and cracked black pepper\\\\n\\\\nCooking Method:\\\\nHand-stretched and baked in our wood-fired oven at 900°F for 90 seconds, creating the perfect balance of crispy crust and melted cheese. The high heat creates characteristic leopard spots on the crust while keeping the center tender.\\\\n\\\\nServed immediately while hot with a drizzle of premium olive oil and fresh basil. A true celebration of simple, high-quality ingredients that showcase the essence of authentic Italian cuisine.\",\\n    \"price\": 22,\\n    \"imgUrl\": \"https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=1200\",\\n    \"categoryId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Cuisine ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing cuisine dish. Requires Staff/Admin role and ownership of the cuisine (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Cuisine Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Cuisine ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the featured image for a cuisine dish. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Cuisine",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/restaurants/cuisines/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "restaurants", "cuisines", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Cuisine ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete a cuisine dish. Requires Staff/Admin role and ownership of the cuisine (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Restaurant cuisine management operations"
+        },
+        {
+          "name": "Public Restaurant API",
+          "item": [
+            {
+              "name": "Get Public Cuisines (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/restaurants/cuisines?q=pizza&i=italian,chinese&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "restaurants", "cuisines"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "pizza",
+                      "description": "Search in cuisine names (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "italian,chinese",
+                      "description": "Filter by category names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Cuisines per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated restaurant cuisines for public consumption. Supports search by name, category filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Cuisine by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/restaurants/cuisines/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "restaurants", "cuisines", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Cuisine ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific cuisine including category and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/restaurants/categories",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "restaurants", "categories"]
+                },
+                "description": "Retrieve all available restaurant categories for public use. Useful for building category filters and exploring different cuisine types. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for restaurant content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected restaurant content management endpoints. Requires authentication and appropriate permissions."
     }
   ],
   "auth": {

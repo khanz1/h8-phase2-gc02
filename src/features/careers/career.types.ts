@@ -211,3 +211,4 @@ export interface ICareerJobService {
   updateJobImage(id: number, imgUrl: string): Promise<CareerJobResponse>;
   deleteJob(id: number): Promise<void>;
 }
+ 

@@ -311,3 +311,4 @@ export class CareerJobRepository implements ICareerJobRepository {
     };
   }
 }
+ 
