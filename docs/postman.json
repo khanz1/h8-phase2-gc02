@@ -3639,6 +3639,486 @@
         }
       ],
       "description": "Protected restaurant content management endpoints. Requires authentication and appropriate permissions."
+    },
+    {
+      "name": "Room Management",
+      "item": [
+        {
+          "name": "Types",
+          "item": [
+            {
+              "name": "Get All Types",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "types"]
+                },
+                "description": "Retrieve all room types (e.g., Hotel, Apartment, Resort)"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Type by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID to retrieve"
+                    }
+                  ]
+                },
+                "description": "Retrieve a specific room type with all associated lodgings"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n  \"name\": \"Resort\"\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "types"]
+                },
+                "description": "Create a new room type (Admin only)"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n  \"name\": \"Luxury Resort\"\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing room type (Admin only)"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Type",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/types/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "types", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Type ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a room type (Admin only)"
+              },
+              "response": []
+            }
+          ],
+          "description": "Room type management operations"
+        },
+        {
+          "name": "Lodgings",
+          "item": [
+            {
+              "name": "Get All Lodgings",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings"]
+                },
+                "description": "Retrieve all lodgings (authenticated users)"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Lodging by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lodging ID to retrieve"
+                    }
+                  ]
+                },
+                "description": "Retrieve a specific lodging by ID"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Lodging",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n  \"name\": \"Grand Ocean Resort\",\\n  \"facility\": \"Swimming pool, spa, gym, restaurant, Wi-Fi, air conditioning, minibar, room service\",\\n  \"roomCapacity\": 4,\\n  \"imgUrl\": \"https://example.com/ocean-resort.jpg\",\\n  \"location\": \"Bali, Indonesia\",\\n  \"typeId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings"]
+                },
+                "description": "Create a new lodging (Admin/Staff only)"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Lodging",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n  \"name\": \"Grand Ocean Resort & Spa\",\\n  \"facility\": \"Swimming pool, luxury spa, fitness center, fine dining restaurant, free Wi-Fi, air conditioning, minibar, 24/7 room service\",\\n  \"roomCapacity\": 6,\\n  \"imgUrl\": \"https://example.com/ocean-resort-updated.jpg\",\\n  \"location\": \"Nusa Dua, Bali, Indonesia\",\\n  \"typeId\": 1\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lodging ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing lodging (Admin/Staff/Owner only)"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Lodging Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": []
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lodging ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload/update lodging image (Admin/Staff/Owner only)"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Lodging",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/rooms/lodgings/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "rooms", "lodgings", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lodging ID to delete"
+                    }
+                  ]
+                },
+                "description": "Delete a lodging (Admin/Staff/Owner only)"
+              },
+              "response": []
+            }
+          ],
+          "description": "Room lodging management operations"
+        },
+        {
+          "name": "Public Room API",
+          "item": [
+            {
+              "name": "Get Public Lodgings (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rooms/lodgings?q=resort&i=hotel&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rooms", "lodgings"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "resort",
+                      "description": "Search in lodging names (optional)"
+                    },
+                    {
+                      "key": "i",
+                      "value": "hotel",
+                      "description": "Filter by type names (comma-separated, optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Lodgings per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated room lodgings for public consumption. Supports search by name, type filtering, and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Lodging by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rooms/lodgings/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rooms", "lodgings", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Lodging ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific lodging including type and author information. Public access, no authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/rooms/types",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "rooms", "types"]
+                },
+                "description": "Retrieve all available room types for public use. Useful for building type filters and exploring different accommodation types. No authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for room content consumption. No authentication required."
+        }
+      ],
+      "description": "Complete suite of room management operations. Types represent accommodation types (e.g., Hotel, Apartment, Resort) while Lodgings are individual properties with facilities, capacity, and location details. Both authenticated admin/staff operations and public browsing are supported."
     }
   ],
   "auth": {
