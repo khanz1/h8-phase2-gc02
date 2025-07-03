@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8002}/health"]
-      interval: 10s
+      interval: 24h
       timeout: 3s
       start_period: 10s
       retries: 3
