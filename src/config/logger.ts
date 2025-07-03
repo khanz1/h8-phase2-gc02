@@ -7,12 +7,10 @@ export class Logger {
   private readonly logger: pino.Logger;
 
   constructor(context?: string) {
-    // Initialize base logger only once
     if (!Logger.baseLogger) {
       Logger.baseLogger = Logger.createBaseLogger();
     }
 
-    // Create child logger with context
     this.logger = context
       ? Logger.baseLogger.child({ context })
       : Logger.baseLogger;
@@ -23,7 +21,6 @@ export class Logger {
     const isProduction = process.env.NODE_ENV === "production";
     const enableFileLogging = process.env.LOG_FILE === "true";
 
-    // Create logs directory if it doesn't exist
     const logsDir = join(process.cwd(), "logs");
     if (enableFileLogging && !existsSync(logsDir)) {
       mkdirSync(logsDir, { recursive: true });
@@ -31,7 +28,6 @@ export class Logger {
 
     if (isProduction) {
       if (enableFileLogging) {
-        // Production with file logging: Log to both files and console
         const today = new Date().toISOString().split("T")[0];
         const appLogFile = join(logsDir, `app-${today}.log`);
         const errorLogFile = join(logsDir, `error-${today}.log`);
@@ -41,7 +37,6 @@ export class Logger {
           timestamp: pino.stdTimeFunctions.isoTime,
           transport: {
             targets: [
-              // Console output with pretty formatting
               {
                 target: "pino-pretty",
                 level: logLevel,
@@ -52,7 +47,6 @@ export class Logger {
                   messageFormat: "{msg}",
                 },
               },
-              // File output for all logs (JSON format)
               {
                 target: "pino/file",
                 level: logLevel,
@@ -60,7 +54,6 @@ export class Logger {
                   destination: appLogFile,
                 },
               },
-              // Separate error file (JSON format)
               {
                 target: "pino/file",
                 level: "error",
@@ -72,7 +65,6 @@ export class Logger {
           },
         });
       } else {
-        // Production without file logging: Pretty console output
         return pino({
           level: logLevel,
           timestamp: pino.stdTimeFunctions.isoTime,
@@ -88,7 +80,6 @@ export class Logger {
         });
       }
     } else {
-      // Development: Pretty print to console with custom formatters
       return pino({
         level: logLevel,
         timestamp: pino.stdTimeFunctions.isoTime,
@@ -109,7 +100,6 @@ export class Logger {
     }
   }
 
-  // Backward compatibility method - creates a logger without context
   public static getInstance(): Logger {
     return new Logger();
   }

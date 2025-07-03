@@ -1,73 +1,52 @@
 import { Sequelize } from "sequelize";
 
+// Direct imports for function usage
+import { User } from "@/features/users/user.model";
+import { BlogCategory, BlogPost } from "@/features/blog/blog.model";
+import {
+  BrandedCategory,
+  BrandedProduct,
+} from "@/features/products/product.model";
+import { MovieGenre, Movie } from "@/features/movies/movie.model";
+import {
+  RentalType,
+  RentalTransportation,
+} from "@/features/rentals/rental.model";
+import { RoomType, RoomLodging } from "@/features/rooms/room.model";
+import { NewsCategory, NewsArticle } from "@/features/news/news.model";
+import { CareerCompany, CareerJob } from "@/features/careers/career.model";
+import {
+  RestaurantCategory,
+  RestaurantCuisine,
+} from "@/features/restaurants/restaurant.model";
+import { Anime } from "@/features/lecture/lecture.model";
+
 // Base model
 export { BaseModel } from "./BaseModel";
 
-// Core models
+// Re-exports for external usage
 export { User } from "@/features/users/user.model";
-
-// Blog models
 export { BlogCategory, BlogPost } from "@/features/blog/blog.model";
-
-// Branded Products models
 export {
   BrandedCategory,
   BrandedProduct,
 } from "@/features/products/product.model";
-
-// Movie models
 export { MovieGenre, Movie } from "@/features/movies/movie.model";
-
-// Rental models
 export {
   RentalType,
   RentalTransportation,
 } from "@/features/rentals/rental.model";
-
-// Room models
 export { RoomType, RoomLodging } from "@/features/rooms/room.model";
-
-// News models
 export { NewsCategory, NewsArticle } from "@/features/news/news.model";
-
-// Career models
 export { CareerCompany, CareerJob } from "@/features/careers/career.model";
-
-// Restaurant models
 export {
   RestaurantCategory,
   RestaurantCuisine,
 } from "@/features/restaurants/restaurant.model";
-
-// Lecture models
 export { Anime } from "@/features/lecture/lecture.model";
 
 // Model initialization function
 export function initializeModels(sequelize: Sequelize): void {
-  // Import all models
-  const { User } = require("@/features/users/user.model");
-  const { BlogCategory, BlogPost } = require("@/features/blog/blog.model");
-  const {
-    BrandedCategory,
-    BrandedProduct,
-  } = require("@/features/products/product.model");
-  const { MovieGenre, Movie } = require("@/features/movies/movie.model");
-  const {
-    RentalType,
-    RentalTransportation,
-  } = require("@/features/rentals/rental.model");
-  const { RoomType, RoomLodging } = require("@/features/rooms/room.model");
-  const { NewsCategory, NewsArticle } = require("@/features/news/news.model");
-  const {
-    CareerCompany,
-    CareerJob,
-  } = require("@/features/careers/career.model");
-  const {
-    RestaurantCategory,
-    RestaurantCuisine,
-  } = require("@/features/restaurants/restaurant.model");
-  const { Anime } = require("@/features/lecture/lecture.model");
-
   // Initialize all models
   User.initialize(sequelize);
 
@@ -109,30 +88,6 @@ export function initializeModels(sequelize: Sequelize): void {
 
 // Model associations function
 export function associateModels(): void {
-  // Import all models
-  const { User } = require("@/features/users/user.model");
-  const { BlogCategory, BlogPost } = require("@/features/blog/blog.model");
-  const {
-    BrandedCategory,
-    BrandedProduct,
-  } = require("@/features/products/product.model");
-  const { MovieGenre, Movie } = require("@/features/movies/movie.model");
-  const {
-    RentalType,
-    RentalTransportation,
-  } = require("@/features/rentals/rental.model");
-  const { RoomType, RoomLodging } = require("@/features/rooms/room.model");
-  const { NewsCategory, NewsArticle } = require("@/features/news/news.model");
-  const {
-    CareerCompany,
-    CareerJob,
-  } = require("@/features/careers/career.model");
-  const {
-    RestaurantCategory,
-    RestaurantCuisine,
-  } = require("@/features/restaurants/restaurant.model");
-  const { Anime } = require("@/features/lecture/lecture.model");
-
   // Set up all associations
   User.associate();
 

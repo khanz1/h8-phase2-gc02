@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 import { Logger } from "./logger";
 import { initializeModels, associateModels } from "@/database/models";
-//
+
 export class DatabaseConnection {
   private static instance: DatabaseConnection;
   private sequelize: Sequelize | null = null;
