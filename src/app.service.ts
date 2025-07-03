@@ -166,7 +166,7 @@ export class AppService {
   /**
    * Get application information
    */
-  public async getAppInfo(req: Request, res: Response): Promise<Response> {
+  public async getAppInfo(_: Request, res: Response): Promise<Response> {
     try {
       const appInfo = {
         name: "Phase2 Graded Challenge API",

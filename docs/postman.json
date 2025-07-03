@@ -4119,6 +4119,292 @@
         }
       ],
       "description": "Complete suite of room management operations. Types represent accommodation types (e.g., Hotel, Apartment, Resort) while Lodgings are individual properties with facilities, capacity, and location details. Both authenticated admin/staff operations and public browsing are supported."
+    },
+    {
+      "name": "Lecture Management",
+      "item": [
+        {
+          "name": "Animes",
+          "item": [
+            {
+              "name": "Get All Animes",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies"]
+                },
+                "description": "Retrieve all anime movies with author information. Requires authentication."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Anime by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Anime ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific anime including author details."
+              },
+              "response": []
+            },
+            {
+              "name": "Create New Anime",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"title\": \"Your Name\",\\n    \"synopsis\": \"Mitsuha Miyamizu, a high school girl, yearns to live the life of a boy in the bustling city of Tokyo—a dream that stands in stark contrast to her present life in the countryside. Meanwhile in the city, Taki Tachibana lives a busy life as a high school student while juggling his part-time job and hopes for a future in architecture.\\\\n\\\\nDirected by Makoto Shinkai, this visually stunning film explores themes of connection, destiny, and the threads that bind us across time and space. The story follows two teenagers who mysteriously begin switching bodies through their dreams, leading to a profound journey of self-discovery and love.\\\\n\\\\nWith breathtaking animation that captures both the beauty of rural Japan and the bustling energy of Tokyo, 'Your Name' masterfully combines supernatural elements with deeply human emotions. The film's exploration of tradition versus modernity, connection versus isolation, and fate versus choice resonates with audiences worldwide.\\\\n\\\\nFeaturing a beautiful score by RADWIMPS and stunning visual storytelling, this modern masterpiece has become one of the highest-grossing anime films of all time, touching hearts with its message about the invisible threads that connect us all.\",\\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1121/119044.jpg\"\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies"]
+                },
+                "description": "Create a new anime entry. Requires Staff or Admin role. The anime will be automatically associated with the authenticated user as the author."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Anime",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\\n    \"title\": \"Your Name - Director's Cut\",\\n    \"synopsis\": \"Mitsuha Miyamizu, a high school girl, yearns to live the life of a boy in the bustling city of Tokyo—a dream that stands in stark contrast to her present life in the countryside. Meanwhile in the city, Taki Tachibana lives a busy life as a high school student while juggling his part-time job and hopes for a future in architecture.\\\\n\\\\nDirected by Makoto Shinkai, this Director's Cut features additional scenes that delve deeper into the characters' backstories and includes extended sequences that further explore the mystical connection between the protagonists. The story follows two teenagers who mysteriously begin switching bodies through their dreams, leading to a profound journey of self-discovery and love.\\\\n\\\\nThis enhanced version provides more insight into the traditional Shinto rituals and the significance of the comet's historical impact. With breathtaking animation that captures both the beauty of rural Japan and the bustling energy of Tokyo, 'Your Name' masterfully combines supernatural elements with deeply human emotions.\\\\n\\\\nThe film's exploration of tradition versus modernity, connection versus isolation, and fate versus choice resonates with audiences worldwide. Featuring a beautiful score by RADWIMPS and stunning visual storytelling, this modern masterpiece has become one of the highest-grossing anime films of all time.\",\\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1121/119044.jpg\"\\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Anime ID to update"
+                    }
+                  ]
+                },
+                "description": "Update an existing anime entry. Requires Staff/Admin role and ownership of the anime (or Admin override)."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Anime Image",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "description": "Image file to upload (JPEG, PNG, WebP supported)",
+                      "type": "file",
+                      "src": "postman-cloud:///1ef44293-f522-4270-9d5c-c46f7ba3b299"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Anime ID to update image for"
+                    }
+                  ]
+                },
+                "description": "Upload and update the cover image for an anime. Image will be automatically optimized and stored in Cloudinary. Requires ownership or Admin role."
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Anime",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/lectures/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "lectures", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Anime ID to delete"
+                    }
+                  ]
+                },
+                "description": "Permanently delete an anime entry. Requires Staff/Admin role and ownership of the anime (or Admin override). This action cannot be undone."
+              },
+              "response": []
+            }
+          ],
+          "description": "Anime management operations"
+        },
+        {
+          "name": "Public Lecture API",
+          "item": [
+            {
+              "name": "Get Public Animes (Paginated)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/lectures/movies?q=name&limit=8&page=1&sort=DESC",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "lectures", "movies"],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "name",
+                      "description": "Search in anime titles (optional)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "8",
+                      "description": "Animes per page (4-12, default: 10)"
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number (min: 1, default: 1)"
+                    },
+                    {
+                      "key": "sort",
+                      "value": "DESC",
+                      "description": "Sort order: ASC or DESC (default: DESC)"
+                    }
+                  ]
+                },
+                "description": "Retrieve paginated anime movies for public consumption. Supports search by title and customizable pagination. No authentication required."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Anime by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/apis/pub/lectures/movies/:id",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["apis", "pub", "lectures", "movies", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1",
+                      "description": "Anime ID"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information for a specific anime including author information. Public access, no authentication required."
+              },
+              "response": []
+            }
+          ],
+          "description": "Public endpoints for anime content consumption. No authentication required."
+        }
+      ],
+      "description": "Protected lecture content management endpoints. Requires authentication and appropriate permissions. Features anime movie management with full CRUD operations, image upload capabilities, and public browsing APIs."
     }
   ],
   "auth": {

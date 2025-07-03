@@ -24,6 +24,7 @@ import {
   RestaurantCategory,
   RestaurantCuisine,
 } from "@/features/restaurants/restaurant.model";
+import { Anime } from "@/features/lecture/lecture.model";
 
 // Interface for seed data structure
 interface SeedData {
@@ -65,6 +66,7 @@ export class SeedService {
       CareerJob,
       RestaurantCategory,
       RestaurantCuisine,
+      Anime,
     };
   }
 
@@ -161,6 +163,11 @@ export class SeedService {
       );
       seedData.roomLodgings = this.readJsonFile(
         path.join(this.dataDirectory, "room", "lodgings.json")
+      );
+
+      // Anime data
+      seedData.animes = this.readJsonFile(
+        path.join(this.dataDirectory, "lecture", "animes.json")
       );
 
       return seedData;
@@ -530,6 +537,27 @@ export class SeedService {
       }
     } catch (error) {
       this.logger.error("Failed to seed career data", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Seed anime data
+   */
+  private async seedAnimeData(
+    seedData: SeedData,
+    transaction: any
+  ): Promise<void> {
+    try {
+      this.logger.info("Seeding anime data...");
+
+      // Seed anime
+      if (seedData.animes.length > 0) {
+        await this.models.Anime.bulkCreate(seedData.animes, { transaction });
+        this.logger.info(`Successfully seeded ${seedData.animes.length} animes`);
+      }
+    } catch (error) {
+      this.logger.error("Failed to seed anime data", { error });
       throw error;
     }
   }
@@ -970,6 +998,7 @@ export class SeedService {
       await this.seedNewsData(seedData, transaction);
       await this.seedCareerData(seedData, transaction);
       await this.seedRestaurantData(seedData, transaction);
+      await this.seedAnimeData(seedData, transaction);
 
       // Commit transaction
       await transaction.commit();

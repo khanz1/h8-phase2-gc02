@@ -39,6 +39,9 @@ export {
   RestaurantCuisine,
 } from "@/features/restaurants/restaurant.model";
 
+// Lecture models
+export { Anime } from "@/features/lecture/lecture.model";
+
 // Model initialization function
 export function initializeModels(sequelize: Sequelize): void {
   // Import all models
@@ -63,6 +66,7 @@ export function initializeModels(sequelize: Sequelize): void {
     RestaurantCategory,
     RestaurantCuisine,
   } = require("@/features/restaurants/restaurant.model");
+  const { Anime } = require("@/features/lecture/lecture.model");
 
   // Initialize all models
   User.initialize(sequelize);
@@ -98,6 +102,9 @@ export function initializeModels(sequelize: Sequelize): void {
   // Restaurant models
   RestaurantCategory.initialize(sequelize);
   RestaurantCuisine.initialize(sequelize);
+
+  // Lecture models
+  Anime.initialize(sequelize);
 }
 
 // Model associations function
@@ -124,6 +131,7 @@ export function associateModels(): void {
     RestaurantCategory,
     RestaurantCuisine,
   } = require("@/features/restaurants/restaurant.model");
+  const { Anime } = require("@/features/lecture/lecture.model");
 
   // Set up all associations
   User.associate();
@@ -159,4 +167,7 @@ export function associateModels(): void {
   // Restaurant associations
   RestaurantCategory.associate();
   RestaurantCuisine.associate();
+
+  // Lecture associations
+  Anime.associate();
 }
