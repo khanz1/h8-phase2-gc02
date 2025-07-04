@@ -1,11 +1,11 @@
 {
   "info": {
-    "_postman_id": "48f47dae-7186-4ccf-bd5c-f7610cc5949e",
-    "name": "Phase 2 GC02 - Multi-Platform Management API",
+    "_postman_id": "486814fc-76e4-4139-b3e7-b65dc5573947",
+    "name": "Phase 2 - Multi-Platform Management API",
     "description": "Comprehensive API collection for a multi-platform management system with authentication, user management, and content operations. This API supports role-based access control (Admin, Staff, User) and provides both authenticated and public endpoints for blog, career, movie, news, product, rental, and restaurant content management.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "22247928",
-    "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/H8-Phase2-GC02~617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-48f47dae-7186-4ccf-bd5c-f7610cc5949e?action=share&source=collection_link&creator=22247928"
+    "_collection_link": "https://martian-zodiac-179198.postman.co/workspace/617a0e7e-e98a-42b6-8042-a5356865c9ca/collection/22247928-486814fc-76e4-4139-b3e7-b65dc5573947?action=share&source=collection_link&creator=22247928"
   },
   "item": [
     {
@@ -224,32 +224,6 @@
               ]
             },
             "description": "Clear all existing data and repopulate database with fresh seed data. This operation will permanently delete all current data and replace it with initial data."
-          },
-          "response": []
-        },
-        {
-          "name": "Empty Database",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/apis/seed?code={{SEED_CODE}}&type=empty",
-              "host": ["{{BASE_URL}}"],
-              "path": ["apis", "seed"],
-              "query": [
-                {
-                  "key": "code",
-                  "value": "{{SEED_CODE}}",
-                  "description": "Secret seed code (required for security)"
-                },
-                {
-                  "key": "type",
-                  "value": "empty",
-                  "description": "Empty all data from database tables"
-                }
-              ]
-            },
-            "description": "Remove all data from database tables. This operation will permanently delete all data including users, blog posts, categories, companies, and job postings. Use with extreme caution."
           },
           "response": []
         }
@@ -1144,7 +1118,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs?q=developer&i=TechCorp,Microsoft&limit=8&page=1&sort=DESC",
+                  "raw": "{{BASE_URL}}/apis/pub/careers/jobs?q=developer&i=Sanska&limit=8&page=1&sort=DESC",
                   "host": ["{{BASE_URL}}"],
                   "path": ["apis", "pub", "careers", "jobs"],
                   "query": [
@@ -1628,7 +1602,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{BASE_URL}}/apis/pub/movies/movies?q=blade&i=action,sci-fi&limit=8&page=1&sort=DESC",
+                  "raw": "{{BASE_URL}}/apis/pub/movies/movies?q=shaw&i=action,sci-fi&limit=8&page=1&sort=DESC",
                   "host": ["{{BASE_URL}}"],
                   "path": ["apis", "pub", "movies", "movies"],
                   "query": [
@@ -4124,10 +4098,10 @@
       "name": "Lecture Management",
       "item": [
         {
-          "name": "Animes",
+          "name": "Movies",
           "item": [
             {
-              "name": "Get All Animes",
+              "name": "Get All Movies",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4151,7 +4125,7 @@
               "response": []
             },
             {
-              "name": "Get Anime by ID",
+              "name": "Get Movie by ID",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4182,7 +4156,7 @@
               "response": []
             },
             {
-              "name": "Create New Anime",
+              "name": "Create New Movie",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4203,7 +4177,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\\n    \"title\": \"Your Name\",\\n    \"synopsis\": \"Mitsuha Miyamizu, a high school girl, yearns to live the life of a boy in the bustling city of Tokyo—a dream that stands in stark contrast to her present life in the countryside. Meanwhile in the city, Taki Tachibana lives a busy life as a high school student while juggling his part-time job and hopes for a future in architecture.\\\\n\\\\nDirected by Makoto Shinkai, this visually stunning film explores themes of connection, destiny, and the threads that bind us across time and space. The story follows two teenagers who mysteriously begin switching bodies through their dreams, leading to a profound journey of self-discovery and love.\\\\n\\\\nWith breathtaking animation that captures both the beauty of rural Japan and the bustling energy of Tokyo, 'Your Name' masterfully combines supernatural elements with deeply human emotions. The film's exploration of tradition versus modernity, connection versus isolation, and fate versus choice resonates with audiences worldwide.\\\\n\\\\nFeaturing a beautiful score by RADWIMPS and stunning visual storytelling, this modern masterpiece has become one of the highest-grossing anime films of all time, touching hearts with its message about the invisible threads that connect us all.\",\\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1121/119044.jpg\"\\n}",
+                  "raw": "{\n    \"title\": \"Demon Slayer: Kimetsu no Yaiba - The Movie: Mugen Train\",\n    \"synopsis\": \"After a string of mysterious disappearances begin to plague a train, the Demon Slayer Corps' multiple attempts to remedy the problem prove fruitless. To prevent further casualties, the Flame Pillar, Kyoujurou Rengoku, takes it upon himself to eliminate the threat. Accompanying him are some of the Corps' most promising new blood: Tanjirou Kamado, Zenitsu Agatsuma, and Inosuke Hashibira, who all hope to witness the fiery feats of this model demon slayer firsthand.\",\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1704/106947.jpg\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4220,7 +4194,7 @@
               "response": []
             },
             {
-              "name": "Update Anime",
+              "name": "Update Movie",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4241,7 +4215,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\\n    \"title\": \"Your Name - Director's Cut\",\\n    \"synopsis\": \"Mitsuha Miyamizu, a high school girl, yearns to live the life of a boy in the bustling city of Tokyo—a dream that stands in stark contrast to her present life in the countryside. Meanwhile in the city, Taki Tachibana lives a busy life as a high school student while juggling his part-time job and hopes for a future in architecture.\\\\n\\\\nDirected by Makoto Shinkai, this Director's Cut features additional scenes that delve deeper into the characters' backstories and includes extended sequences that further explore the mystical connection between the protagonists. The story follows two teenagers who mysteriously begin switching bodies through their dreams, leading to a profound journey of self-discovery and love.\\\\n\\\\nThis enhanced version provides more insight into the traditional Shinto rituals and the significance of the comet's historical impact. With breathtaking animation that captures both the beauty of rural Japan and the bustling energy of Tokyo, 'Your Name' masterfully combines supernatural elements with deeply human emotions.\\\\n\\\\nThe film's exploration of tradition versus modernity, connection versus isolation, and fate versus choice resonates with audiences worldwide. Featuring a beautiful score by RADWIMPS and stunning visual storytelling, this modern masterpiece has become one of the highest-grossing anime films of all time.\",\\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1121/119044.jpg\"\\n}",
+                  "raw": "{\n    \"title\": \"Demon Slayer: Kimetsu no Yaiba Infinity Castle\",\n    \"synopsis\": \"Anime movie trilogy adaptation of the Infinity Castle Arc.\",\n    \"coverUrl\": \"https://cdn.myanimelist.net/images/anime/1681/148216.jpg\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4265,7 +4239,7 @@
               "response": []
             },
             {
-              "name": "Update Anime Image",
+              "name": "Update Movie Image",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4307,7 +4281,7 @@
               "response": []
             },
             {
-              "name": "Delete Anime",
+              "name": "Delete Movie",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4344,7 +4318,7 @@
           "name": "Public Lecture API",
           "item": [
             {
-              "name": "Get Public Animes (Paginated)",
+              "name": "Get Public Movies (Paginated)",
               "request": {
                 "method": "GET",
                 "header": [],
@@ -4380,7 +4354,7 @@
               "response": []
             },
             {
-              "name": "Get Public Anime by ID",
+              "name": "Get Public Movie by ID",
               "request": {
                 "method": "GET",
                 "header": [],
