@@ -168,7 +168,8 @@ export class AnimePublicController {
 
   public createAnimePublic = async (req: Request, res: Response) => {
     const validatedData = CreateAnimeSchema.parse(req.body);
-    const authorId = req.user!.userId;
+    // TODO: Fix this later
+    const authorId = 1;
 
     if (!req.file) {
       throw new BadRequestError("No image file provided");
