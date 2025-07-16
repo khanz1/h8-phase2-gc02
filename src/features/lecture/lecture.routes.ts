@@ -91,6 +91,26 @@ export class LectureRoutes {
       RouteWrapper.withErrorHandler(this.publicController.getAnimeByIdPublic)
     );
 
+    this.publicRouter.post(
+      "/movies",
+      RouteWrapper.withErrorHandler(this.publicController.createAnimePublic)
+    );
+
+    this.publicRouter.delete(
+      "/movies/:id",
+      RouteWrapper.withErrorHandler(this.publicController.deleteAnimePublic)
+    );
+
+    this.publicRouter.put(
+      "/movies/:id",
+      RouteWrapper.withErrorHandler(this.publicController.updateAnimePublic)
+    );
+
+    this.publicRouter.patch(
+      "/movies/:id",
+      RouteWrapper.withErrorHandler(this.publicController.updateAnimePublic)
+    );
+
     this.logger.info("✅ Lecture public routes configured successfully");
   }
 

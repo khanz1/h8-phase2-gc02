@@ -143,4 +143,41 @@ export class AnimePublicController {
       .status(200)
       .json(ResponseDTO.success("Anime retrieved successfully", anime));
   };
+
+  public deleteAnimePublic = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    this.logger.info(`Deleting public anime with ID: ${id}`);
+
+    await this.animeService.deleteAnime(id);
+
+    res.status(200).json(ResponseDTO.success("Anime deleted successfully"));
+  };
+
+  public updateAnimePublic = async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+    const validatedData = UpdateAnimeSchema.parse(req.body);
+
+    this.logger.info(`Updating public anime ${id}:`, validatedData);
+
+    const anime = await this.animeService.updateAnime(id, validatedData);
+
+    res
+      .status(200)
+      .json(ResponseDTO.success("Anime updated successfully", anime));
+  };
+
+  public createAnimePublic = async (req: Request, res: Response) => {
+    const validatedData = CreateAnimeSchema.parse(req.body);
+    const authorId = req.user!.userId;
+
+    if (!req.file) {
+      throw new BadRequestError("No image file provided");
+    }
+
+    this.logger.info(`Creating new anime by user ${authorId}:`, validatedData);
+
+    const anime = await this.animeService.createAnime(validatedData, authorId);
+
+    res.status(201).json(ResponseDTO.success("Anime created successfully", anime));
+  };
 }
