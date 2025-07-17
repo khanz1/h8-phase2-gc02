@@ -90,7 +90,7 @@ export class Movie extends BaseModel {
         field: "img_url",
       },
       rating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DOUBLE,
         allowNull: false,
         validate: {
           min: {
