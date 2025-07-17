@@ -61,6 +61,7 @@ export class AppService {
       );
     }
 
+    console.log("Starting seed operation", { type, ip: req.ip });
     this.logger.info("Starting seed operation", { type, ip: req.ip });
 
     let message: string;
