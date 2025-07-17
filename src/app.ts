@@ -16,6 +16,7 @@ import { RentalRoutes } from "@/features/rentals/rental.routes";
 import { RouteMapper } from "@/shared/utils/route-mapper";
 import { LectureRoutes } from "@/features/lecture/lecture.routes";
 import { AppService } from "@/app.service";
+import { RouteWrapper } from "./shared/utils/route-wrapper";
 
 export class App {
   private readonly app: Application;
@@ -85,9 +86,7 @@ export class App {
       this.appService.getAppInfo(req, res);
     });
 
-    this.app.get("/apis/seed", (req: Request, res: Response) => {
-      this.appService.handleSeedRequest(req, res);
-    });
+    this.app.get("/apis/seed", RouteWrapper.withErrorHandler(this.appService.handleSeedRequest));
 
     const authRoutes = new AuthRoutes();
     this.app.use("/apis/auth", authRoutes.getRouter());
