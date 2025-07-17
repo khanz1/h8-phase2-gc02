@@ -44,6 +44,13 @@ export class SeedService {
     this.dataDirectory = path.join(__dirname, "..", "..", "data");
   }
 
+  /**
+   * Add delay between operations to ensure different createdAt timestamps
+   */
+  private async delay(ms: number = 10): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   private async initializeModels(): Promise<void> {
     this.models = {
       User,
@@ -273,10 +280,10 @@ export class SeedService {
       this.logger.info("Seeding users...");
 
       const users = await this.createDefaultUsers();
-      await this.models.User.bulkCreate(users, {
-        transaction,
-        individualHooks: false,
-      });
+      for (const user of users) {
+        await this.models.User.create(user, { transaction });
+        await this.delay();
+      }
 
       this.logger.info(`Successfully seeded ${users.length} users`);
     } catch (error) {
@@ -296,18 +303,20 @@ export class SeedService {
       this.logger.info("Seeding blog data...");
 
       if (seedData.blogCategories.length > 0) {
-        await this.models.BlogCategory.bulkCreate(seedData.blogCategories, {
-          transaction,
-        });
+        for (const category of seedData.blogCategories) {
+          await this.models.BlogCategory.create(category, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.blogCategories.length} blog categories`
         );
       }
 
       if (seedData.blogPosts.length > 0) {
-        await this.models.BlogPost.bulkCreate(seedData.blogPosts, {
-          transaction,
-        });
+        for (const post of seedData.blogPosts) {
+          await this.models.BlogPost.create(post, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.blogPosts.length} blog posts`
         );
@@ -329,21 +338,20 @@ export class SeedService {
       this.logger.info("Seeding branded products data...");
 
       if (seedData.brandedCategories.length > 0) {
-        await this.models.BrandedCategory.bulkCreate(
-          seedData.brandedCategories,
-          {
-            transaction,
-          }
-        );
+        for (const category of seedData.brandedCategories) {
+          await this.models.BrandedCategory.create(category, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.brandedCategories.length} branded categories`
         );
       }
 
       if (seedData.brandedProducts.length > 0) {
-        await this.models.BrandedProduct.bulkCreate(seedData.brandedProducts, {
-          transaction,
-        });
+        for (const product of seedData.brandedProducts) {
+          await this.models.BrandedProduct.create(product, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.brandedProducts.length} branded products`
         );
@@ -365,16 +373,20 @@ export class SeedService {
       this.logger.info("Seeding movies data...");
 
       if (seedData.movieGenres.length > 0) {
-        await this.models.MovieGenre.bulkCreate(seedData.movieGenres, {
-          transaction,
-        });
+        for (const genre of seedData.movieGenres) {
+          await this.models.MovieGenre.create(genre, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.movieGenres.length} movie genres`
         );
       }
 
       if (seedData.movies.length > 0) {
-        await this.models.Movie.bulkCreate(seedData.movies, { transaction });
+        for (const movie of seedData.movies) {
+          await this.models.Movie.create(movie, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.movies.length} movies`
         );
@@ -396,21 +408,22 @@ export class SeedService {
       this.logger.info("Seeding rental data...");
 
       if (seedData.rentalTypes.length > 0) {
-        await this.models.RentalType.bulkCreate(seedData.rentalTypes, {
-          transaction,
-        });
+        for (const type of seedData.rentalTypes) {
+          await this.models.RentalType.create(type, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.rentalTypes.length} rental types`
         );
       }
 
       if (seedData.rentalTransportations.length > 0) {
-        await this.models.RentalTransportation.bulkCreate(
-          seedData.rentalTransportations,
-          {
+        for (const transport of seedData.rentalTransportations) {
+          await this.models.RentalTransportation.create(transport, {
             transaction,
-          }
-        );
+          });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.rentalTransportations.length} rental transportations`
         );
@@ -432,18 +445,20 @@ export class SeedService {
       this.logger.info("Seeding room data...");
 
       if (seedData.roomTypes.length > 0) {
-        await this.models.RoomType.bulkCreate(seedData.roomTypes, {
-          transaction,
-        });
+        for (const type of seedData.roomTypes) {
+          await this.models.RoomType.create(type, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.roomTypes.length} room types`
         );
       }
 
       if (seedData.roomLodgings.length > 0) {
-        await this.models.RoomLodging.bulkCreate(seedData.roomLodgings, {
-          transaction,
-        });
+        for (const lodging of seedData.roomLodgings) {
+          await this.models.RoomLodging.create(lodging, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.roomLodgings.length} room lodgings`
         );
@@ -465,18 +480,20 @@ export class SeedService {
       this.logger.info("Seeding news data...");
 
       if (seedData.newsCategories.length > 0) {
-        await this.models.NewsCategory.bulkCreate(seedData.newsCategories, {
-          transaction,
-        });
+        for (const category of seedData.newsCategories) {
+          await this.models.NewsCategory.create(category, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.newsCategories.length} news categories`
         );
       }
 
       if (seedData.newsArticles.length > 0) {
-        await this.models.NewsArticle.bulkCreate(seedData.newsArticles, {
-          transaction,
-        });
+        for (const article of seedData.newsArticles) {
+          await this.models.NewsArticle.create(article, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.newsArticles.length} news articles`
         );
@@ -498,18 +515,20 @@ export class SeedService {
       this.logger.info("Seeding career data...");
 
       if (seedData.careerCompanies.length > 0) {
-        await this.models.CareerCompany.bulkCreate(seedData.careerCompanies, {
-          transaction,
-        });
+        for (const company of seedData.careerCompanies) {
+          await this.models.CareerCompany.create(company, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.careerCompanies.length} career companies`
         );
       }
 
       if (seedData.careerJobs.length > 0) {
-        await this.models.CareerJob.bulkCreate(seedData.careerJobs, {
-          transaction,
-        });
+        for (const job of seedData.careerJobs) {
+          await this.models.CareerJob.create(job, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.careerJobs.length} career jobs`
         );
@@ -531,7 +550,10 @@ export class SeedService {
       this.logger.info("Seeding anime data...");
 
       if (seedData.animes.length > 0) {
-        await this.models.Anime.bulkCreate(seedData.animes, { transaction });
+        for (const anime of seedData.animes) {
+          await this.models.Anime.create(anime, { transaction });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.animes.length} animes`
         );
@@ -553,24 +575,24 @@ export class SeedService {
       this.logger.info("Seeding restaurant data...");
 
       if (seedData.restaurantCategories.length > 0) {
-        await this.models.RestaurantCategory.bulkCreate(
-          seedData.restaurantCategories,
-          {
+        for (const category of seedData.restaurantCategories) {
+          await this.models.RestaurantCategory.create(category, {
             transaction,
-          }
-        );
+          });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.restaurantCategories.length} restaurant categories`
         );
       }
 
       if (seedData.restaurantCuisines.length > 0) {
-        await this.models.RestaurantCuisine.bulkCreate(
-          seedData.restaurantCuisines,
-          {
+        for (const cuisine of seedData.restaurantCuisines) {
+          await this.models.RestaurantCuisine.create(cuisine, {
             transaction,
-          }
-        );
+          });
+          await this.delay();
+        }
         this.logger.info(
           `Successfully seeded ${seedData.restaurantCuisines.length} restaurant cuisines`
         );
