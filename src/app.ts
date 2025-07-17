@@ -78,15 +78,26 @@ export class App {
   }
 
   private setupRoutes(): void {
-    this.app.get("/health", (req: Request, res: Response) => {
-      this.appService.getHealthStatus(req, res);
-    });
+    this.app.get(
+      "/health",
+      RouteWrapper.withErrorHandler(
+        this.appService.getHealthStatus.bind(this.appService)
+      )
+    );
 
-    this.app.get("/", (req: Request, res: Response) => {
-      this.appService.getAppInfo(req, res);
-    });
+    this.app.get(
+      "/",
+      RouteWrapper.withErrorHandler(
+        this.appService.getAppInfo.bind(this.appService)
+      )
+    );
 
-    this.app.get("/apis/seed", RouteWrapper.withErrorHandler(this.appService.handleSeedRequest));
+    this.app.get(
+      "/apis/seed",
+      RouteWrapper.withErrorHandler(
+        this.appService.handleSeedRequest.bind(this.appService)
+      )
+    );
 
     const authRoutes = new AuthRoutes();
     this.app.use("/apis/auth", authRoutes.getRouter());
