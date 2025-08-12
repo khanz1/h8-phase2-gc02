@@ -17,6 +17,8 @@ import { RouteMapper } from "@/shared/utils/route-mapper";
 import { LectureRoutes } from "@/features/lecture/lecture.routes";
 import { AppService } from "@/app.service";
 import { RouteWrapper } from "./shared/utils/route-wrapper";
+import { RestaurantRoutes } from "./features/restaurants/restaurant.routes";
+import { RoomRoutes } from "./features/rooms/room.routes";
 
 export class App {
   private readonly app: Application;
@@ -125,6 +127,14 @@ export class App {
     const rentalRoutes = new RentalRoutes();
     this.app.use("/apis/rentals", rentalRoutes.getRouter());
     this.app.use("/apis/pub/rentals", rentalRoutes.getPublicRouter());
+
+    const restaurantRoutes = new RestaurantRoutes();
+    this.app.use("/apis/restaurants", restaurantRoutes.getRouter());
+    this.app.use("/apis/pub/restaurants", restaurantRoutes.getPublicRouter());
+
+    const roomRoutes = new RoomRoutes();
+    this.app.use("/apis/rooms", roomRoutes.getRouter());
+    this.app.use("/apis/pub/rooms", roomRoutes.getPublicRouter());
 
     const lectureRoutes = new LectureRoutes();
     this.app.use("/apis/lectures", lectureRoutes.getRouter());
