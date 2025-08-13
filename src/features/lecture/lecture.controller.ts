@@ -171,9 +171,9 @@ export class AnimePublicController {
     // TODO: Fix this later
     const authorId = 1;
 
-    if (!req.file) {
-      throw new BadRequestError("No image file provided");
-    }
+    // if (!req.file) {
+    //   throw new BadRequestError("No image file provided");
+    // }
 
     this.logger.info(`Creating new anime by user ${authorId}:`, validatedData);
 
