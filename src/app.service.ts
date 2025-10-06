@@ -141,7 +141,7 @@ export class AppService {
     try {
       const appInfo = {
         name: "Phase2 Graded Challenge API",
-        version: "1.0.0",
+        version: "1.0.1",
         description: "A comprehensive API for Phase2 Graded Challenge",
         documentation: "/api/docs",
         endpoints: {
