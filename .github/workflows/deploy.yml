@@ -68,10 +68,10 @@ jobs:
           port: 22
           script: |
             # Create app directory structure and environment file
-            mkdir -p ~/app/logs
+            mkdir -p ~/app/h8-phase2-gc02/logs
             # Set proper permissions for logs directory (nodejs user UID 1001)
-            sudo chown -R 1001:1001 ~/app/logs
-            cat << 'EOF' > ~/app/.env
+            sudo chown -R 1001:1001 ~/app/h8-phase2-gc02/logs
+            cat << 'EOF' > ~/app/h8-phase2-gc02/.env
             ${{ secrets.PROD_ENV_FILE }}
             EOF
 
@@ -82,7 +82,7 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
             # Stop and remove existing containers using docker-compose
-            docker-compose -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
+            docker-compose -f docker-compose.prod.yml down
 
             # Set environment variable for the Docker image
             export DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
@@ -97,4 +97,4 @@ jobs:
             curl -f http://localhost:8002/health || docker-compose -f docker-compose.prod.yml logs app --tail 20
 
             # Clean up old images
-            docker image prune -f --filter "until=24h"
+            # docker image prune -f --filter "until=24h"

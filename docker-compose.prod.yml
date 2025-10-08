@@ -47,7 +47,6 @@ services:
 
 networks:
   default:
-    name: app_default
     driver: bridge
 
 volumes:

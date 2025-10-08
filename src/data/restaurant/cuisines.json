@@ -491,7 +491,7 @@
   },
   {
     "name": "Nasi Putih",
-    "description": "",
+    "description": "Nasi putih pulen berkualitas premium yang cocok untuk menemani berbagai hidangan lauk pauk pilihan Anda",
     "price": 23600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555761/hacktiv8/restaurant/nasi-putih-q82bnbpk2p.jpg",
     "categoryId": 6,
@@ -501,7 +501,7 @@
   },
   {
     "name": "Nasi Shirataki",
-    "description": "",
+    "description": "Nasi shirataki rendah kalori dan rendah karbohidrat sebagai alternatif nasi sehat untuk diet dan gaya hidup Anda",
     "price": 34700,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555762/hacktiv8/restaurant/nasi-shirataki-lhu4zoigma.jpg",
     "categoryId": 6,
@@ -511,7 +511,7 @@
   },
   {
     "name": "Nasi Uduk Saja",
-    "description": "",
+    "description": "Nasi uduk Betawi yang gurih dan harum dimasak dengan santan dan rempah-rempah pilihan yang menggugah selera",
     "price": 25000,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555763/hacktiv8/restaurant/nasi-uduk-saja-lm7pomj7xv8.jpg",
     "categoryId": 6,
@@ -521,7 +521,7 @@
   },
   {
     "name": "Nasi Merah Saja",
-    "description": "",
+    "description": "Nasi merah organik kaya serat dan nutrisi yang baik untuk kesehatan pencernaan dan pilihan pola makan sehat",
     "price": 26400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555765/hacktiv8/restaurant/nasi-merah-saja-4bawfo8ljn7.jpg",
     "categoryId": 6,
@@ -531,7 +531,7 @@
   },
   {
     "name": "Nasi Kuning Saja",
-    "description": "",
+    "description": "Nasi kuning wangi dengan kunyit dan rempah tradisional yang sering disajikan untuk acara spesial dan perayaan",
     "price": 26400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555766/hacktiv8/restaurant/nasi-kuning-saja-lpc8xhcic5c.jpg",
     "categoryId": 6,
@@ -541,7 +541,7 @@
   },
   {
     "name": "Lontong Saja",
-    "description": "",
+    "description": "Lontong khas Indonesia yang lembut dan kenyal sebagai pengganti nasi atau pelengkap berbagai hidangan berkuah",
     "price": 22200,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555767/hacktiv8/restaurant/lontong-saja-g4l3ngm48ne.jpg",
     "categoryId": 6,
@@ -1021,7 +1021,7 @@
   },
   {
     "name": "Asem Asem Iga Putri Solo",
-    "description": "Sup Iga asam pedas",
+    "description": "Sup iga sapi asam pedas khas Solo dengan kuah asam yang menyegarkan dan rempah tradisional",
     "price": 127900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555831/hacktiv8/restaurant/asem-asem-iga-putri-solo-njfoyto64e.jpg",
     "categoryId": 8,
@@ -1571,7 +1571,7 @@
   },
   {
     "name": "Kepiting Soka Bumbu Lada Garam",
-    "description": "",
+    "description": "Kepiting soka goreng tepung dengan bumbu lada garam khas yang gurih pedas dan sangat renyah menggugah selera",
     "price": 115400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723555915/hacktiv8/restaurant/kepiting-soka-bumbu-lada-garam-vn69suuze.jpg",
     "categoryId": 10,
@@ -2071,7 +2071,7 @@
   },
   {
     "name": "Sambel Tempe Donorojo",
-    "description": "sambal penyet tempe",
+    "description": "Tempe goreng renyah yang diulek dengan sambal penyet pedas khas Jawa Timur yang menggugah selera",
     "price": 40300,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556005/hacktiv8/restaurant/sambel-tempe-donorojo-ikcsngywza.png",
     "categoryId": 13,
@@ -2241,7 +2241,7 @@
   },
   {
     "name": "Sambal Balado Hijau",
-    "description": "",
+    "description": "Sambal balado hijau pedas dengan cabai hijau segar tumis bawang merah dan tomat hijau untuk pelengkap makanan",
     "price": 30600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556030/hacktiv8/restaurant/sambal-balado-hijau-tn6qs2lmk3m.jpg",
     "categoryId": 15,
@@ -2251,7 +2251,7 @@
   },
   {
     "name": "Sambal Lada Garam",
-    "description": "",
+    "description": "Sambal lada garam khas dengan campuran cabai rawit merica dan garam yang gurih pedas sangat cocok untuk seafood",
     "price": 30600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556031/hacktiv8/restaurant/sambal-lada-garam-a3f0dqe8na4.jpg",
     "categoryId": 15,
@@ -2261,7 +2261,7 @@
   },
   {
     "name": "Sambal Rica-Rica",
-    "description": "",
+    "description": "Sambal rica-rica khas Manado dengan cabai merah tomat dan rempah yang pedas menggigit kaya akan aroma wangi",
     "price": 30600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556032/hacktiv8/restaurant/sambal-rica-rica-28um3op4ct1.jpg",
     "categoryId": 15,
@@ -2271,7 +2271,7 @@
   },
   {
     "name": "Sambal Terasi",
-    "description": "",
+    "description": "Sambal terasi tradisional dengan terasi udang cabai rawit dan jeruk nipis yang pedas gurih menyegarkan khas Indonesia",
     "price": 15300,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556034/hacktiv8/restaurant/sambal-terasi-8jv8id9pcgy.jpg",
     "categoryId": 15,
@@ -2281,7 +2281,7 @@
   },
   {
     "name": "Sambal Roa",
-    "description": "",
+    "description": "Sambal roa khas Manado dengan ikan roa asap cabai dan rempah yang gurih pedas menggugah selera makan",
     "price": 22200,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556037/hacktiv8/restaurant/sambal-roa-htqrwz2uad.jpg",
     "categoryId": 15,
@@ -2291,7 +2291,7 @@
   },
   {
     "name": "Sambal Penyet",
-    "description": "",
+    "description": "Sambal penyet khas Jawa Timur dengan cabai rawit tomat dan terasi yang diulek kasar pedas menggigit cocok untuk ayam",
     "price": 15300,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556039/hacktiv8/restaurant/sambal-penyet-1eidahw18om.jpg",
     "categoryId": 15,
@@ -2301,7 +2301,7 @@
   },
   {
     "name": "Sambal Mangga",
-    "description": "",
+    "description": "Sambal mangga muda pedas asam segar dengan irisan mangga mentah cabai dan gula merah cocok sebagai pelengkap hidangan",
     "price": 19400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556041/hacktiv8/restaurant/sambal-mangga-bzqt4c0ogys.jpg",
     "categoryId": 15,
@@ -2311,7 +2311,7 @@
   },
   {
     "name": "Sambal Matah",
-    "description": "",
+    "description": "Sambal matah khas Bali dengan irisan bawang merah cabai rawit dan terasi mentah dengan minyak panas sangat harum",
     "price": 19400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556043/hacktiv8/restaurant/sambal-matah-6lulrezrh0u.jpg",
     "categoryId": 15,
@@ -2321,7 +2321,7 @@
   },
   {
     "name": "Extra Telor Asin",
-    "description": "",
+    "description": "Telur asin asli Brebes dengan kuning telur berminyak dan rasa asin gurih sebagai pelengkap nasi dan hidangan",
     "price": 16600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556044/hacktiv8/restaurant/extra-telor-asin-4gcxoh9p9or.jpg",
     "categoryId": 16,
@@ -2331,7 +2331,7 @@
   },
   {
     "name": "Extra Telor Ceplok",
-    "description": "",
+    "description": "Telur ceplok mata sapi yang digoreng dengan minyak panas sehingga pinggiran renyah dan kuning telur masih setengah matang",
     "price": 16600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556046/hacktiv8/restaurant/extra-telor-ceplok-46xt2ei2448.jpg",
     "categoryId": 16,
@@ -2341,7 +2341,7 @@
   },
   {
     "name": "Extra Telur Dadar Rawis",
-    "description": "",
+    "description": "Telur dadar dengan campuran cabai rawit yang pedas menggigit cocok untuk menambah rasa pedas pada hidangan Anda",
     "price": 16600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556047/hacktiv8/restaurant/extra-telur-dadar-rawis-ov249t7oc6i.jpg",
     "categoryId": 16,
@@ -2351,7 +2351,7 @@
   },
   {
     "name": "Extra Telur Dadar",
-    "description": "",
+    "description": "Telur dadar klasik yang lembut dan gurih dimasak sempurna sebagai pelengkap nasi goreng atau hidangan lainnya",
     "price": 16600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556047/hacktiv8/restaurant/extra-telur-dadar-aeglqmb5pku.jpg",
     "categoryId": 16,
@@ -2361,7 +2361,7 @@
   },
   {
     "name": "Extra Telur Rebus",
-    "description": "",
+    "description": "Telur rebus matang sempurna dengan putih yang kenyal dan kuning yang padat sebagai tambahan protein untuk menu Anda",
     "price": 16600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556049/hacktiv8/restaurant/extra-telur-rebus-oo8ffa3zthn.jpg",
     "categoryId": 16,
@@ -2371,7 +2371,7 @@
   },
   {
     "name": "Kerupuk Bawang",
-    "description": "",
+    "description": "Kerupuk bawang renyah gurih dengan aroma bawang harum khas sebagai pelengkap makanan yang menggugah selera",
     "price": 13900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556051/hacktiv8/restaurant/kerupuk-bawang-akopsnpcq19.jpg",
     "categoryId": 16,
@@ -2381,7 +2381,7 @@
   },
   {
     "name": "Kerupuk Udang",
-    "description": "",
+    "description": "Kerupuk udang asli dengan rasa udang yang kuat tekstur renyah dan gurih sebagai cemilan atau pelengkap hidangan",
     "price": 13900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556052/hacktiv8/restaurant/kerupuk-udang-gde2fwncx5c.jpg",
     "categoryId": 16,
@@ -2391,7 +2391,7 @@
   },
   {
     "name": "Extra Pete",
-    "description": "",
+    "description": "Pete atau petai segar yang khas dengan aroma menyengat cocok ditumis dengan sambal atau pelengkap berbagai hidangan",
     "price": 30600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556053/hacktiv8/restaurant/extra-pete-7zv1drb8iq3.jpg",
     "categoryId": 16,
@@ -2401,7 +2401,7 @@
   },
   {
     "name": "Kerupuk Bangka",
-    "description": "",
+    "description": "Kerupuk Bangka khas Pulau Bangka dengan tekstur super renyah dan rasa gurih yang cocok sebagai pelengkap makanan",
     "price": 13900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556055/hacktiv8/restaurant/kerupuk-bangka-4y3lmcvwvjj.jpg",
     "categoryId": 16,
@@ -2411,7 +2411,7 @@
   },
   {
     "name": "Kerupuk Gendar",
-    "description": "",
+    "description": "Kerupuk gendar khas Jawa dengan bentuk bunga yang unik tekstur renyah dan rasa gurih sebagai pelengkap nasi",
     "price": 13900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556056/hacktiv8/restaurant/kerupuk-gendar-rghoh3d1wfh.jpg",
     "categoryId": 16,
@@ -2421,7 +2421,7 @@
   },
   {
     "name": "Kerupuk Singkong",
-    "description": "",
+    "description": "Kerupuk singkong tradisional yang renyah terbuat dari singkong pilihan dengan rasa gurih alami yang khas Indonesia",
     "price": 13900,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556058/hacktiv8/restaurant/kerupuk-singkong-d93pjkpalhv.jpg",
     "categoryId": 16,
@@ -2431,7 +2431,7 @@
   },
   {
     "name": "Cutlery - Dessert",
-    "description": "sendok + tissue",
+    "description": "Peralatan makan untuk dessert terdiri dari sendok dan tissue untuk kenyamanan bersantap",
     "price": 1300,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556060/hacktiv8/restaurant/cutlery-dessert-s6ml6cduyvr.jpg",
     "categoryId": 17,
@@ -2441,7 +2441,7 @@
   },
   {
     "name": "Cutlery - Food",
-    "description": "sendok garpu + tissue + toothpick",
+    "description": "Peralatan makan lengkap dengan sendok garpu, tissue dan tusuk gigi untuk hidangan utama",
     "price": 2000,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556062/hacktiv8/restaurant/cutlery-food-3h50mqcl6c6.jpg",
     "categoryId": 17,
@@ -2461,7 +2461,7 @@
   },
   {
     "name": "Bubur Candil",
-    "description": "Bubur Candil",
+    "description": "Bubur candil tradisional dengan bola-bola tepung ketan isi gula merah disajikan dengan kuah santan",
     "price": 48600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556066/hacktiv8/restaurant/bubur-candil-s1aqihrgf5j.jpg",
     "categoryId": 18,
@@ -2471,7 +2471,7 @@
   },
   {
     "name": "Bubur Ketan Hitam",
-    "description": "Bubur ketan hitam",
+    "description": "Bubur ketan hitam manis dengan tekstur lembut disajikan dengan santan dan gula merah cair",
     "price": 48600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556067/hacktiv8/restaurant/bubur-ketan-hitam-s64umdk6cnr.jpg",
     "categoryId": 18,
@@ -2481,7 +2481,7 @@
   },
   {
     "name": "Bubur Pacar Cina",
-    "description": "Bubur Pacar Cina",
+    "description": "Bubur pacar cina khas dengan biji pacar cina merah disajikan dengan kuah santan manis yang legit",
     "price": 48600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556070/hacktiv8/restaurant/bubur-pacar-cina-bcu1h9tuzi.jpg",
     "categoryId": 18,
@@ -2491,7 +2491,7 @@
   },
   {
     "name": "Bubur Sumsum",
-    "description": "Bubur sum-sum putih",
+    "description": "Bubur sumsum putih lembut dari tepung beras dengan kuah santan dan siraman gula merah manis",
     "price": 48600,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556071/hacktiv8/restaurant/bubur-sumsum-kfv4ubgybnf.jpg",
     "categoryId": 18,
@@ -2701,7 +2701,7 @@
   },
   {
     "name": "Es Milo Kolaka",
-    "description": "Es Milo",
+    "description": "Minuman es coklat Milo yang creamy dan segar dengan rasa coklat malt khas yang nikmat",
     "price": 52800,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556108/hacktiv8/restaurant/es-milo-kolaka-zss6fqg47ia.png",
     "categoryId": 19,
@@ -2771,7 +2771,7 @@
   },
   {
     "name": "Puding Mangga Probolinggo",
-    "description": "",
+    "description": "Puding mangga segar dari mangga Probolinggo yang manis dengan tekstur lembut dan rasa buah alami yang menyegarkan",
     "price": 68100,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556120/hacktiv8/restaurant/puding-mangga-probolinggo-bdh5wm84q4.jpg",
     "categoryId": 20,
@@ -2781,7 +2781,7 @@
   },
   {
     "name": "Bubur Ketan Item Es Puter Hitam",
-    "description": "",
+    "description": "Bubur ketan hitam manis dengan es puter hitam vanilla yang creamy perpaduan unik hangat dan dingin yang menyegarkan",
     "price": 58400,
     "imgUrl": "https://res.cloudinary.com/dpjqm8kkk/image/upload/v1723556121/hacktiv8/restaurant/bubur-ketan-item-es-puter-hitam-edme3tzovso.jpg",
     "categoryId": 20,

@@ -117,7 +117,7 @@ export interface CareerJobResponse {
   title: string;
   description: string;
   imgUrl: string;
-  jobType: "Full-time" | "Part-time" | "Contract" | "Internship" | "Remote";
+  jobType: "Full-Time" | "Part-Time" | "Contract" | "Internship" | "Remote" | "Project-Based";
   companyId: number;
   authorId: number;
   createdAt: Date;

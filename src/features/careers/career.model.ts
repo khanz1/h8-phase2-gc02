@@ -80,11 +80,12 @@ export class CareerJob extends BaseModel {
   declare description: string;
   declare imgUrl: string;
   declare jobType:
-    | "Full-time"
-    | "Part-time"
+    | "Full-Time"
+    | "Part-Time"
     | "Contract"
     | "Internship"
-    | "Remote";
+    | "Remote"
+    | "Project-Based";
   declare companyId: number;
   declare authorId: number;
   declare createdAt: Date;
@@ -132,9 +133,9 @@ export class CareerJob extends BaseModel {
         validate: {
           isIn: {
             args: [
-              ["Full-time", "Part-time", "Contract", "Internship", "Remote"],
+              ["Full-Time", "Part-Time", "Contract", "Internship", "Remote", "Project-Based"],
             ],
-            msg: "Job type must be Full-time, Part-time, Contract, Internship, or Remote",
+            msg: "Job type must be Full-Time, Part-Time, Contract, Internship, Remote, or Project-Based",
           },
         },
       },
