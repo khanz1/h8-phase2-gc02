@@ -56,7 +56,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: "docker-compose.prod.yml"
-          target: "~/app/"
+          target: "~/app/h8-phase2-gc02"
 
       # 7) SSH into EC2 and deploy
       - name: Deploy to EC2
