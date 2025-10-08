@@ -76,7 +76,7 @@ jobs:
             EOF
 
             # Navigate to app directory
-            cd ~/app
+            cd ~/app/h8-phase2-gc02
 
             # Pull latest application image
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
