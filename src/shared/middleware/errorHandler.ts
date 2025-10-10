@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Logger } from "@/config/logger";
 import { AppError } from "@/shared/errors";
 import { ResponseDTO } from "../utils/response.dto";
+import { ValidationError } from "sequelize";
 
 export class ErrorHandler {
   private static readonly logger = Logger.getInstance();
@@ -27,7 +28,13 @@ export class ErrorHandler {
       ErrorHandler.handleZodError(error, res);
     } else if (error.name === "ValidationError") {
       ErrorHandler.handleValidationError(error, res);
-    } else if (error.name === "SequelizeError") {
+    } else if (
+      error instanceof ValidationError ||
+      error.name === "SequelizeError" ||
+      error.name === "SequelizeUniqueConstraintError" ||
+      error.name === "SequelizeValidationError" ||
+      error.name === "SequelizeForeignKeyConstraintError"
+    ) {
       ErrorHandler.handleSequelizeError(error, res);
     } else if (error.name === "JsonWebTokenError") {
       ErrorHandler.handleJWTError(error, res);
