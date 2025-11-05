@@ -84,6 +84,10 @@ jobs:
             # Stop and remove existing containers using docker-compose
             docker-compose -f docker-compose.prod.yml down
 
+            # Force remove any orphaned containers with the same names
+            docker rm -f h8-phase2-gc02-app-prod 2>/dev/null || true
+            docker rm -f h8-phase2-gc02-postgres-prod 2>/dev/null || true
+
             # Set environment variable for the Docker image
             export DOCKER_IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/h8-phase2-gc02:latest
 
