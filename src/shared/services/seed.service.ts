@@ -265,10 +265,6 @@ export class SeedService {
       },
     ];
 
-    for (const user of users) {
-      user.password = await BcryptHelper.hashPassword(user.password);
-    }
-
     return users;
   }
 

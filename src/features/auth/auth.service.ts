@@ -52,11 +52,11 @@ export class AuthService {
 
       const user = await this.authRepository.findUserByEmail(credentials.email);
 
-      // const isPasswordValid = await user.comparePassword(credentials.password);
+      const isPasswordValid = await user.comparePassword(credentials.password);
 
-      // if (!isPasswordValid) {
-      //   throw new UnauthorizedError("Invalid email or password");
-      // }
+      if (!isPasswordValid) {
+        throw new UnauthorizedError("Invalid email or password");
+      }
 
       const tokens = JwtHelper.generateTokenPair({
         userId: user.id,

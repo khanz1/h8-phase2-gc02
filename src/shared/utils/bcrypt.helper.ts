@@ -41,7 +41,6 @@ export class BcryptHelper {
       }
 
       const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
-      this.logger.debug("Password comparison completed", { isMatch });
 
       return isMatch;
     } catch (error) {

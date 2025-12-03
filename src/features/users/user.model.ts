@@ -31,7 +31,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   declare readonly updatedAt: Date;
 
   public async comparePassword(candidatePassword: string): Promise<boolean> {
-    console.log(candidatePassword, this.get("password"), "<<< angga2");
     return BcryptHelper.comparePassword(candidatePassword, this.password);
   }
 
